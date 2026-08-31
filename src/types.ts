@@ -1,4 +1,5 @@
 export type ModuleType =
+  | 'metricas'
   | 'folio_seguimiento'
   | 'cotizacion'
   | 'orden_taller'

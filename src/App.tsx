@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
+  LayoutDashboard,
   FileText,
   FileCheck,
   Wrench,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ModuleType, CompanyInfo } from './types';
 import { StorageService } from './lib/storage';
+import { MetricasModule } from './components/MetricasModule';
 import { FolioSeguimientoModule } from './components/FolioSeguimientoModule';
 import { CotizacionModule } from './components/CotizacionModule';
 import { OrdenTallerModule } from './components/OrdenTallerModule';
@@ -22,7 +24,7 @@ import { ReporteSitioModule } from './components/ReporteSitioModule';
 import { HojaServicioModule } from './components/HojaServicioModule';
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<ModuleType>('folio_seguimiento');
+  const [activeModule, setActiveModule] = useState<ModuleType>('metricas');
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(() => StorageService.getCompanyInfo());
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [tempCompany, setTempCompany] = useState<CompanyInfo>(companyInfo);
@@ -67,7 +69,22 @@ export default function App() {
     }
   };
 
+  const totalAllRecords =
+    stats.foliosCount +
+    stats.cotizacionesCount +
+    stats.ordenesCount +
+    stats.reportesCount +
+    stats.hojasCount;
+
   const modules = [
+    {
+      id: 'metricas' as ModuleType,
+      number: '0',
+      title: 'Panel & Métricas (Home)',
+      subtitle: 'Dashboard Global y Flujo',
+      icon: LayoutDashboard,
+      count: totalAllRecords,
+    },
     {
       id: 'folio_seguimiento' as ModuleType,
       number: '1',
@@ -309,6 +326,15 @@ export default function App() {
 
         {/* Main Bento Canvas */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          {activeModule === 'metricas' && (
+            <MetricasModule
+              company={companyInfo}
+              onNavigate={(mod) => {
+                setActiveModule(mod);
+                refreshCounters();
+              }}
+            />
+          )}
           {activeModule === 'folio_seguimiento' && (
             <FolioSeguimientoModule company={companyInfo} />
           )}

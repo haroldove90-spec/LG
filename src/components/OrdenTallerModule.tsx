@@ -156,57 +156,6 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
 
   return (
     <div className="space-y-4">
-      {/* Bento Grid Metrics Summary Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Total Órdenes Taller
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-slate-800">{ordenes.length}</h3>
-            <span className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
-              Registradas
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            En Banco / Taller
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-amber-600">{enTallerCount}</h3>
-            <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-              Activas
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Total Presupuestado
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-indigo-600">{formatCurrency(totalPresupuesto)}</h3>
-            <span className="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
-              Acumulado
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Taller & Banco
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-emerald-600">Carry-In</h3>
-            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-              Recepción
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Header & Controls Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-3">

@@ -207,64 +207,13 @@ export const FolioSeguimientoModule: React.FC<{ company: CompanyInfo }> = ({ com
 
   return (
     <div className="space-y-4">
-      {/* Bento Grid Metrics Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Total de Folios
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-slate-800">{folios.length}</h3>
-            <span className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
-              Registrados
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            En Proceso / Activos
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-amber-600">{enProcesoCount}</h3>
-            <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-              Pendientes
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Anticipos (70%)
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-indigo-600">{formatCurrency(totalAnticipos)}</h3>
-            <span className="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
-              Calculados
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Monto Total Cotizado
-          </p>
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-xl font-bold text-emerald-600">{formatCurrency(totalReparaciones)}</h3>
-            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-              En Cartera
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Header & Controls Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-3">
           <h2 className="font-bold text-base text-slate-800 flex items-center gap-2">
             <span>Folios de Seguimiento</span>
-            <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase">
-              Activo
+            <span className="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase">
+              Módulo 1
             </span>
           </h2>
         </div>
