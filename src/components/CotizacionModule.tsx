@@ -157,9 +157,9 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-3">
           <h2 className="font-bold text-base text-slate-800 flex items-center gap-2">
-            <span>Cotizaciones de Refacciones</span>
+            <span>Cotizaciones de Refacciones & Pedidos</span>
             <span className="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase">
-              Módulo 2
+              Módulo 4
             </span>
           </h2>
         </div>

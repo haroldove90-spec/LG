@@ -195,7 +195,7 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
           <h2 className="font-bold text-base text-slate-800 flex items-center gap-2">
             <span>Servicio en Sitio (A Domicilio)</span>
             <span className="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase">
-              Módulo 4
+              Módulo 2
             </span>
           </h2>
         </div>

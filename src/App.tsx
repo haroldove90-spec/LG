@@ -24,7 +24,7 @@ import { ReporteSitioModule } from './components/ReporteSitioModule';
 import { HojaServicioModule } from './components/HojaServicioModule';
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<ModuleType>('folio_seguimiento');
+  const [activeModule, setActiveModule] = useState<ModuleType>('orden_taller');
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(() => StorageService.getCompanyInfo());
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [tempCompany, setTempCompany] = useState<CompanyInfo>(companyInfo);
@@ -71,36 +71,36 @@ export default function App() {
 
   const modules = [
     {
-      id: 'folio_seguimiento' as ModuleType,
-      number: '1',
-      title: 'Folio de Seguimiento',
-      subtitle: 'Revisión y Costos',
-      icon: FileText,
-      count: stats.foliosCount,
-    },
-    {
-      id: 'cotizacion' as ModuleType,
-      number: '2',
-      title: 'No. Cotización',
-      subtitle: 'Refacciones y Pedidos',
-      icon: FileCheck,
-      count: stats.cotizacionesCount,
-    },
-    {
       id: 'orden_taller' as ModuleType,
-      number: '3',
-      title: 'Orden Taller',
-      subtitle: 'Carry-In & Diagnóstico',
+      number: '1',
+      title: 'Orden de Taller',
+      subtitle: 'Carry-In & Banco',
       icon: Wrench,
       count: stats.ordenesCount,
     },
     {
       id: 'reporte_sitio' as ModuleType,
-      number: '4',
-      title: '# de Reporte (Sitio)',
-      subtitle: 'Servicio a Domicilio',
+      number: '2',
+      title: 'Servicio en Sitio',
+      subtitle: 'Ruta & Domicilio',
       icon: Truck,
       count: stats.reportesCount,
+    },
+    {
+      id: 'folio_seguimiento' as ModuleType,
+      number: '3',
+      title: 'Folio Seguimiento',
+      subtitle: 'Costeo & Anticipo 70%',
+      icon: FileText,
+      count: stats.foliosCount,
+    },
+    {
+      id: 'cotizacion' as ModuleType,
+      number: '4',
+      title: 'Cotización Partes',
+      subtitle: 'Refacciones & Pedidos',
+      icon: FileCheck,
+      count: stats.cotizacionesCount,
     },
     {
       id: 'hoja_servicio' as ModuleType,

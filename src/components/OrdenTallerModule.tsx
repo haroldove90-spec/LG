@@ -162,7 +162,7 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
           <h2 className="font-bold text-base text-slate-800 flex items-center gap-2">
             <span>Órdenes de Taller (Carry-In)</span>
             <span className="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase">
-              Módulo 3
+              Módulo 1
             </span>
           </h2>
         </div>
