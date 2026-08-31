@@ -24,7 +24,7 @@ import { ReporteSitioModule } from './components/ReporteSitioModule';
 import { HojaServicioModule } from './components/HojaServicioModule';
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<ModuleType>('metricas');
+  const [activeModule, setActiveModule] = useState<ModuleType>('folio_seguimiento');
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(() => StorageService.getCompanyInfo());
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [tempCompany, setTempCompany] = useState<CompanyInfo>(companyInfo);
@@ -69,22 +69,7 @@ export default function App() {
     }
   };
 
-  const totalAllRecords =
-    stats.foliosCount +
-    stats.cotizacionesCount +
-    stats.ordenesCount +
-    stats.reportesCount +
-    stats.hojasCount;
-
   const modules = [
-    {
-      id: 'metricas' as ModuleType,
-      number: '0',
-      title: 'Panel & Métricas (Home)',
-      subtitle: 'Dashboard Global y Flujo',
-      icon: LayoutDashboard,
-      count: totalAllRecords,
-    },
     {
       id: 'folio_seguimiento' as ModuleType,
       number: '1',
