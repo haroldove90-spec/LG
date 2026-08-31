@@ -1,0 +1,6 @@
+{
+  "name": "ServiTrack Pro - Dashboard de Servicio Técnico",
+  "description": "Sistema de gestión integral para centros de servicio técnico y soporte: Folios de Seguimiento, Cotizaciones, Órdenes de Taller, Reportes en Sitio y Hojas Oficiales de Servicio con exportación a PDF y Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
