@@ -1869,40 +1869,45 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                     {/* Botonera de Acciones por Registro */}
                     <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
                       <button
+                        type="button"
                         onClick={() => handlePrintSingle(item)}
-                        className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="Imprimir ficha de reporte"
+                        className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                        title="Imprimir formato"
                       >
                         <Printer className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => {
                           const doc = ExportService.generateReporteSitioPdf(item, company);
                           doc.save(`Reporte_${item.numeroReporte}.pdf`);
                         }}
-                        className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                         title="Descargar PDF"
                       >
                         <FileDown className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDuplicateRecord(item)}
-                        className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                         title="Duplicar reporte"
                       >
                         <Copy className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleEditRecord(item)}
-                        className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors"
+                        className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                         title="Editar reporte"
                       >
                         <Edit className="w-3.5 h-3.5" />
                         <span>Editar</span>
                       </button>
                       <button
+                        type="button"
                         onClick={() => setDeleteCandidate(item)}
-                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                         title="Eliminar reporte"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -2028,28 +2033,53 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                         <td className="p-3 text-slate-500 max-w-[200px] truncate">
                           {item.observaciones || '--'}
                         </td>
-                        <td className="p-3 text-right space-x-1">
-                          <button
-                            onClick={() => handlePrintSingle(item)}
-                            className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded"
-                            title="Imprimir"
-                          >
-                            <Printer className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleEditRecord(item)}
-                            className="p-1.5 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded"
-                            title="Editar"
-                          >
-                            <Edit className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setDeleteCandidate(item)}
-                            className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded"
-                            title="Eliminar"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                        <td className="p-3 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handlePrintSingle(item)}
+                              className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                              title="Imprimir formato"
+                            >
+                              <Printer className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const doc = ExportService.generateReporteSitioPdf(item, company);
+                                doc.save(`Reporte_${item.numeroReporte}.pdf`);
+                              }}
+                              className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Descargar PDF"
+                            >
+                              <FileDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDuplicateRecord(item)}
+                              className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                              title="Duplicar reporte"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleEditRecord(item)}
+                              className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Editar reporte"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                              <span>Editar</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteCandidate(item)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Eliminar reporte"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -2065,11 +2095,11 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
               {paginatedReportes.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white p-4 rounded-2xl border border-slate-200 hover:border-indigo-200 hover:shadow-md transition-all space-y-3 flex flex-col justify-between"
+                  className="bg-white p-4 rounded-2xl border border-slate-200 hover:shadow-md transition-all space-y-3 flex flex-col justify-between"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <div className="bg-[#2D2A4A] text-white px-2 py-0.5 rounded font-mono font-bold text-xs">
+                      <div className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-lg font-mono font-bold text-xs">
                         #{item.numeroReporte}
                       </div>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 uppercase">
@@ -2085,7 +2115,7 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                     <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs space-y-1">
                       <div className="flex justify-between">
                         <span className="text-slate-400">Celular:</span>
-                        <span className="font-bold text-red-600">{item.celular || '--'}</span>
+                        <span className="font-bold text-rose-600">{item.celular || '--'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-400">Aparato:</span>
@@ -2095,7 +2125,7 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-400">Visita:</span>
-                        <span className="font-semibold text-indigo-700">{item.fechaVisita}</span>
+                        <span className="font-semibold text-blue-700">{item.fechaVisita}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-400">Técnico:</span>
@@ -2104,37 +2134,56 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                  <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
                     <div className="flex items-center gap-1">
                       <button
+                        type="button"
                         onClick={() => handlePrintSingle(item)}
-                        className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded"
-                        title="Imprimir"
+                        className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                        title="Imprimir formato"
                       >
                         <Printer className="w-3.5 h-3.5" />
                       </button>
                       <button
+                        type="button"
+                        onClick={() => {
+                          const doc = ExportService.generateReporteSitioPdf(item, company);
+                          doc.save(`Reporte_${item.numeroReporte}.pdf`);
+                        }}
+                        className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        title="Descargar PDF"
+                      >
+                        <FileDown className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleDuplicateRecord(item)}
-                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded"
-                        title="Duplicar"
+                        className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                        title="Duplicar reporte"
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
+                    </div>
+
+                    <div className="flex items-center gap-1">
                       <button
+                        type="button"
+                        onClick={() => handleEditRecord(item)}
+                        className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                        title="Editar reporte"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        <span>Editar</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => setDeleteCandidate(item)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded"
-                        title="Eliminar"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        title="Eliminar reporte"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-
-                    <button
-                      onClick={() => handleEditRecord(item)}
-                      className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-[11px] transition-colors"
-                    >
-                      Ver / Editar
-                    </button>
                   </div>
                 </div>
               ))}

@@ -223,7 +223,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
     setToastMessage(`Formulario limpio listo para nueva Cotización #${nextNo}`);
   };
 
-  // Duplicate current record
+  // Duplicate current record in form
   const handleDuplicate = () => {
     const nextNo = StorageService.getNextCotizacionNumber();
     const duplicated: Partial<Cotizacion> = {
@@ -239,6 +239,26 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
     setFormData(duplicated);
     setCurrentIndex(-1);
     setActiveTab('form');
+    setToastMessage(`Cotización duplicada con nuevo No. #${nextNo}`);
+  };
+
+  // Duplicate record directly from directory
+  const handleDuplicateRecord = (item: Cotizacion) => {
+    const nextNo = StorageService.getNextCotizacionNumber();
+    const duplicated: Cotizacion = {
+      ...item,
+      id: `cot-${Date.now()}`,
+      numeroCotizacion: nextNo,
+      referenciaRef: item.referenciaRef ? `${item.referenciaRef}-COPIA` : '',
+      nombreCliente: item.nombreCliente ? `${item.nombreCliente} (Copia)` : '',
+      fechaPedido: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const updated = StorageService.saveCotizacion(duplicated);
+    setCotizaciones(updated);
+    setFormData(duplicated);
+    setCurrentIndex(0);
     setToastMessage(`Cotización duplicada con nuevo No. #${nextNo}`);
   };
 
@@ -1564,7 +1584,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                       className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs hover:border-slate-300 transition-all space-y-3.5"
                     >
                       {/* Cabecera de la Tarjeta */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                         <div className="flex items-center gap-2.5 flex-wrap">
                           <span className="px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs font-mono">
                             COT #{item.numeroCotizacion}
@@ -1581,13 +1601,59 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                           >
                             {item.estatus}
                           </span>
+                          <span className="text-2xs text-slate-400 hidden lg:inline">•</span>
+                          <span className="text-2xs text-slate-400 hidden lg:inline">
+                            {item.fechaPedido || 'Sin fecha'} • Atendió: {item.atendio || 'N/A'}
+                          </span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-2xs text-slate-400">
-                          <Calendar className="w-3.5 h-3.5" />
-                          <span>{item.fechaPedido || 'Sin fecha'}</span>
-                          <span>•</span>
-                          <span>Atendió: {item.atendio || 'N/A'}</span>
+                        {/* Botonera de Acciones por Registro Unificada */}
+                        <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                          <button
+                            type="button"
+                            onClick={() => openPrint(item)}
+                            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                            title="Imprimir formato"
+                          >
+                            <Printer className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => downloadPdf(item)}
+                            className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                            title="Descargar PDF"
+                          >
+                            <FileDown className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDuplicateRecord(item)}
+                            className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                            title="Duplicar cotización"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const idx = cotizaciones.findIndex((c) => c.id === item.id);
+                              loadRecordByIndex(idx >= 0 ? idx : 0);
+                              setActiveTab('form');
+                            }}
+                            className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                            title="Editar cotización"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                            <span>Editar</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => requestDelete(item)}
+                            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                            title="Eliminar cotización"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
 
@@ -1645,54 +1711,12 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                         </div>
                       </div>
 
-                      {/* Pie de Tarjeta con Acciones Rápidas */}
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                        <div className="text-2xs text-slate-400 truncate max-w-xs">
-                          {item.detallesOperacion && `Op: ${item.detallesOperacion}`}
+                      {/* Pie de Tarjeta */}
+                      {item.detallesOperacion && (
+                        <div className="pt-2 border-t border-slate-100 text-2xs text-slate-400">
+                          <span className="font-semibold text-slate-500">Operación:</span> {item.detallesOperacion}
                         </div>
-
-                        <div className="flex items-center gap-1.5 ml-auto">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const idx = cotizaciones.findIndex((c) => c.id === item.id);
-                              loadRecordByIndex(idx >= 0 ? idx : 0);
-                              setActiveTab('form');
-                            }}
-                            className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                          >
-                            <Edit className="w-3.5 h-3.5 text-slate-500" />
-                            <span>Editar</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => openPrint(item)}
-                            className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                            title="Imprimir formato formal"
-                          >
-                            <Printer className="w-3.5 h-3.5" />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => downloadPdf(item)}
-                            className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                            title="Descargar PDF"
-                          >
-                            <FileDown className="w-3.5 h-3.5" />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => requestDelete(item)}
-                            className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer"
-                            title="Eliminar cotización"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1757,37 +1781,46 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                               <div className="flex items-center justify-end gap-1">
                                 <button
                                   type="button"
-                                  onClick={() => {
-                                    const idx = cotizaciones.findIndex((c) => c.id === item.id);
-                                    loadRecordByIndex(idx >= 0 ? idx : 0);
-                                    setActiveTab('form');
-                                  }}
-                                  className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                                  title="Editar"
-                                >
-                                  <Edit className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  type="button"
                                   onClick={() => openPrint(item)}
-                                  className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                                  title="Imprimir"
+                                  className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                                  title="Imprimir formato"
                                 >
                                   <Printer className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => downloadPdf(item)}
-                                  className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                                  title="PDF"
+                                  className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Descargar PDF"
                                 >
                                   <FileDown className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   type="button"
+                                  onClick={() => handleDuplicateRecord(item)}
+                                  className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Duplicar cotización"
+                                >
+                                  <Copy className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const idx = cotizaciones.findIndex((c) => c.id === item.id);
+                                    loadRecordByIndex(idx >= 0 ? idx : 0);
+                                    setActiveTab('form');
+                                  }}
+                                  className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                                  title="Editar cotización"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                  <span>Editar</span>
+                                </button>
+                                <button
+                                  type="button"
                                   onClick={() => requestDelete(item)}
-                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer"
-                                  title="Eliminar"
+                                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Eliminar cotización"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -1844,34 +1877,57 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-end gap-1 mt-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const idx = cotizaciones.findIndex((c) => c.id === item.id);
-                              loadRecordByIndex(idx >= 0 ? idx : 0);
-                              setActiveTab('form');
-                            }}
-                            className="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition-colors cursor-pointer text-center"
-                          >
-                            Editar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => openPrint(item)}
-                            className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                            title="Imprimir"
-                          >
-                            <Printer className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => downloadPdf(item)}
-                            className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                            title="PDF"
-                          >
-                            <FileDown className="w-3.5 h-3.5" />
-                          </button>
+                        <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => openPrint(item)}
+                              className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                              title="Imprimir formato"
+                            >
+                              <Printer className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => downloadPdf(item)}
+                              className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Descargar PDF"
+                            >
+                              <FileDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDuplicateRecord(item)}
+                              className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                              title="Duplicar cotización"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const idx = cotizaciones.findIndex((c) => c.id === item.id);
+                                loadRecordByIndex(idx >= 0 ? idx : 0);
+                                setActiveTab('form');
+                              }}
+                              className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Editar cotización"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                              <span>Editar</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => requestDelete(item)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Eliminar cotización"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

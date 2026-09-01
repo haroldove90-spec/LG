@@ -1423,44 +1423,49 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                   </div>
 
                   {/* Columna Derecha / Footer Móvil: Botones de Acción */}
-                  <div className="flex items-center justify-between sm:justify-end lg:flex-col xl:flex-row gap-1.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 w-full lg:w-auto shrink-0">
+                  <div className="flex items-center justify-between sm:justify-end gap-1.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 w-full lg:w-auto shrink-0">
                     <button
+                      type="button"
                       onClick={() => handlePrintSingle(contact)}
-                      className="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer min-h-[38px]"
-                      title="Imprimir ficha directamente"
+                      className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                      title="Imprimir formato"
                     >
                       <Printer className="w-4 h-4" />
-                      <span>Imprimir</span>
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => ExportService.exportToPdf('agenda', contact)}
-                      className="p-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      title="Descargar Ficha en PDF"
+                      className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                      title="Descargar PDF"
                     >
                       <FileDown className="w-4 h-4" />
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => handleDuplicateRecord(contact)}
-                      className="p-2 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      title="Duplicar este registro"
+                      className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                      title="Duplicar contacto"
                     >
                       <Copy className="w-4 h-4" />
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => handleEditRecord(contact)}
-                      className="p-2 text-slate-600 hover:text-amber-700 hover:bg-amber-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      title="Editar este registro en el formulario"
+                      className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Editar contacto"
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="w-3.5 h-3.5" />
+                      <span>Editar</span>
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => setDeleteCandidate(contact)}
-                      className="p-2 text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      title="Eliminar este registro"
+                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                      title="Eliminar contacto"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1481,7 +1486,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                     className="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 space-y-3 w-full"
                   >
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                      <span className="bg-slate-900 text-emerald-400 font-mono font-black text-xs px-2.5 py-1 rounded-lg">
+                      <span className="bg-slate-100 text-slate-800 border border-slate-200 font-mono font-bold text-xs px-2.5 py-1 rounded-lg">
                         ID #{contact.agendaId}
                       </span>
                       {contact.organizacion && (
@@ -1497,7 +1502,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                         <p className="text-xs text-slate-500 font-mono mt-0.5">{contact.cargo}</p>
                       )}
                       {contact.correoElectronico && (
-                        <p className="text-xs text-emerald-700 mt-0.5">{contact.correoElectronico}</p>
+                        <p className="text-xs text-blue-600 mt-0.5">{contact.correoElectronico}</p>
                       )}
                     </div>
 
@@ -1529,38 +1534,53 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-slate-100">
-                      <button
-                        onClick={() => handlePrintSingle(contact)}
-                        className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer min-h-[38px]"
-                      >
-                        <Printer className="w-4 h-4" />
-                        <span>Imprimir</span>
-                      </button>
-                      <button
-                        onClick={() => ExportService.exportToPdf('agenda', contact)}
-                        className="p-2 text-slate-600 hover:text-rose-600 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      >
-                        <FileDown className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDuplicateRecord(contact)}
-                        className="p-2 text-slate-600 hover:text-emerald-700 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleEditRecord(contact)}
-                        className="p-2 text-slate-600 hover:text-amber-700 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeleteCandidate(contact)}
-                        className="p-2 text-slate-600 hover:text-rose-700 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <div className="flex items-center justify-between gap-1.5 pt-2.5 border-t border-slate-100">
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handlePrintSingle(contact)}
+                          className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                          title="Imprimir formato"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => ExportService.exportToPdf('agenda', contact)}
+                          className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Descargar PDF"
+                        >
+                          <FileDown className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDuplicateRecord(contact)}
+                          className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          title="Duplicar contacto"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleEditRecord(contact)}
+                          className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                          title="Editar contacto"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Editar</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteCandidate(contact)}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Eliminar contacto"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1618,39 +1638,45 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                           <td className="px-4 py-3 text-right whitespace-nowrap">
                             <div className="flex items-center justify-end gap-1">
                               <button
+                                type="button"
                                 onClick={() => handlePrintSingle(contact)}
-                                className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
-                                title="Imprimir directamente"
+                                className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                                title="Imprimir formato"
                               >
-                                <Printer className="w-4 h-4" />
+                                <Printer className="w-3.5 h-3.5" />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => ExportService.exportToPdf('agenda', contact)}
-                                className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
+                                className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                                 title="Descargar PDF"
                               >
-                                <FileDown className="w-4 h-4" />
+                                <FileDown className="w-3.5 h-3.5" />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => handleDuplicateRecord(contact)}
-                                className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
-                                title="Duplicar"
+                                className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                title="Duplicar contacto"
                               >
-                                <Copy className="w-4 h-4" />
+                                <Copy className="w-3.5 h-3.5" />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => handleEditRecord(contact)}
-                                className="p-1.5 text-slate-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg cursor-pointer"
-                                title="Editar en formulario"
+                                className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                                title="Editar contacto"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3.5 h-3.5" />
+                                <span>Editar</span>
                               </button>
                               <button
+                                type="button"
                                 onClick={() => setDeleteCandidate(contact)}
-                                className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
-                                title="Eliminar"
+                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                title="Eliminar contacto"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>
@@ -1669,54 +1695,60 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
               {paginatedContacts.map((contact) => (
                 <div
                   key={contact.id}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all flex flex-col overflow-hidden group w-full"
+                  className="bg-white rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col overflow-hidden group w-full"
                 >
-                  {/* Cabecera de Tarjeta */}
-                  <div className="p-3.5 sm:p-4 bg-slate-900 text-white flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="bg-emerald-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md tracking-wider shrink-0 font-mono">
+                  {/* Cabecera de Tarjeta Unificada */}
+                  <div className="p-3.5 sm:p-4 bg-white border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                      <span className="bg-slate-100 text-slate-800 border border-slate-200 font-bold text-xs px-2.5 py-1 rounded-lg tracking-wider shrink-0 font-mono">
                         ID #{contact.agendaId}
                       </span>
                       {contact.organizacion && (
-                        <span className="text-[11px] font-semibold text-slate-300 truncate">
+                        <span className="text-xs font-bold text-blue-600 truncate max-w-[150px]">
                           {contact.organizacion}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
                       <button
+                        type="button"
                         onClick={() => handlePrintSingle(contact)}
-                        className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                        title="Imprimir directamente"
+                        className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                        title="Imprimir formato"
                       >
                         <Printer className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => ExportService.exportToPdf('agenda', contact)}
-                        className="p-1.5 text-slate-300 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                        className="p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                         title="Descargar PDF"
                       >
                         <FileDown className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDuplicateRecord(contact)}
-                        className="p-1.5 text-slate-300 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                        title="Duplicar"
+                        className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                        title="Duplicar contacto"
                       >
                         <Copy className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleEditRecord(contact)}
-                        className="p-1.5 text-slate-300 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                        title="Editar en formulario"
+                        className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Editar contacto"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-3.5 h-3.5" />
+                        <span>Editar</span>
                       </button>
                       <button
+                        type="button"
                         onClick={() => setDeleteCandidate(contact)}
-                        className="p-1.5 text-slate-300 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                        title="Eliminar"
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        title="Eliminar contacto"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
