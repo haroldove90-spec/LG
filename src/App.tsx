@@ -24,6 +24,8 @@ import {
   PanelLeftOpen,
   Layers,
   Wrench,
+  Search,
+  Plus,
 } from 'lucide-react';
 import { ModuleType, CompanyInfo } from './types';
 import { StorageService } from './lib/storage';
@@ -366,164 +368,172 @@ export default function App() {
       </aside>
 
       {/* ========================================================================= */}
-      {/* 2. UNIVERSAL LATERAL SLIDE DRAWER (OPENS LATERALLY FROM THE LEFT)        */}
+      {/* 2. UNIVERSAL LATERAL SLIDE DRAWER (SMOOTH FADE & LATERAL SLIDE)          */}
       {/* ========================================================================= */}
-      {isLateralDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex animate-in fade-in duration-200">
-          {/* Backdrop semi-transparente */}
-          <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity cursor-pointer"
-            onClick={closeLateralDrawer}
-            title="Cerrar barra lateral"
-          />
+      <div
+        className={`fixed inset-0 z-50 transition-all duration-300 ${
+          isLateralDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        {/* Backdrop con desvanecido suave */}
+        <div
+          className={`fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 ease-out ${
+            isLateralDrawerOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={closeLateralDrawer}
+          title="Cerrar barra lateral"
+        />
 
-          {/* Panel Lateral que desliza estrictamente de IZQUIERDA a DERECHA */}
-          <div className="relative w-84 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-300 ease-out border-r border-slate-200">
-            {/* Header del Panel Lateral */}
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/90">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xs">
-                  <Zap className="w-5 h-5 text-yellow-300 fill-yellow-300" />
-                </div>
-                <div>
-                  <h2 className="text-xs font-black text-slate-900 uppercase tracking-tight">
-                    Electro Industrias
-                  </h2>
-                  <p className="text-[9px] text-blue-600 font-extrabold uppercase tracking-wider">
-                    Navegación Lateral
-                  </p>
-                </div>
+        {/* Panel Lateral con Deslizamiento y Desvanecido Suave */}
+        <div
+          className={`relative w-84 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 border-r border-slate-200 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform ${
+            isLateralDrawerOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
+          }`}
+        >
+          {/* Header del Panel Lateral */}
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/90">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xs">
+                <Zap className="w-5 h-5 text-yellow-300 fill-yellow-300" />
               </div>
-              <button
-                type="button"
-                onClick={closeLateralDrawer}
-                className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-white rounded-xl transition-colors cursor-pointer border border-slate-200/80 shadow-2xs"
-                aria-label="Cerrar barra lateral"
-                title="Cerrar"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div>
+                <h2 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                  Electro Industrias
+                </h2>
+                <p className="text-[9px] text-blue-600 font-extrabold uppercase tracking-wider">
+                  Navegación Lateral
+                </p>
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={closeLateralDrawer}
+              className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-white rounded-xl transition-colors cursor-pointer border border-slate-200/80 shadow-2xs"
+              aria-label="Cerrar barra lateral"
+              title="Cerrar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
-            {/* Lista Lateral de Módulos (1 al 4) */}
-            <nav className="flex-1 p-3.5 space-y-2 overflow-y-auto">
-              <p className="px-2 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                Módulos del Sistema (Deslizar y Seleccionar)
-              </p>
-              {modules.map((mod) => {
-                const Icon = mod.icon;
-                const isActive = activeModule === mod.id;
-                return (
-                  <button
-                    key={mod.id}
-                    type="button"
-                    onClick={() => selectModule(mod.id)}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-200 font-bold'
-                        : 'text-slate-700 hover:bg-slate-100/90 border border-slate-200/80 font-medium'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 truncate">
-                      <div
-                        className={`p-2 rounded-lg shrink-0 ${
-                          isActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div className="truncate">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs font-bold block truncate ${isActive ? 'text-white' : 'text-slate-900'}`}>
-                            #{mod.number}. {mod.title}
-                          </span>
-                          {mod.isNew && (
-                            <span className={`text-[9px] px-1.5 py-0.2 font-black rounded uppercase tracking-wider ${
-                              isActive ? 'bg-yellow-400 text-slate-900' : 'bg-indigo-600 text-white'
-                            }`}>
-                              Nuevo
-                            </span>
-                          )}
-                        </div>
-                        <span className={`text-[10px] block truncate ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
-                          {mod.subtitle}
-                        </span>
-                      </div>
-                    </div>
-                    <span
-                      className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ml-1.5 ${
-                        isActive
-                          ? 'bg-white text-blue-700'
-                          : 'bg-slate-100 text-slate-600 border border-slate-200/60'
+          {/* Lista Lateral de Módulos (1 al 4) */}
+          <nav className="flex-1 p-3.5 space-y-2 overflow-y-auto">
+            <p className="px-2 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+              Módulos del Sistema (Deslizar y Seleccionar)
+            </p>
+            {modules.map((mod) => {
+              const Icon = mod.icon;
+              const isActive = activeModule === mod.id;
+              return (
+                <button
+                  key={mod.id}
+                  type="button"
+                  onClick={() => selectModule(mod.id)}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-200 font-bold'
+                      : 'text-slate-700 hover:bg-slate-100/90 border border-slate-200/80 font-medium'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 truncate">
+                    <div
+                      className={`p-2 rounded-lg shrink-0 ${
+                        isActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
                       }`}
                     >
-                      {mod.count}
-                    </span>
-                  </button>
-                );
-              })}
-
-              {/* PWA Direct Installation Card */}
-              <div className="pt-3 mt-3 border-t border-slate-100">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50/70 border border-blue-200/80 rounded-xl p-3 text-xs space-y-2">
-                  <div className="flex items-center gap-1.5 text-blue-900 font-bold">
-                    <Smartphone className="w-4 h-4 text-blue-600" />
-                    <span>Instalar en Teléfono / Tablet</span>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-xs font-bold block truncate ${isActive ? 'text-white' : 'text-slate-900'}`}>
+                          #{mod.number}. {mod.title}
+                        </span>
+                        {mod.isNew && (
+                          <span className={`text-[9px] px-1.5 py-0.2 font-black rounded uppercase tracking-wider ${
+                            isActive ? 'bg-yellow-400 text-slate-900' : 'bg-indigo-600 text-white'
+                          }`}>
+                            Nuevo
+                          </span>
+                        )}
+                      </div>
+                      <span className={`text-[10px] block truncate ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
+                        {mod.subtitle}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-slate-600 leading-snug">
-                    Gestiona reportes, cotizaciones y órdenes de taller al instante.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      closeLateralDrawer();
-                      handleInstallApp();
-                    }}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-98"
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ml-1.5 ${
+                      isActive
+                        ? 'bg-white text-blue-700'
+                        : 'bg-slate-100 text-slate-600 border border-slate-200/60'
+                    }`}
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>{isInstalled ? 'App Instalada' : 'Instalar Aplicación'}</span>
-                  </button>
-                </div>
-              </div>
-            </nav>
+                    {mod.count}
+                  </span>
+                </button>
+              );
+            })}
 
-            {/* Lateral Drawer Footer */}
-            <div className="p-3.5 border-t border-slate-100 bg-slate-50/70 space-y-2">
-              <button
-                type="button"
-                onClick={() => {
-                  closeLateralDrawer();
-                  setTempCompany(companyInfo);
-                  setIsCompanyModalOpen(true);
-                }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs"
-              >
-                <div className="flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-slate-500" />
-                  <span>Configuración de Empresa</span>
+            {/* PWA Direct Installation Card */}
+            <div className="pt-3 mt-3 border-t border-slate-100">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50/70 border border-blue-200/80 rounded-xl p-3 text-xs space-y-2">
+                <div className="flex items-center gap-1.5 text-blue-900 font-bold">
+                  <Smartphone className="w-4 h-4 text-blue-600" />
+                  <span>Instalar en Teléfono / Tablet</span>
                 </div>
-                <span className="text-[10px] text-slate-400">Editar</span>
-              </button>
-
-              <div className="flex items-center justify-between text-[11px] px-1 text-slate-400">
+                <p className="text-[11px] text-slate-600 leading-snug">
+                  Gestiona reportes, cotizaciones y órdenes de taller al instante.
+                </p>
                 <button
                   type="button"
                   onClick={() => {
                     closeLateralDrawer();
-                    handleResetDemoData();
+                    handleInstallApp();
                   }}
-                  className="inline-flex items-center gap-1 hover:text-rose-600 transition-colors cursor-pointer"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-98"
                 >
-                  <RefreshCw className="w-3 h-3" />
-                  <span>Restaurar Datos</span>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>{isInstalled ? 'App Instalada' : 'Instalar Aplicación'}</span>
                 </button>
-                <span>v5.0 PWA</span>
               </div>
+            </div>
+          </nav>
+
+          {/* Lateral Drawer Footer */}
+          <div className="p-3.5 border-t border-slate-100 bg-slate-50/70 space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                closeLateralDrawer();
+                setTempCompany(companyInfo);
+                setIsCompanyModalOpen(true);
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs"
+            >
+              <div className="flex items-center gap-2">
+                <Settings className="w-4 h-4 text-slate-500" />
+                <span>Configuración de Empresa</span>
+              </div>
+              <span className="text-[10px] text-slate-400">Editar</span>
+            </button>
+
+            <div className="flex items-center justify-between text-[11px] px-1 text-slate-400">
+              <button
+                type="button"
+                onClick={() => {
+                  closeLateralDrawer();
+                  handleResetDemoData();
+                }}
+                className="inline-flex items-center gap-1 hover:text-rose-600 transition-colors cursor-pointer"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Restaurar Datos</span>
+              </button>
+              <span>v5.0 PWA</span>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* ========================================================================= */}
       {/* 3. MAIN CONTENT CONTAINER                                                 */}
@@ -672,48 +682,95 @@ export default function App() {
           )}
         </main>
 
-        {/* Fixed Bottom Dock Navigation Bar for Mobile and Tablets */}
+        {/* Fixed Bottom Dock Navigation Bar for Mobile and Tablets (Action Oriented) */}
         <nav
-          aria-label="Navegación Móvil Rápida"
-          className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-md border-t border-slate-200 px-1 py-1.5 flex items-center justify-around shadow-lg"
+          aria-label="Barra de Acciones Rápidas"
+          className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-lg"
         >
-          {modules.map((mod) => {
-            const Icon = mod.icon;
-            const isActive = activeModule === mod.id;
-            return (
-              <button
-                key={mod.id}
-                type="button"
-                onClick={() => selectModule(mod.id)}
-                className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer relative ${
-                  isActive
-                    ? 'text-blue-600 font-bold bg-blue-50/80'
-                    : 'text-slate-500 hover:text-slate-800 font-medium'
-                }`}
-              >
-                <div className="relative">
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600 scale-110' : 'text-slate-400'}`} />
-                  {mod.count > 0 && (
-                    <span
-                      className={`absolute -top-1.5 -right-2 text-[9px] font-black min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center ${
-                        isActive
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-200 text-slate-700'
-                      }`}
-                    >
-                      {mod.count}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[10px] mt-0.5 leading-tight tracking-tight text-center truncate max-w-[72px]">
-                  {mod.shortTitle}
-                </span>
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-0.5" />
-                )}
-              </button>
-            );
-          })}
+          {/* 1. Botón Menú / Módulos (Abre la barra lateral suavemente) */}
+          <button
+            type="button"
+            onClick={openLateralDrawer}
+            className="flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl text-slate-600 hover:text-blue-600 transition-colors cursor-pointer active:scale-95"
+            title="Abrir Módulos del Sistema"
+          >
+            <Menu className="w-5 h-5 text-slate-700" />
+            <span className="text-[10px] mt-0.5 font-bold tracking-tight text-center truncate">
+              Módulos
+            </span>
+          </button>
+
+          {/* 2. Botón Buscar Registros del Módulo Activo */}
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(
+                new CustomEvent('app:switch-view', {
+                  detail: { view: 'directory', module: activeModule },
+                })
+              );
+            }}
+            className="flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl text-blue-700 hover:text-blue-900 transition-colors cursor-pointer active:scale-95"
+            title="Buscar Registros en este Módulo"
+          >
+            <Search className="w-5 h-5 text-blue-600" />
+            <span className="text-[10px] mt-0.5 font-bold tracking-tight text-center truncate">
+              Buscar
+            </span>
+          </button>
+
+          {/* 3. Botón Central Destacado: NUEVO REGISTRO */}
+          <div className="flex-1 flex items-center justify-center -mt-4">
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent('app:switch-view', {
+                    detail: { view: 'create', module: activeModule },
+                  })
+                );
+              }}
+              className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center shadow-lg hover:shadow-xl border-2 border-white transition-all cursor-pointer active:scale-90 hover:scale-105"
+              title="Dar de alta nuevo registro en el módulo actual"
+            >
+              <Plus className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* 4. Botón WhatsApp Rápido */}
+          <button
+            type="button"
+            onClick={() => {
+              const cleanTel = companyInfo.phone.replace(/[^0-9]/g, '');
+              const url = cleanTel ? `https://wa.me/${cleanTel}` : `https://wa.me/`;
+              window.open(url, '_blank');
+            }}
+            className="flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl text-emerald-700 hover:text-emerald-900 transition-colors cursor-pointer active:scale-95"
+            title="Abrir WhatsApp"
+          >
+            <svg className="w-5 h-5 fill-current text-emerald-600" viewBox="0 0 24 24">
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+            </svg>
+            <span className="text-[10px] mt-0.5 font-bold tracking-tight text-center truncate">
+              WhatsApp
+            </span>
+          </button>
+
+          {/* 5. Botón Configuración de Empresa */}
+          <button
+            type="button"
+            onClick={() => {
+              setTempCompany(companyInfo);
+              setIsCompanyModalOpen(true);
+            }}
+            className="flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl text-slate-600 hover:text-slate-900 transition-colors cursor-pointer active:scale-95"
+            title="Configuración de Empresa"
+          >
+            <Settings className="w-5 h-5 text-slate-700" />
+            <span className="text-[10px] mt-0.5 font-bold tracking-tight text-center truncate">
+              Empresa
+            </span>
+          </button>
         </nav>
 
         {/* Footer */}

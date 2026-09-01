@@ -3,6 +3,7 @@ import { X, Printer, FileDown, FileSpreadsheet } from 'lucide-react';
 import { ModuleType, AnyRecord, CompanyInfo, FolioSeguimiento, Cotizacion, OrdenTaller, ReporteSitio, HojaServicio } from '../types';
 import { ExportService } from '../lib/exportUtils';
 import { printUnifiedDocumentDirectly } from '../lib/printUtils';
+import { WhatsAppShareMenu } from './WhatsAppShareMenu';
 import { StatusBadge } from './StatusBadge';
 
 interface FormatPrintPreviewProps {
@@ -61,6 +62,12 @@ export const FormatPrintPreview: React.FC<FormatPrintPreviewProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            <WhatsAppShareMenu
+              module={module}
+              record={record}
+              company={company}
+              variant="button"
+            />
             <button
               onClick={handleExportPdf}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-medium transition-colors shadow-sm"

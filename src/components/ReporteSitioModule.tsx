@@ -41,6 +41,7 @@ import {
 import { ReporteSitio, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
+import { WhatsAppShareMenu } from './WhatsAppShareMenu';
 import * as XLSX from 'xlsx';
 
 const ITEMS_PER_PAGE = 10;
@@ -888,6 +889,22 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
     setCurrentPage(1);
   }, [searchQuery]);
 
+  // Listener para acciones globales de navegación rápida (Móvil / Bottom Bar)
+  useEffect(() => {
+    const handleAppAction = (e: Event) => {
+      const customEvt = e as CustomEvent;
+      if (customEvt.detail?.view === 'create') {
+        handleStartNewRegistration();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (customEvt.detail?.view === 'directory') {
+        setMainView('directory');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('app:switch-view', handleAppAction);
+    return () => window.removeEventListener('app:switch-view', handleAppAction);
+  }, []);
+
   // Cálculos de Paginación
   const totalItems = filteredReportes.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
@@ -1659,6 +1676,12 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
               {/* Botones de acción si estamos editando */}
               {editingItem && (
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                  <WhatsAppShareMenu
+                    module="reporte_sitio"
+                    record={editingItem}
+                    company={company}
+                    variant="button"
+                  />
                   <button
                     type="button"
                     onClick={() => handleDuplicateRecord(editingItem)}
@@ -1868,6 +1891,12 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
 
                     {/* Botonera de Acciones por Registro */}
                     <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                      <WhatsAppShareMenu
+                        module="reporte_sitio"
+                        record={item}
+                        company={company}
+                        variant="icon"
+                      />
                       <button
                         type="button"
                         onClick={() => handlePrintSingle(item)}
@@ -2035,6 +2064,12 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                         </td>
                         <td className="p-3 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-1">
+                            <WhatsAppShareMenu
+                              module="reporte_sitio"
+                              record={item}
+                              company={company}
+                              variant="icon"
+                            />
                             <button
                               type="button"
                               onClick={() => handlePrintSingle(item)}
@@ -2136,6 +2171,12 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
 
                   <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
                     <div className="flex items-center gap-1">
+                      <WhatsAppShareMenu
+                        module="reporte_sitio"
+                        record={item}
+                        company={company}
+                        variant="icon"
+                      />
                       <button
                         type="button"
                         onClick={() => handlePrintSingle(item)}
