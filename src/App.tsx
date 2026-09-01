@@ -304,27 +304,38 @@ export default function App() {
       {/* Main Container Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header Bar */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-20 shadow-2xs">
-          <div className="flex items-center gap-3">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-6 lg:px-8 sticky top-0 z-20 shadow-2xs">
+          <div className="flex items-center gap-2.5">
             <button
+              type="button"
+              id="btn-hamburger-menu"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer"
+              className={`lg:hidden p-2 rounded-xl border transition-all cursor-pointer ${
+                isMobileMenuOpen
+                  ? 'bg-blue-50 text-blue-700 border-blue-200 ring-2 ring-blue-100'
+                  : 'text-slate-700 bg-slate-50 hover:bg-slate-100 border-slate-200'
+              }`}
+              aria-label="Abrir o cerrar menú de navegación"
             >
-              <Menu className="w-5 h-5" />
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5 text-blue-700" />
+              ) : (
+                <Menu className="w-5 h-5 text-slate-700" />
+              )}
             </button>
 
-            <div className="flex items-center gap-2.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-              <div>
-                <h2 className="font-bold text-sm sm:text-base text-slate-800 leading-tight">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" />
+              <div className="min-w-0">
+                <h2 className="font-bold text-xs sm:text-base text-slate-800 leading-tight truncate">
                   {currentModuleObj.title}
                 </h2>
-                <p className="text-[10px] text-slate-400 font-medium hidden sm:block">
+                <p className="text-[10px] text-slate-400 font-medium hidden sm:block truncate">
                   {currentModuleObj.subtitle}
                 </p>
               </div>
             </div>
-            <span className="hidden sm:inline-flex bg-blue-50 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase border border-blue-100">
+            <span className="hidden sm:inline-flex bg-blue-50 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase border border-blue-100 shrink-0">
               Módulo #{currentModuleObj.number}
             </span>
           </div>
@@ -336,11 +347,11 @@ export default function App() {
               type="button"
               onClick={handleInstallApp}
               id="btn-instalar-app-header"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer ring-2 ring-blue-200/50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer ring-2 ring-blue-200/50"
               title="Instalar Electro Industrias en tu teléfono móvil o computadora"
             >
-              <Download className="w-3.5 h-3.5 text-blue-100 animate-bounce" />
-              <span>Instalar App</span>
+              <Download className="w-3.5 h-3.5 text-blue-100" />
+              <span className="hidden xs:inline">Instalar</span> App
             </button>
 
             <button
@@ -348,10 +359,11 @@ export default function App() {
                 setTempCompany(companyInfo);
                 setIsCompanyModalOpen(true);
               }}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+              title="Configuración de la Empresa"
             >
               <Settings className="w-3.5 h-3.5 text-slate-500" />
-              <span>Configuración</span>
+              <span className="hidden sm:inline">Configuración</span>
             </button>
             <div className="h-4 w-px bg-slate-200 hidden sm:block" />
             <div className="text-right hidden md:block">
@@ -361,58 +373,194 @@ export default function App() {
           </div>
         </header>
 
-        {/* Mobile Navigation Drawer */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 p-4 space-y-2 shadow-lg animate-in slide-in-from-top duration-200">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Módulos de Servicio
-              </span>
+        {/* Quick Module Switcher Pill Bar for Mobile & Tablets (Always visible below header) */}
+        <div className="lg:hidden bg-slate-100/90 border-b border-slate-200 px-2 py-1.5 overflow-x-auto no-scrollbar flex items-center gap-1.5 sticky top-16 z-15 backdrop-blur-xs">
+          {modules.map((mod) => {
+            const Icon = mod.icon;
+            const isActive = activeModule === mod.id;
+            return (
               <button
+                key={mod.id}
                 type="button"
-                onClick={handleInstallApp}
-                className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100"
+                onClick={() => {
+                  setActiveModule(mod.id);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200/80'
+                }`}
               >
-                <Download className="w-3 h-3" />
-                <span>Instalar PWA</span>
-              </button>
-            </div>
-            {modules.map((mod) => {
-              const Icon = mod.icon;
-              const isActive = activeModule === mod.id;
-              return (
-                <button
-                  key={mod.id}
-                  onClick={() => {
-                    setActiveModule(mod.id);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left cursor-pointer ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-700 border border-blue-100 font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50'
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-blue-600'}`} />
+                <span className="whitespace-nowrap">
+                  #{mod.number} {mod.id === 'orden_taller' ? 'Órdenes Taller' : mod.title.split(' ')[0]}
+                </span>
+                <span
+                  className={`text-[9px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                    isActive ? 'bg-blue-800 text-white' : 'bg-slate-100 text-slate-600'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        isActive ? 'bg-blue-600' : 'bg-slate-300'
-                      }`}
-                    />
-                    <Icon className="w-4 h-4 text-blue-600" />
-                    <span className="text-xs font-medium">{mod.title}</span>
+                  {mod.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Full Slide-Over Navigation Drawer for Mobile and Tablets */}
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden flex animate-in fade-in duration-200">
+            {/* Dark Backdrop */}
+            <div
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            {/* Slide Drawer Panel */}
+            <div className="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-250 border-r border-slate-200">
+              {/* Drawer Header */}
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-gradient-to-tr from-blue-700 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xs">
+                    <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                    {mod.count}
-                  </span>
+                  <div>
+                    <h2 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                      Electro Industrias
+                    </h2>
+                    <p className="text-[9px] text-blue-600 font-bold uppercase tracking-wider">
+                      Servicio Técnico & PWA
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-white rounded-lg transition-colors cursor-pointer border border-slate-200/60"
+                  aria-label="Cerrar menú"
+                >
+                  <X className="w-5 h-5" />
                 </button>
-              );
-            })}
+              </div>
+
+              {/* Drawer Navigation List */}
+              <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
+                <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Módulos del Sistema (1 al 4)
+                </p>
+                {modules.map((mod) => {
+                  const Icon = mod.icon;
+                  const isActive = activeModule === mod.id;
+                  return (
+                    <button
+                      key={mod.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveModule(mod.id);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs font-semibold'
+                          : 'text-slate-700 hover:bg-slate-50 border border-slate-100 font-medium'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 truncate">
+                        <div
+                          className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                            isActive ? 'bg-blue-600 ring-2 ring-blue-200' : 'bg-slate-300'
+                          }`}
+                        />
+                        <div className="p-1.5 rounded-lg bg-blue-50/80 text-blue-600 shrink-0">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="truncate">
+                          <span className="text-xs font-bold block text-slate-900 truncate">
+                            #{mod.number}. {mod.title}
+                          </span>
+                          <span className="text-[10px] text-slate-400 block truncate">
+                            {mod.subtitle}
+                          </span>
+                        </div>
+                      </div>
+                      <span
+                        className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ml-1 ${
+                          isActive
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-100 text-slate-600 border border-slate-200/60'
+                        }`}
+                      >
+                        {mod.count}
+                      </span>
+                    </button>
+                  );
+                })}
+
+                {/* PWA Direct Installation Card */}
+                <div className="pt-3 mt-3 border-t border-slate-100">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50/70 border border-blue-200/80 rounded-xl p-3 text-xs space-y-2">
+                    <div className="flex items-center gap-1.5 text-blue-900 font-bold">
+                      <Smartphone className="w-4 h-4 text-blue-600" />
+                      <span>Instalar en Teléfono / Tablet</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-snug">
+                      Accede sin conexión y gestiona órdenes de taller al instante.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleInstallApp();
+                      }}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-98"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{isInstalled ? 'App Instalada' : 'Instalar Aplicación'}</span>
+                    </button>
+                  </div>
+                </div>
+              </nav>
+
+              {/* Drawer Footer Actions */}
+              <div className="p-3.5 border-t border-slate-100 bg-slate-50/50 space-y-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setTempCompany(companyInfo);
+                    setIsCompanyModalOpen(true);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings className="w-4 h-4 text-slate-500" />
+                    <span>Configuración de Empresa</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400">Editar</span>
+                </button>
+
+                <div className="flex items-center justify-between text-[11px] px-1 text-slate-400">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleResetDemoData();
+                    }}
+                    className="inline-flex items-center gap-1 hover:text-rose-600 transition-colors cursor-pointer"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    <span>Restaurar Datos</span>
+                  </button>
+                  <span>v3.0 PWA</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Main Canvas */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-8">
           {activeModule === 'agenda' && (
             <AgendaModule company={companyInfo} />
           )}
@@ -427,14 +575,64 @@ export default function App() {
           )}
         </main>
 
+        {/* Fixed Bottom Dock Navigation Bar for Mobile and Tablets */}
+        <nav
+          aria-label="Navegación Móvil Rápida"
+          className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-md border-t border-slate-200 px-1 py-1.5 flex items-center justify-around shadow-lg"
+        >
+          {modules.map((mod) => {
+            const Icon = mod.icon;
+            const isActive = activeModule === mod.id;
+            return (
+              <button
+                key={mod.id}
+                type="button"
+                onClick={() => {
+                  setActiveModule(mod.id);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer relative ${
+                  isActive
+                    ? 'text-blue-600 font-bold bg-blue-50/80'
+                    : 'text-slate-500 hover:text-slate-800 font-medium'
+                }`}
+              >
+                <div className="relative">
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600 scale-110' : 'text-slate-400'}`} />
+                  {mod.count > 0 && (
+                    <span
+                      className={`absolute -top-1.5 -right-2 text-[9px] font-black min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center ${
+                        isActive
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-slate-200 text-slate-700'
+                      }`}
+                    >
+                      {mod.count}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] mt-0.5 leading-tight tracking-tight text-center truncate max-w-[72px]">
+                  {mod.id === 'agenda' && 'Agenda'}
+                  {mod.id === 'reporte_sitio' && 'Citas Sitio'}
+                  {mod.id === 'cotizacion' && 'Cotizaciones'}
+                  {mod.id === 'orden_taller' && 'Órdenes'}
+                </span>
+                {isActive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-0.5" />
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
         {/* Footer */}
-        <footer className="bg-white border-t border-slate-200 py-3.5 px-6 mt-auto">
+        <footer className="bg-white border-t border-slate-200 py-3.5 px-6 mt-auto hidden lg:block">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
             <p>
               <strong className="text-slate-700">Electro Industrias</strong> • {companyInfo.address} • Tel: {companyInfo.phone}
             </p>
             <p className="text-[11px] text-slate-400">
-              Electro Industrias PWA • Agenda, Citas y Cotizaciones
+              Electro Industrias PWA • Agenda, Citas, Cotizaciones y Órdenes de Taller
             </p>
           </div>
         </footer>
