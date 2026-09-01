@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
   PlusCircle,
@@ -15,6 +15,7 @@ import {
   MapPin,
   BookUser,
   Sparkles,
+  LayoutList,
   LayoutGrid,
   Table as TableIcon,
   Smartphone,
@@ -22,23 +23,36 @@ import {
   FileDown,
   ExternalLink,
   Hash,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
 import { AgendaContact, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
 
+const ITEMS_PER_PAGE = 10;
+
 export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) => {
   const [contacts, setContacts] = useState<AgendaContact[]>(() => StorageService.getAgenda());
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  
+  // Vista predeterminada: 'horizontal' (Horizontal cards)
+  const [viewMode, setViewMode] = useState<'horizontal' | 'table' | 'grid'>('horizontal');
+  
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Modals state
+  // Modales y estados
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AgendaContact | null>(null);
   const [deleteCandidate, setDeleteCandidate] = useState<AgendaContact | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Form State - sin campos de categoría ni clasificación
+  // Form State
   const initialFormState: Partial<AgendaContact> = {
     agendaId: StorageService.getNextAgendaId(),
     nombre: '',
@@ -249,7 +263,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
     }
   };
 
-  // Open New Contact Modal
+  // Abrir modal de nuevo registro
   const handleOpenNew = () => {
     setEditingItem(null);
     setFormData({
@@ -259,14 +273,14 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
     setIsModalOpen(true);
   };
 
-  // Open Edit Modal
+  // Abrir modal de edición
   const handleOpenEdit = (contact: AgendaContact) => {
     setEditingItem(contact);
     setFormData({ ...contact });
     setIsModalOpen(true);
   };
 
-  // Save Contact (Create / Update)
+  // Guardar registro
   const handleSaveRecord = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!formData.nombre?.trim()) {
@@ -301,7 +315,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
     );
   };
 
-  // Duplicate Contact
+  // Duplicar registro
   const handleDuplicateRecord = (contact: AgendaContact) => {
     const { list, duplicated } = StorageService.duplicateAgendaContact(contact.id);
     setContacts(list);
@@ -310,7 +324,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
     }
   };
 
-  // Delete Contact
+  // Eliminar registro
   const handleConfirmDelete = () => {
     if (!deleteCandidate) return;
     const updatedList = StorageService.deleteAgendaContact(deleteCandidate.id);
@@ -319,7 +333,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
     setDeleteCandidate(null);
   };
 
-  // Imprimir Ficha Individual: Manda a imprimir directamente (Abre impresora en 1 clic)
+  // Imprimir ficha individual directamente
   const handlePrintSingle = (contact: AgendaContact) => {
     const html = `
       <div class="header">
@@ -482,7 +496,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
     printDirectly(html, `Directorio_Agenda_${new Date().toISOString().split('T')[0]}`);
   };
 
-  // Export CSV
+  // Exportar CSV
   const handleExportCSV = () => {
     const headers = [
       'Id',
@@ -522,28 +536,109 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
     showToast('📊 Agenda exportada a CSV exitosamente.');
   };
 
-  // Filtered Contacts
+  // Normalizador de búsqueda robusto (elimina acentos, mayúsculas, signos)
+  const normalizeText = (text: string) => {
+    return (text || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  };
+
+  const stripSpecialChars = (text: string) => {
+    return (text || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
+  };
+
+  // Filtrado de contactos multi-campo y tolerante a #, ID numérico, etc.
   const filteredContacts = useMemo(() => {
+    const rawQuery = searchQuery.trim();
+    if (!rawQuery) return contacts;
+
+    const normQuery = normalizeText(rawQuery);
+    const cleanQuery = stripSpecialChars(rawQuery);
+
     return contacts.filter((c) => {
-      const q = searchQuery.toLowerCase().trim();
-      if (!q) return true;
-      return (
-        c.agendaId.toLowerCase().includes(q) ||
-        c.nombre.toLowerCase().includes(q) ||
-        c.organizacion.toLowerCase().includes(q) ||
-        c.telefono.toLowerCase().includes(q) ||
-        c.extension.toLowerCase().includes(q) ||
-        c.movil.toLowerCase().includes(q) ||
-        c.fax.toLowerCase().includes(q) ||
-        c.correoElectronico.toLowerCase().includes(q) ||
-        c.cargo.toLowerCase().includes(q) ||
-        c.informacionAdicional.toLowerCase().includes(q)
-      );
+      // 1. Coincidencia directa con agendaId (con o sin #, con o sin texto)
+      const rawId = (c.agendaId || '').trim();
+      const idWithHash = `#${rawId}`.toLowerCase();
+      const cleanId = stripSpecialChars(rawId);
+
+      if (
+        rawId === rawQuery ||
+        rawId.toLowerCase().includes(normQuery) ||
+        idWithHash.includes(normQuery) ||
+        (cleanQuery && cleanId.includes(cleanQuery)) ||
+        (cleanQuery && cleanId === cleanQuery)
+      ) {
+        return true;
+      }
+
+      // 2. Coincidencia en campos de texto normalizados
+      const normNombre = normalizeText(c.nombre);
+      const normOrg = normalizeText(c.organizacion);
+      const normTel = normalizeText(c.telefono);
+      const normExt = normalizeText(c.extension);
+      const normMovil = normalizeText(c.movil);
+      const normFax = normalizeText(c.fax);
+      const normEmail = normalizeText(c.correoElectronico);
+      const normCargo = normalizeText(c.cargo);
+      const normInfo = normalizeText(c.informacionAdicional);
+
+      if (
+        normNombre.includes(normQuery) ||
+        normOrg.includes(normQuery) ||
+        normTel.includes(normQuery) ||
+        normExt.includes(normQuery) ||
+        normMovil.includes(normQuery) ||
+        normFax.includes(normQuery) ||
+        normEmail.includes(normQuery) ||
+        normCargo.includes(normQuery) ||
+        normInfo.includes(normQuery)
+      ) {
+        return true;
+      }
+
+      // 3. Coincidencia limpia en teléfonos (para buscar números sin guiones/paréntesis)
+      if (cleanQuery.length >= 3) {
+        const cleanTel = stripSpecialChars(c.telefono);
+        const cleanMovil = stripSpecialChars(c.movil);
+        const cleanExt = stripSpecialChars(c.extension);
+        if (
+          cleanTel.includes(cleanQuery) ||
+          cleanMovil.includes(cleanQuery) ||
+          cleanExt.includes(cleanQuery)
+        ) {
+          return true;
+        }
+      }
+
+      return false;
     });
   }, [contacts, searchQuery]);
 
+  // Reset de página al cambiar búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  // Cálculos de Paginación (10 resultados por bloque)
+  const totalItems = filteredContacts.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+  const validCurrentPage = Math.min(currentPage, totalPages);
+
+  const startIndex = (validCurrentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+  const paginatedContacts = useMemo(() => {
+    return filteredContacts.slice(startIndex, endIndex);
+  }, [filteredContacts, startIndex, endIndex]);
+
+  const hasMorePages = totalPages > 1;
+  const remainingItems = totalItems - endIndex;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 animate-in fade-in slide-in-from-bottom-3 duration-200">
@@ -564,6 +659,9 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
           <div className="flex items-center gap-2">
             <span className="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide">
               Módulo
+            </span>
+            <span className="bg-slate-100 text-slate-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
+              10 registros por página
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1 flex items-center gap-2">
@@ -609,22 +707,23 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
             <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
           </button>
 
-          {/* Toggle View Mode */}
+          {/* Toggle View Mode: Horizontal (Default), Cuadrícula o Tabla */}
           <div className="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200">
             <button
-              onClick={() => setViewMode('cards')}
-              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-                viewMode === 'cards'
+              onClick={() => setViewMode('horizontal')}
+              className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-xs font-semibold ${
+                viewMode === 'horizontal'
                   ? 'bg-white text-emerald-700 shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
-              title="Vista en Tarjetas"
+              title="Vista Horizontal (Predeterminada)"
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutList className="w-4 h-4" />
+              <span className="hidden xl:inline">Horizontal</span>
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+              className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-xs font-semibold ${
                 viewMode === 'table'
                   ? 'bg-white text-emerald-700 shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
@@ -632,12 +731,25 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
               title="Vista en Tabla"
             >
               <TableIcon className="w-4 h-4" />
+              <span className="hidden xl:inline">Tabla</span>
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-xs font-semibold ${
+                viewMode === 'grid'
+                  ? 'bg-white text-emerald-700 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Vista en Cuadrícula"
+            >
+              <LayoutGrid className="w-4 h-4" />
+              <span className="hidden xl:inline">Cuadrícula</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Buscador de registros */}
+      {/* Buscador de registros con indicador de resultados y páginas */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row items-center gap-3">
           {/* Input Buscador */}
@@ -648,13 +760,13 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
               id="buscador-registros-agenda"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscador de registros (Buscar por Id, Nombre, Organización, Teléfono, Cargo, Dirección o Notas)..."
-              className="w-full pl-10 pr-9 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+              placeholder="Buscador por Id (ej. 1560 o #1560), Nombre, Organización, Teléfono, Extensión, Cargo o Dirección..."
+              className="w-full pl-10 pr-9 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all font-medium"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1"
                 title="Limpiar búsqueda"
               >
                 <X className="w-4 h-4" />
@@ -663,176 +775,185 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
           </div>
         </div>
 
-        {/* Counter Summary */}
-        <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
-          <span>
-            Mostrando <b>{filteredContacts.length}</b> de <b>{contacts.length}</b> registros en agenda
-          </span>
-          {searchQuery && (
-            <span className="text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded-md">
-              Filtro activo: "{searchQuery}"
+        {/* Barra de Resumen de Resultados y Paginación */}
+        <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 pt-2 border-t border-slate-100 gap-2">
+          <div className="flex items-center gap-2">
+            <span>
+              Mostrando{' '}
+              <b className="text-slate-900">
+                {totalItems > 0 ? startIndex + 1 : 0} - {endIndex}
+              </b>{' '}
+              de <b className="text-slate-900">{totalItems}</b> registros
             </span>
-          )}
+            {searchQuery && (
+              <span className="text-emerald-800 font-semibold bg-emerald-100 px-2 py-0.5 rounded-md text-[11px]">
+                Filtro: "{searchQuery}"
+              </span>
+            )}
+          </div>
+
+          {/* Indicador de Páginas Existentes */}
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+              Página {validCurrentPage} de {totalPages}
+            </span>
+
+            {hasMorePages && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg animate-pulse">
+                <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Hay más páginas con resultados</span>
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Alerta Destacada cuando hay múltiples páginas */}
+      {hasMorePages && (
+        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/80 rounded-xl p-3 flex items-center justify-between text-xs text-emerald-900">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>
+              Resultados divididos en bloques de <b>10 registros</b>. Actualmente en <b>Página {validCurrentPage} de {totalPages}</b> ({remainingItems > 0 ? `${remainingItems} registros en siguientes páginas` : 'Última página'}).
+            </span>
+          </div>
+          {validCurrentPage < totalPages && (
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:text-emerald-900 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer shrink-0"
+            >
+              <span>Ver Página {validCurrentPage + 1}</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Main Content Area */}
-      {filteredContacts.length === 0 ? (
+      {totalItems === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-xs">
           <BookUser className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h3 className="text-base font-bold text-slate-800">No se encontraron registros</h3>
           <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
             {searchQuery
-              ? `No hay coincidencias para "${searchQuery}". Intenta con otros términos o limpia el buscador.`
+              ? `No hay coincidencias para "${searchQuery}". Intenta con otros términos como el nombre, teléfono o limpia el buscador.`
               : 'La agenda está vacía. Haz clic en "Agregar Registro" para capturar el primero.'}
           </p>
-          <button
-            onClick={handleOpenNew}
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium text-xs hover:bg-emerald-700 cursor-pointer"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Agregar Primer Registro</span>
-          </button>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors cursor-pointer"
+              >
+                Limpiar Buscador
+              </button>
+            )}
+            <button
+              onClick={handleOpenNew}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium text-xs hover:bg-emerald-700 cursor-pointer shadow-xs"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Agregar Nuevo Registro</span>
+            </button>
+          </div>
         </div>
-      ) : viewMode === 'cards' ? (
-        /* Grid de Tarjetas Modernas y Responsivas */
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {filteredContacts.map((contact) => (
+      ) : viewMode === 'horizontal' ? (
+        /* ========================================================================= */
+        /* VISTA HORIZONTAL PREDETERMINADA (Diseño Apaisado, Limpio y Estructurado) */
+        /* ========================================================================= */
+        <div className="space-y-3.5">
+          {paginatedContacts.map((contact) => (
             <div
               key={contact.id}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all flex flex-col overflow-hidden group"
+              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 group"
             >
-              {/* Card Header Top */}
-              <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="bg-emerald-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md tracking-wider">
-                    ID #{contact.agendaId}
+              {/* Columna Izquierda: ID + Identidad */}
+              <div className="flex items-start gap-3.5 min-w-[260px] lg:max-w-[340px]">
+                {/* Badge ID */}
+                <div className="flex flex-col items-center justify-center bg-slate-900 text-white rounded-xl px-3 py-2 shrink-0 border border-slate-800 shadow-2xs">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID</span>
+                  <span className="font-mono font-black text-sm text-emerald-400">#{contact.agendaId}</span>
+                </div>
+
+                {/* Nombre y Organización */}
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+                    Contacto / Programa
                   </span>
+                  <h3 className="font-black text-sm sm:text-base text-slate-900 leading-snug tracking-tight">
+                    {contact.nombre}
+                  </h3>
+
                   {contact.organizacion && (
-                    <span className="text-[11px] font-semibold text-slate-300 truncate max-w-[140px] sm:max-w-[170px]">
-                      {contact.organizacion}
-                    </span>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1 font-medium">
+                      <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span className="truncate">{contact.organizacion}</span>
+                    </div>
+                  )}
+
+                  {contact.correoElectronico && (
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
+                      <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <a
+                        href={`mailto:${contact.correoElectronico}`}
+                        className="truncate hover:text-emerald-700 transition-colors"
+                      >
+                        {contact.correoElectronico}
+                      </a>
+                    </div>
                   )}
                 </div>
+              </div>
 
-                {/* Card Top Action Icons */}
-                <div className="flex items-center gap-1">
-                  {/* Botón Imprimir Directo (Abre la impresora directamente sin ventana flotante) */}
-                  <button
-                    onClick={() => handlePrintSingle(contact)}
-                    className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                    title="Imprimir directamente este registro"
-                  >
-                    <Printer className="w-4 h-4" />
-                  </button>
-                  {/* Botón Descargar PDF Oficial */}
-                  <button
-                    onClick={() => ExportService.exportToPdf('agenda', contact)}
-                    className="p-1.5 text-slate-300 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                    title="Descargar Ficha en PDF"
-                  >
-                    <FileDown className="w-4 h-4" />
-                  </button>
-                  {/* Botón Duplicar */}
-                  <button
-                    onClick={() => handleDuplicateRecord(contact)}
-                    className="p-1.5 text-slate-300 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                    title="Duplicar este registro"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </button>
-                  {/* Botón Editar */}
-                  <button
-                    onClick={() => handleOpenEdit(contact)}
-                    className="p-1.5 text-slate-300 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                    title="Editar este registro"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  {/* Botón Eliminar */}
-                  <button
-                    onClick={() => setDeleteCandidate(contact)}
-                    className="p-1.5 text-slate-300 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                    title="Eliminar este registro"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+              {/* Columna Centro: Comunicaciones (Teléfonos, Extensión, Móvil, Fax) */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs min-w-[220px] lg:max-w-[280px]">
+                <div>
+                  <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
+                    <Phone className="w-3 h-3 text-slate-400" /> Teléfono:
+                  </span>
+                  <span className="font-bold text-slate-800 text-xs block">
+                    {contact.telefono || <span className="text-slate-300 font-normal">--</span>}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-semibold text-slate-400 block">Extensión:</span>
+                  <span className="font-bold text-slate-800 text-xs block">
+                    {contact.extension ? (
+                      <span className="bg-slate-200/80 text-slate-800 px-1.5 py-0.5 rounded text-[11px]">
+                        Ext: {contact.extension}
+                      </span>
+                    ) : (
+                      <span className="text-slate-300 font-normal">--</span>
+                    )}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
+                    <Smartphone className="w-3 h-3 text-slate-400" /> Móvil:
+                  </span>
+                  <span className="font-semibold text-slate-800 text-xs block">
+                    {contact.movil || <span className="text-slate-300 font-normal">--</span>}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-semibold text-slate-400 block">Fax:</span>
+                  <span className="font-semibold text-slate-800 text-xs block">
+                    {contact.fax || <span className="text-slate-300 font-normal">--</span>}
+                  </span>
                 </div>
               </div>
 
-              {/* Nombre Principal */}
-              <div className="p-4 border-b border-slate-100 bg-slate-50/60">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                  Nombre / Contacto
-                </span>
-                <h3 className="font-black text-base text-slate-900 leading-snug tracking-tight">
-                  {contact.nombre}
-                </h3>
-              </div>
-
-              {/* Body Fields */}
-              <div className="p-4 space-y-3 flex-1 text-xs">
-                {/* Teléfonos y Extensiones */}
-                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                  <div>
-                    <span className="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
-                      <Phone className="w-3 h-3 text-slate-400" /> Teléfono:
-                    </span>
-                    <span className="font-semibold text-slate-800 text-xs">
-                      {contact.telefono || <span className="text-slate-400 font-normal">--</span>}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-semibold text-slate-500 block">Extensión:</span>
-                    <span className="font-semibold text-slate-800 text-xs">
-                      {contact.extension || <span className="text-slate-400 font-normal">--</span>}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
-                      <Smartphone className="w-3 h-3 text-slate-400" /> Móvil:
-                    </span>
-                    <span className="font-semibold text-slate-800 text-xs">
-                      {contact.movil || <span className="text-slate-400 font-normal">--</span>}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-semibold text-slate-500 block">Fax:</span>
-                    <span className="font-semibold text-slate-800 text-xs">
-                      {contact.fax || <span className="text-slate-400 font-normal">--</span>}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Correo Electrónico */}
-                {contact.correoElectronico && (
-                  <div className="flex items-center gap-2 text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="truncate font-medium">{contact.correoElectronico}</span>
-                  </div>
-                )}
-
-                {/* Organización */}
-                {contact.organizacion && (
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                      Organización / Área:
-                    </span>
-                    <div className="font-semibold text-slate-800 mt-0.5 flex items-center gap-1.5">
-                      <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{contact.organizacion}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Cargo / Enlace */}
+              {/* Columna Notas / Cargo / Info Adicional */}
+              <div className="flex-1 min-w-[200px] text-xs">
                 {contact.cargo && (
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  <div className="mb-1.5">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                       Cargo / Enlace:
                     </span>
-                    <div className="text-slate-700 mt-0.5 break-all font-mono text-[11px] bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <div className="font-mono text-[11px] text-slate-700 truncate">
                       {contact.cargo.startsWith('http') ? (
                         <a
                           href={contact.cargo}
@@ -840,7 +961,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                           rel="noreferrer"
                           className="text-blue-600 hover:underline inline-flex items-center gap-1 font-sans font-medium"
                         >
-                          <span>{contact.cargo}</span>
+                          <span className="truncate">{contact.cargo}</span>
                           <ExternalLink className="w-3 h-3 shrink-0" />
                         </a>
                       ) : (
@@ -850,44 +971,71 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                   </div>
                 )}
 
-                {/* Información Adicional */}
-                {contact.informacionAdicional && (
-                  <div className="pt-2 border-t border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                      Información Adicional / Ubicación:
-                    </span>
-                    <p className="text-[11px] text-slate-700 bg-amber-50/50 p-2.5 rounded-lg border border-amber-200/60 leading-relaxed font-medium">
-                      {contact.informacionAdicional}
-                    </p>
+                {contact.informacionAdicional ? (
+                  <div className="bg-amber-50/60 border border-amber-200/60 rounded-xl p-2 text-[11px] text-slate-700 line-clamp-2">
+                    <span className="font-bold text-amber-900 block text-[10px] uppercase">Información / Notas:</span>
+                    {contact.informacionAdicional}
                   </div>
+                ) : (
+                  <span className="text-slate-300 text-[11px] italic">Sin información adicional</span>
                 )}
               </div>
 
-              {/* Card Footer Actions */}
-              <div className="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 mt-auto">
-                <button
-                  onClick={() => handleDuplicateRecord(contact)}
-                  className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium flex items-center gap-1 transition-all cursor-pointer"
-                  title="Duplicar registro"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Duplicar</span>
-                </button>
-
+              {/* Columna Derecha: Botones de Acción */}
+              <div className="flex items-center justify-end lg:flex-col xl:flex-row gap-1.5 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100 shrink-0">
+                {/* Botón Imprimir Ficha Directo */}
                 <button
                   onClick={() => handlePrintSingle(contact)}
-                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
-                  title="Mandar a imprimir directamente"
+                  className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+                  title="Mandar a imprimir directamente esta ficha"
                 >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Imprimir</span>
+                  <Printer className="w-4 h-4" />
+                  <span className="hidden sm:inline">Imprimir</span>
+                </button>
+
+                {/* Botón Descargar PDF */}
+                <button
+                  onClick={() => ExportService.exportToPdf('agenda', contact)}
+                  className="p-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                  title="Descargar Ficha en PDF"
+                >
+                  <FileDown className="w-4 h-4" />
+                </button>
+
+                {/* Botón Duplicar */}
+                <button
+                  onClick={() => handleDuplicateRecord(contact)}
+                  className="p-2 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                  title="Duplicar este registro"
+                >
+                  <Copy className="w-4 h-4" />
+                </button>
+
+                {/* Botón Editar */}
+                <button
+                  onClick={() => handleOpenEdit(contact)}
+                  className="p-2 text-slate-600 hover:text-amber-700 hover:bg-amber-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                  title="Editar este registro"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+
+                {/* Botón Eliminar */}
+                <button
+                  onClick={() => setDeleteCandidate(contact)}
+                  className="p-2 text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                  title="Eliminar este registro"
+                >
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
           ))}
         </div>
-      ) : (
-        /* Vista en Tabla */
+      ) : viewMode === 'table' ? (
+        /* ========================================================================= */
+        /* VISTA EN TABLA                                                            */
+        /* ========================================================================= */
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-600">
@@ -904,7 +1052,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredContacts.map((contact) => (
+                {paginatedContacts.map((contact) => (
                   <tr key={contact.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
                       <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded text-[11px] font-mono font-bold">
@@ -981,11 +1129,277 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
             </table>
           </div>
         </div>
+      ) : (
+        /* ========================================================================= */
+        /* VISTA EN CUADRÍCULA (Cards Grid)                                          */
+        /* ========================================================================= */
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {paginatedContacts.map((contact) => (
+            <div
+              key={contact.id}
+              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all flex flex-col overflow-hidden group"
+            >
+              {/* Card Header Top */}
+              <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="bg-emerald-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md tracking-wider">
+                    ID #{contact.agendaId}
+                  </span>
+                  {contact.organizacion && (
+                    <span className="text-[11px] font-semibold text-slate-300 truncate max-w-[140px] sm:max-w-[170px]">
+                      {contact.organizacion}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handlePrintSingle(contact)}
+                    className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                    title="Imprimir directamente"
+                  >
+                    <Printer className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => ExportService.exportToPdf('agenda', contact)}
+                    className="p-1.5 text-slate-300 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                    title="Descargar PDF"
+                  >
+                    <FileDown className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDuplicateRecord(contact)}
+                    className="p-1.5 text-slate-300 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                    title="Duplicar"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleOpenEdit(contact)}
+                    className="p-1.5 text-slate-300 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                    title="Editar"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setDeleteCandidate(contact)}
+                    className="p-1.5 text-slate-300 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                    title="Eliminar"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Nombre Principal */}
+              <div className="p-4 border-b border-slate-100 bg-slate-50/60">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
+                  Nombre / Contacto
+                </span>
+                <h3 className="font-black text-base text-slate-900 leading-snug tracking-tight">
+                  {contact.nombre}
+                </h3>
+              </div>
+
+              {/* Body Fields */}
+              <div className="p-4 space-y-3 flex-1 text-xs">
+                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                  <div>
+                    <span className="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
+                      <Phone className="w-3 h-3 text-slate-400" /> Teléfono:
+                    </span>
+                    <span className="font-semibold text-slate-800 text-xs">
+                      {contact.telefono || <span className="text-slate-400 font-normal">--</span>}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-semibold text-slate-500 block">Extensión:</span>
+                    <span className="font-semibold text-slate-800 text-xs">
+                      {contact.extension || <span className="text-slate-400 font-normal">--</span>}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
+                      <Smartphone className="w-3 h-3 text-slate-400" /> Móvil:
+                    </span>
+                    <span className="font-semibold text-slate-800 text-xs">
+                      {contact.movil || <span className="text-slate-400 font-normal">--</span>}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-semibold text-slate-500 block">Fax:</span>
+                    <span className="font-semibold text-slate-800 text-xs">
+                      {contact.fax || <span className="text-slate-400 font-normal">--</span>}
+                    </span>
+                  </div>
+                </div>
+
+                {contact.correoElectronico && (
+                  <div className="flex items-center gap-2 text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="truncate font-medium">{contact.correoElectronico}</span>
+                  </div>
+                )}
+
+                {contact.organizacion && (
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                      Organización:
+                    </span>
+                    <div className="font-semibold text-slate-800 mt-0.5 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{contact.organizacion}</span>
+                    </div>
+                  </div>
+                )}
+
+                {contact.cargo && (
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                      Cargo / Enlace:
+                    </span>
+                    <div className="text-slate-700 mt-0.5 break-all font-mono text-[11px] bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      {contact.cargo}
+                    </div>
+                  </div>
+                )}
+
+                {contact.informacionAdicional && (
+                  <div className="pt-2 border-t border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                      Información Adicional:
+                    </span>
+                    <p className="text-[11px] text-slate-700 bg-amber-50/50 p-2 rounded-lg border border-amber-200/60 leading-relaxed font-medium">
+                      {contact.informacionAdicional}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Card Footer Actions */}
+              <div className="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 mt-auto">
+                <button
+                  onClick={() => handleDuplicateRecord(contact)}
+                  className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium flex items-center gap-1 transition-all cursor-pointer"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Duplicar</span>
+                </button>
+                <button
+                  onClick={() => handlePrintSingle(contact)}
+                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Imprimir</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL: FORMULARIO AGREGAR / EDITAR / GUARDAR REGISTRO                     */}
-      {/* (Sin campos de categoría ni clasificación según solicitud)                 */}
+      {/* BARRA DE PAGINACIÓN COMPLETA (Bloques de 10 con indicador de más páginas) */}
+      {/* ========================================================================= */}
+      {totalItems > 0 && (
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs text-slate-600 text-center sm:text-left">
+            <span>
+              Mostrando <b className="text-slate-900">{startIndex + 1} - {endIndex}</b> de <b className="text-slate-900">{totalItems}</b> registros en agenda
+            </span>
+            {hasMorePages && (
+              <span className="block sm:inline sm:ml-2 text-emerald-700 font-semibold">
+                • Página {validCurrentPage} de {totalPages}
+              </span>
+            )}
+          </div>
+
+          {/* Botones de navegación de páginas */}
+          <div className="flex items-center gap-1.5">
+            {/* Primera Página */}
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={validCurrentPage === 1}
+              className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              title="Primera Página"
+            >
+              <ChevronsLeft className="w-4 h-4" />
+            </button>
+
+            {/* Página Anterior */}
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={validCurrentPage === 1}
+              className="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 text-xs font-semibold cursor-pointer"
+              title="Página Anterior"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Anterior</span>
+            </button>
+
+            {/* Números de Página */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                // Mostrar páginas cercanas si son muchas
+                if (
+                  totalPages > 7 &&
+                  pageNum !== 1 &&
+                  pageNum !== totalPages &&
+                  Math.abs(pageNum - validCurrentPage) > 1
+                ) {
+                  if (pageNum === 2 || pageNum === totalPages - 1) {
+                    return (
+                      <span key={pageNum} className="px-1 text-slate-400 text-xs">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                }
+
+                const isActive = pageNum === validCurrentPage;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-8 h-8 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'text-slate-700 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Página Siguiente */}
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              disabled={validCurrentPage === totalPages}
+              className="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 text-xs font-semibold cursor-pointer"
+              title="Página Siguiente"
+            >
+              <span className="hidden sm:inline">Siguiente</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+
+            {/* Última Página */}
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={validCurrentPage === totalPages}
+              className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              title="Última Página"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: FORMULARIO AGREGAR / EDITAR REGISTRO                               */}
       {/* ========================================================================= */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto print:hidden">
@@ -1028,7 +1442,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                   value={formData.agendaId || ''}
                   onChange={(e) => setFormData({ ...formData, agendaId: e.target.value })}
                   className="w-full sm:w-48 px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none"
-                  placeholder="Ej. 1, 2, 3..."
+                  placeholder="Ej. 1560, 1, 2..."
                 />
               </div>
 
@@ -1154,36 +1568,32 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  Información Adicional
+                  Información Adicional / Ubicación y Referencias
                 </label>
                 <textarea
                   rows={3}
                   value={formData.informacionAdicional || ''}
                   onChange={(e) => setFormData({ ...formData, informacionAdicional: e.target.value })}
                   placeholder="Ej. PASEO RIO SONORA #72 % GALEANA Y REFORMA A UN LADO DEL PALOMINO EN EL CENTRO DE GOBIERNO ****"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-emerald-500 outline-none resize-y"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:border-emerald-500 outline-none resize-none font-sans"
                 />
               </div>
 
               {/* Modal Footer Buttons */}
-              <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold text-xs sm:text-sm cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold text-xs transition-colors cursor-pointer"
                 >
-                  <X className="w-4 h-4" />
-                  <span>Cancelar</span>
+                  Cancelar
                 </button>
-
-                {/* BOTÓN: GUARDAR REGISTRO */}
                 <button
                   type="submit"
-                  id="btn-guardar-registro"
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold text-xs sm:text-sm shadow-md flex items-center gap-2 cursor-pointer transition-all"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
-                  <span>Guardar Registro</span>
+                  <span>{editingItem ? 'Actualizar Registro' : 'Guardar en Agenda'}</span>
                 </button>
               </div>
             </form>
@@ -1192,33 +1602,30 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL: CONFIRMACIÓN DE ELIMINAR REGISTRO                                   */}
+      {/* MODAL: CONFIRMAR ELIMINACIÓN                                              */}
       {/* ========================================================================= */}
       {deleteCandidate && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 print:hidden">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 text-center">
-            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 text-center">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
               <Trash2 className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900">¿Eliminar este registro?</h3>
-            <p className="text-sm text-slate-500 mt-1">
-              Estás a punto de eliminar el registro <b>Id #{deleteCandidate.agendaId}</b> (
-              {deleteCandidate.nombre}). Esta acción no se puede deshacer.
+            <h3 className="font-black text-base text-slate-900">¿Eliminar este registro?</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Estás a punto de eliminar el registro <b>Id #{deleteCandidate.agendaId}</b> ({deleteCandidate.nombre}). Esta acción no se puede deshacer.
             </p>
-
-            <div className="mt-6 flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={() => setDeleteCandidate(null)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs sm:text-sm cursor-pointer"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-xs cursor-pointer"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
-                <Trash2 className="w-4 h-4" />
-                <span>Sí, Eliminar</span>
+                Sí, Eliminar
               </button>
             </div>
           </div>

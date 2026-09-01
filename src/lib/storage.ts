@@ -254,7 +254,18 @@ export const StorageService = {
         localStorage.setItem(KEYS.AGENDA, JSON.stringify(INITIAL_AGENDA));
         return INITIAL_AGENDA;
       }
-      return JSON.parse(stored);
+      const parsed: AgendaContact[] = JSON.parse(stored);
+      // If user had an older short seed array without 1560, enrich with missing initial items
+      if (parsed.length < INITIAL_AGENDA.length) {
+        const existingIds = new Set(parsed.map((p) => p.agendaId));
+        const missing = INITIAL_AGENDA.filter((item) => !existingIds.has(item.agendaId));
+        if (missing.length > 0) {
+          const merged = [...parsed, ...missing];
+          localStorage.setItem(KEYS.AGENDA, JSON.stringify(merged));
+          return merged;
+        }
+      }
+      return parsed;
     } catch {
       return INITIAL_AGENDA;
     }
