@@ -39,6 +39,7 @@ import {
   Tag,
   Truck,
   Hash,
+  FileCheck,
 } from 'lucide-react';
 import { Cotizacion, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
@@ -517,137 +518,197 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
       {/* ========================================================================= */}
       {/* HEADER DE MÓDULO & CONTROL DE VISTAS */}
       {/* ========================================================================= */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-sm shadow-xs">
-              COT
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-                  Cotizaciones de Refacciones & Pedidos
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                  {cotizaciones.length} registros
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Presupuestos de piezas, importes con IVA, políticas de garantía y seguimiento de pedidos
-              </p>
-            </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide">
+              Módulo de Cotización
+            </span>
+            <span className="bg-slate-100 text-slate-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
+              {cotizaciones.length} registros guardados
+            </span>
           </div>
-
-          {/* Switch de Pestañas */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 self-start md:self-auto">
-            <button
-              type="button"
-              onClick={() => setActiveTab('form')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeTab === 'form'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Edit className="w-3.5 h-3.5" />
-              <span>Formulario de Cotización</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('list')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeTab === 'list'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <List className="w-3.5 h-3.5" />
-              <span>Directorio ({cotizaciones.length})</span>
-            </button>
-          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1 flex items-center gap-2">
+            <FileCheck className="w-6 h-6 text-blue-600" />
+            Cotizaciones de Refacciones & Pedidos
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            {activeTab === 'form'
+              ? currentIndex >= 0 && cotizaciones[currentIndex]
+                ? `Editando cotización #${formData.numeroCotizacion || '8292'}`
+                : 'Formulario en blanco listo para registrar una nueva cotización o presupuesto de refacción.'
+              : 'Buscador, consulta y administración general de cotizaciones y pedidos.'}
+          </p>
         </div>
 
-        {/* Notificación Toast Flotante */}
-        {toastMessage && (
-          <div className="mt-3.5 py-2 px-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-medium flex items-center justify-between animate-in fade-in slide-in-from-top-1 duration-150">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>{toastMessage}</span>
-            </div>
+        {/* Botonera de Navegación de Vistas */}
+        <div className="flex flex-wrap items-center gap-2">
+          {activeTab === 'form' ? (
             <button
               type="button"
-              onClick={() => setToastMessage(null)}
-              className="text-emerald-700 hover:text-emerald-900 font-bold ml-2 cursor-pointer"
+              onClick={() => {
+                setActiveTab('list');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              id="btn-ir-a-directorio-cotizaciones"
+              className="bg-slate-900 hover:bg-slate-800 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-all cursor-pointer border border-slate-800"
+              title="Ir al directorio general de cotizaciones"
             >
-              <X className="w-3.5 h-3.5" />
+              <Search className="w-4 h-4 text-blue-400" />
+              <span>Buscador de Registros / Directorio</span>
+              <span className="bg-slate-800 text-blue-300 text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ml-1">
+                {cotizaciones.length}
+              </span>
             </button>
-          </div>
-        )}
+          ) : (
+            <button
+              type="button"
+              onClick={handleNewRecord}
+              id="btn-ir-a-nueva-cotizacion"
+              className="bg-blue-600 hover:bg-blue-700 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+              title="Abrir formulario en blanco para nueva cotización"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Nueva Cotización</span>
+            </button>
+          )}
+
+          {/* Exportación a Excel */}
+          <button
+            type="button"
+            onClick={handleExportAllToExcel}
+            className="bg-white hover:bg-slate-50 text-slate-700 px-3.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm flex items-center gap-2 border border-slate-200 shadow-2xs transition-all cursor-pointer"
+            title="Exportar cotizaciones a archivo Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            <span className="hidden sm:inline">Excel</span>
+          </button>
+        </div>
       </div>
+
+      {/* Notificación Toast Flotante */}
+      {toastMessage && (
+        <div className="py-2.5 px-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-medium flex items-center justify-between animate-in fade-in slide-in-from-top-1 duration-150">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{toastMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setToastMessage(null)}
+            className="text-emerald-700 hover:text-emerald-900 font-bold ml-2 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* PESTAÑA 1: FORMULARIO PRINCIPAL DE COTIZACIÓN */}
       {/* ========================================================================= */}
       {activeTab === 'form' && (
-        <div className="space-y-5">
-          {/* BARRA DE NAVEGACIÓN Y ACCIONES DEL REGISTRO */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-2xs flex flex-wrap items-center justify-between gap-3">
-            {/* Controles de Navegación Primero / Anterior / Selector / Siguiente / Último */}
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => loadRecordByIndex(0)}
-                disabled={cotizaciones.length === 0 || currentIndex === 0}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                title="Primera cotización"
-              >
-                <ChevronsLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => loadRecordByIndex(Math.max(0, currentIndex - 1))}
-                disabled={cotizaciones.length === 0 || currentIndex <= 0}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                title="Cotización anterior"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              <div className="flex items-center gap-2 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700">
-                <Hash className="w-3.5 h-3.5 text-slate-400" />
-                <span>
-                  {currentIndex >= 0 && cotizaciones.length > 0
-                    ? `Cotización ${currentIndex + 1} de ${cotizaciones.length}`
-                    : 'Nueva Cotización'}
-                </span>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-200">
+          {/* Form Banner Header (Dark card with colored icon box like Agenda & Reportes) */}
+          <div className="bg-slate-900 text-white p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-xl">
+                <FileCheck className="w-5 h-5" />
               </div>
-
-              <button
-                type="button"
-                onClick={() => loadRecordByIndex(Math.min(cotizaciones.length - 1, currentIndex + 1))}
-                disabled={cotizaciones.length === 0 || currentIndex >= cotizaciones.length - 1}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                title="Siguiente cotización"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => loadRecordByIndex(cotizaciones.length - 1)}
-                disabled={cotizaciones.length === 0 || currentIndex === cotizaciones.length - 1}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                title="Última cotización"
-              >
-                <ChevronsRight className="w-4 h-4" />
-              </button>
+              <div>
+                <h2 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                  {currentIndex >= 0 && cotizaciones[currentIndex]?.id === formData.id
+                    ? 'Editar Cotización de Refacción'
+                    : 'Registrar Nueva Cotización de Refacción'}
+                </h2>
+                <p className="text-xs text-slate-400">
+                  {currentIndex >= 0 && cotizaciones[currentIndex]?.id === formData.id
+                    ? 'Modifica los datos del presupuesto, piezas y seguimiento del pedido.'
+                    : 'Captura los datos del cliente, aparato, refacción solicitada y desglose de costos.'}
+                </p>
+              </div>
             </div>
 
-            {/* Acciones del Formulario */}
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+              {/* Controles de Navegación Compactos entre Registros */}
+              <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => loadRecordByIndex(0)}
+                  disabled={cotizaciones.length === 0 || currentIndex === 0}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Primera cotización"
+                >
+                  <ChevronsLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => loadRecordByIndex(Math.max(0, currentIndex - 1))}
+                  disabled={cotizaciones.length === 0 || currentIndex <= 0}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Cotización anterior"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNewRecord}
+                  className="px-2 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer"
+                  title="Limpiar para nueva cotización"
+                >
+                  Nuevo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => loadRecordByIndex(Math.min(cotizaciones.length - 1, currentIndex + 1))}
+                  disabled={cotizaciones.length === 0 || currentIndex >= cotizaciones.length - 1}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Siguiente cotización"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => loadRecordByIndex(cotizaciones.length - 1)}
+                  disabled={cotizaciones.length === 0 || currentIndex === cotizaciones.length - 1}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Última cotización"
+                >
+                  <ChevronsRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700 text-xs">
+                <span className="text-slate-400 font-medium">Asignación #:</span>
+                <span className="font-mono font-black text-blue-400">#{formData.numeroCotizacion || 'N/A'}</span>
+              </div>
+
+              {formData.id && (
+                <button
+                  type="button"
+                  onClick={handleNewRecord}
+                  className="text-xs text-amber-400 hover:text-amber-300 font-semibold px-2.5 py-1.5 bg-amber-950/40 border border-amber-800/60 rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancelar Edición
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Toolbar de Acciones del Formulario */}
+          <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500 font-semibold">
+                {currentIndex >= 0 && cotizaciones.length > 0
+                  ? `Cotización ${currentIndex + 1} de ${cotizaciones.length}`
+                  : 'Nueva Cotización'}
+              </span>
+            </div>
+
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={handleNewRecord}
-                className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-2xs"
                 title="Limpiar formulario para nueva cotización"
               >
                 <Plus className="w-3.5 h-3.5 text-slate-600" />
@@ -658,7 +719,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                 type="button"
                 onClick={handleDuplicate}
                 disabled={!formData.nombreCliente}
-                className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs"
                 title="Duplicar datos en nueva cotización"
               >
                 <Copy className="w-3.5 h-3.5 text-slate-600" />
@@ -674,7 +735,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                     alert('Complete al menos el nombre del cliente para imprimir');
                   }
                 }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-2xs"
                 title="Formato formal de impresión"
               >
                 <Printer className="w-3.5 h-3.5 text-slate-600" />
@@ -690,7 +751,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                     alert('Complete al menos el nombre del cliente para generar PDF');
                   }
                 }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-2xs"
                 title="Descargar PDF"
               >
                 <FileDown className="w-3.5 h-3.5 text-slate-600" />
@@ -701,7 +762,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                 <button
                   type="button"
                   onClick={() => requestDelete(formData as Cotizacion)}
-                  className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl transition-colors cursor-pointer"
+                  className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl transition-colors cursor-pointer shadow-2xs"
                   title="Eliminar cotización actual"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -711,7 +772,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
               <button
                 type="button"
                 onClick={() => handleSave()}
-                className="flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-colors shadow-xs cursor-pointer ml-1"
+                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs cursor-pointer ml-1"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Guardar Cotización</span>
@@ -719,17 +780,15 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
             </div>
           </div>
 
-          {/* FORMULARIO ESTRUCTURADO Y MINIMALISTA */}
-          <form onSubmit={handleSave} className="space-y-5">
+          {/* FORMULARIO ESTRUCTURADO */}
+          <form onSubmit={handleSave} className="p-5 sm:p-7 space-y-6">
             {/* SECCIÓN 1: IDENTIDAD, CONTROL Y ESTATUS */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-                <div className="w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                  1
-                </div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Hash className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Control, Identidad & Estatus de la Cotización
-                </h2>
+                </h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
@@ -816,14 +875,12 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
             </div>
 
             {/* SECCIÓN 2: DATOS DEL CLIENTE Y CONTACTO */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-                <div className="w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                  2
-                </div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Hash className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Datos del Cliente & Contacto
-                </h2>
+                </h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -907,14 +964,12 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
             </div>
 
             {/* SECCIÓN 3: INFORMACIÓN DEL APARATO / ELECTRODOMÉSTICO */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-                <div className="w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                  3
-                </div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Hash className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Identificación del Aparato / Electrodoméstico
-                </h2>
+                </h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -997,14 +1052,12 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
             </div>
 
             {/* SECCIÓN 4: DETALLES DE LA COTIZACIÓN & REFACCIONES */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-                <div className="w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                  4
-                </div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Hash className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Nombre o Número de Parte & Refacciones Solicitadas
-                </h2>
+                </h3>
               </div>
 
               <div className="space-y-4">
@@ -1052,15 +1105,13 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
             </div>
 
             {/* SECCIÓN 5: COSTOS DE LA REFACCIÓN ($$) */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
-              <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <div className="flex items-center justify-between gap-2 pb-2 mb-4 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                    5
-                  </div>
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                    $$ Costo de la Refacción e Importes ($$)
-                  </h2>
+                  <Hash className="w-4 h-4 text-blue-600" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                    Costo de la Refacción e Importes ($)
+                  </h3>
                 </div>
 
                 {/* Botón de cálculo rápido */}
@@ -1160,14 +1211,12 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
             </div>
 
             {/* SECCIÓN 6: LOGÍSTICA DEL PEDIDO E INFORMACIÓN CONFIDENCIAL */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-2xs">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-                <div className="w-6 h-6 rounded-md bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                  6
-                </div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Hash className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Logística del Pedido & Información Confidencial
-                </h2>
+                </h3>
               </div>
 
               <div className="space-y-4">
@@ -1218,7 +1267,7 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
               </button>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-colors shadow-xs cursor-pointer"
+                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs cursor-pointer"
               >
                 <Save className="w-4 h-4" />
                 <span>Guardar Cotización</span>
