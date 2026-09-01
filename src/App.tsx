@@ -539,10 +539,10 @@ export default function App() {
       {/* 3. MAIN CONTENT CONTAINER                                                 */}
       {/* ========================================================================= */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header Bar */}
+        {/* Top Header Bar: Clean, minimal layout with only Hamburger, Logo, and Name */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-6 lg:px-8 sticky top-0 z-20 shadow-2xs">
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Universal Lateral Drawer Trigger Button (Opens lateral drawer strictly from the left) */}
+          <div className="flex items-center gap-3">
+            {/* Botón de Menú Hamburguesa */}
             <button
               type="button"
               id="btn-lateral-menu-toggle"
@@ -553,118 +553,29 @@ export default function App() {
                   openLateralDrawer();
                 }
               }}
-              className="p-2 sm:px-3 sm:py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs active:scale-95"
-              title="Abrir barra de navegación lateral"
-              aria-label="Abrir barra de navegación lateral"
+              className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:border-slate-300 transition-all cursor-pointer flex items-center justify-center shadow-2xs active:scale-95"
+              title="Abrir menú de navegación"
+              aria-label="Abrir menú de navegación"
             >
-              <Menu className="w-5 h-5 text-blue-700" />
-              <span className="hidden sm:inline text-xs font-bold text-slate-800">Menú Lateral</span>
+              <Menu className="w-5 h-5 text-slate-800" />
             </button>
 
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" />
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h2 className="font-extrabold text-xs sm:text-base text-slate-900 leading-tight truncate">
-                    #{currentModuleObj.number} {currentModuleObj.title}
-                  </h2>
-                  {currentModuleObj.isNew && (
-                    <span className="bg-indigo-600 text-white text-[9px] px-1.5 py-0.2 font-black rounded uppercase">
-                      Nuevo
-                    </span>
-                  )}
-                </div>
-                <p className="text-[10px] text-slate-400 font-medium hidden md:block truncate">
-                  {currentModuleObj.subtitle}
-                </p>
+            {/* Logo y Nombre de la Empresa */}
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-tr from-blue-700 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xs shrink-0">
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 fill-yellow-300" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm sm:text-base font-black text-slate-900 tracking-tight uppercase truncate">
+                  {companyInfo.name || 'Electro Industrias'}
+                </span>
+                <span className="text-[9px] font-bold text-blue-600 tracking-wider uppercase -mt-0.5 hidden xs:inline">
+                  {companyInfo.tagline || 'Servicio Técnico Especializado'}
+                </span>
               </div>
             </div>
           </div>
-
-          {/* Quick Direct Module Selector Pills in Header (Always visible for instantaneous 1-click access) */}
-          <div className="hidden xl:flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
-            {modules.map((mod) => {
-              const Icon = mod.icon;
-              const isActive = activeModule === mod.id;
-              return (
-                <button
-                  key={mod.id}
-                  type="button"
-                  onClick={() => selectModule(mod.id)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-white text-blue-700 shadow-xs border border-slate-200'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                  <span>#{mod.number} {mod.shortTitle}</span>
-                  <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-black ${
-                    isActive ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-600'
-                  }`}>
-                    {mod.count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Quick System Tools Header Actions */}
-          <div className="flex items-center gap-2">
-            {/* BOTÓN INSTALAR PWA */}
-            <button
-              type="button"
-              onClick={handleInstallApp}
-              id="btn-instalar-app-header"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer ring-2 ring-blue-200/50"
-              title="Instalar Electro Industrias en tu teléfono o computadora"
-            >
-              <Download className="w-3.5 h-3.5 text-blue-100" />
-              <span className="hidden xs:inline">Instalar</span> App
-            </button>
-
-            <button
-              onClick={() => {
-                setTempCompany(companyInfo);
-                setIsCompanyModalOpen(true);
-              }}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-              title="Configuración de la Empresa"
-            >
-              <Settings className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline">Configuración</span>
-            </button>
-          </div>
         </header>
-
-        {/* Quick Lateral Drawer Trigger Badge when Sidebar is Collapsed on Desktop */}
-        {!isSidebarOpen && (
-          <div className="hidden lg:flex items-center justify-between bg-white border-b border-slate-200 px-6 py-2 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
-            >
-              <PanelLeftOpen className="w-4 h-4" />
-              <span>Deslizar y Mostrar Barra Lateral</span>
-            </button>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-500">Módulos:</span>
-              {modules.map((mod) => (
-                <button
-                  key={mod.id}
-                  type="button"
-                  onClick={() => selectModule(mod.id)}
-                  className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-                    activeModule === mod.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-                >
-                  #{mod.number} {mod.shortTitle}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Main Canvas with active module */}
         <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-8">

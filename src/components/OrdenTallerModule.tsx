@@ -615,29 +615,32 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
         </div>
       </div>
 
-      {/* STATS BENTO ROW */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
-        <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-2xs">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Órdenes</span>
-          <span className="text-xl font-black text-slate-800 font-mono mt-0.5 block">{stats.total}</span>
+      {/* MÉTRICAS COMPACTAS Y LIMPIAS */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-600 shadow-2xs">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div>
+            <span className="text-slate-400 font-medium mr-1.5">Total:</span>
+            <span className="font-bold text-slate-900 font-mono">{stats.total}</span>
+          </div>
+          <div className="hidden sm:block w-px h-3.5 bg-slate-200" />
+          <div>
+            <span className="text-amber-600 font-medium mr-1.5">Diagnóstico:</span>
+            <span className="font-bold text-slate-900 font-mono">{stats.diagnostico}</span>
+          </div>
+          <div className="hidden sm:block w-px h-3.5 bg-slate-200" />
+          <div>
+            <span className="text-blue-600 font-medium mr-1.5">Reparación:</span>
+            <span className="font-bold text-slate-900 font-mono">{stats.reparacion}</span>
+          </div>
+          <div className="hidden sm:block w-px h-3.5 bg-slate-200" />
+          <div>
+            <span className="text-emerald-600 font-medium mr-1.5">Cerradas:</span>
+            <span className="font-bold text-slate-900 font-mono">{stats.cerrados}</span>
+          </div>
         </div>
-        <div className="bg-white border border-amber-200/80 rounded-xl p-3 shadow-2xs">
-          <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">En Diagnóstico</span>
-          <span className="text-xl font-black text-amber-700 font-mono mt-0.5 block">{stats.diagnostico}</span>
-        </div>
-        <div className="bg-white border border-blue-200/80 rounded-xl p-3 shadow-2xs">
-          <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider block">En Reparación</span>
-          <span className="text-xl font-black text-blue-700 font-mono mt-0.5 block">{stats.reparacion}</span>
-        </div>
-        <div className="bg-white border border-emerald-200/80 rounded-xl p-3 shadow-2xs">
-          <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">Entregados / Cerrados</span>
-          <span className="text-xl font-black text-emerald-700 font-mono mt-0.5 block">{stats.cerrados}</span>
-        </div>
-        <div className="col-span-2 sm:col-span-4 lg:col-span-1 bg-slate-900 text-white rounded-xl p-3 border border-slate-800 shadow-2xs">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Presupuestado</span>
-          <span className="text-lg font-black text-blue-300 font-mono mt-0.5 block truncate">
-            {formatCurrency(stats.montoTotal)}
-          </span>
+        <div className="text-right font-medium">
+          <span className="text-slate-400 mr-1.5">Presupuesto:</span>
+          <span className="font-bold text-blue-700 font-mono">{formatCurrency(stats.montoTotal)}</span>
         </div>
       </div>
 
