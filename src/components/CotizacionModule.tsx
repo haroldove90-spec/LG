@@ -44,6 +44,7 @@ import {
 import { Cotizacion, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
+import { printUnifiedDocumentDirectly } from '../lib/printUtils';
 import { FormatPrintPreview } from './FormatPrintPreview';
 import * as XLSX from 'xlsx';
 
@@ -386,10 +387,9 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
     }
   };
 
-  // Open print modal
+  // Direct printing with unified minimalist layout
   const openPrint = (item: Cotizacion) => {
-    setPrintRecord(item);
-    setIsPrintModalOpen(true);
+    printUnifiedDocumentDirectly('cotizacion', item, company);
   };
 
   // Direct PDF Download

@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Printer, FileDown, FileSpreadsheet } from 'lucide-react';
 import { ModuleType, AnyRecord, CompanyInfo, FolioSeguimiento, Cotizacion, OrdenTaller, ReporteSitio, HojaServicio } from '../types';
 import { ExportService } from '../lib/exportUtils';
+import { printUnifiedDocumentDirectly } from '../lib/printUtils';
 import { StatusBadge } from './StatusBadge';
 
 interface FormatPrintPreviewProps {
@@ -30,7 +31,7 @@ export const FormatPrintPreview: React.FC<FormatPrintPreviewProps> = ({
   if (!isOpen || !record) return null;
 
   const handlePrint = () => {
-    window.print();
+    printUnifiedDocumentDirectly(module, record, company);
   };
 
   const handleExportPdf = () => {

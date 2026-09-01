@@ -41,6 +41,7 @@ import {
 import { OrdenTaller, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
+import { printUnifiedDocumentDirectly } from '../lib/printUtils';
 import { FormatPrintPreview } from './FormatPrintPreview';
 import * as XLSX from 'xlsx';
 
@@ -366,15 +367,14 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
     }
   };
 
-  // Print format modal handler
+  // Print format handler (Direct printing)
   const openPrint = (item?: OrdenTaller) => {
     const target = item || (formData as OrdenTaller);
     if (!target || !target.nombreCliente) {
-      showNotification('Guarde o seleccione una orden para imprimir su formato.', 'error');
+      showNotification('Guarde o seleccione una orden con nombre de cliente para imprimir su formato.', 'error');
       return;
     }
-    setPrintRecord(target);
-    setIsPrintModalOpen(true);
+    printUnifiedDocumentDirectly('orden_taller', target, company);
   };
 
   const downloadPdf = (item?: OrdenTaller) => {
@@ -541,108 +541,102 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
       )}
 
       {/* ========================================================================= */}
-      {/* HEADER PRINCIPAL + STATS CARDS */}
+      {/* HEADER DE MÓDULO & CONTROL DE VISTAS (TARJETA CON COLOR DE FONDO DISTINTIVO) */}
       {/* ========================================================================= */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-5 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shadow-2xs">
-                <Wrench className="w-5 h-5" />
-              </div>
-              <div>
-                <h1 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>Órdenes de Taller (Sin Garantía)</span>
-                  <span className="text-[11px] font-bold px-2 py-0.5 bg-blue-100/70 text-blue-700 rounded-md uppercase tracking-wider">
-                    Taller Especializado
-                  </span>
-                </h1>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Recepción de equipos, diagnóstico técnico, presupuesto desglosado y control de entrega.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Header Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={exportFullExcel}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
-              title="Exportar base de datos a archivo Excel"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Exportar Directorio</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => openPrint()}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
-              title="Imprimir formato oficial de la orden activa"
-            >
-              <Printer className="w-3.5 h-3.5 text-blue-300" />
-              <span>Imprimir Formato</span>
-            </button>
-          </div>
-        </div>
-
-        {/* STATS BENTO ROW */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 pt-4">
-          <div className="bg-slate-50 border border-slate-200/70 rounded-xl p-3">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Órdenes</span>
-            <span className="text-xl font-black text-slate-800 font-mono mt-0.5 block">{stats.total}</span>
-          </div>
-          <div className="bg-amber-50/50 border border-amber-200/70 rounded-xl p-3">
-            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">En Diagnóstico</span>
-            <span className="text-xl font-black text-amber-700 font-mono mt-0.5 block">{stats.diagnostico}</span>
-          </div>
-          <div className="bg-blue-50/50 border border-blue-200/70 rounded-xl p-3">
-            <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider block">En Reparación</span>
-            <span className="text-xl font-black text-blue-700 font-mono mt-0.5 block">{stats.reparacion}</span>
-          </div>
-          <div className="bg-emerald-50/50 border border-emerald-200/70 rounded-xl p-3">
-            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">Entregados / Cerrados</span>
-            <span className="text-xl font-black text-emerald-700 font-mono mt-0.5 block">{stats.cerrados}</span>
-          </div>
-          <div className="col-span-2 sm:col-span-4 lg:col-span-1 bg-slate-900 text-white rounded-xl p-3 border border-slate-800">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Presupuestado</span>
-            <span className="text-lg font-black text-blue-300 font-mono mt-0.5 block truncate">
-              {formatCurrency(stats.montoTotal)}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 p-5 sm:p-6 rounded-2xl border border-blue-900/60 shadow-lg text-white">
+        <div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+              Módulo de Órdenes de Taller
+            </span>
+            <span className="bg-slate-800/80 text-slate-300 border border-slate-700 text-xs px-2.5 py-0.5 rounded-full font-medium font-mono">
+              {ordenes.length} órdenes registradas
+            </span>
+            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+              Sin Garantía
             </span>
           </div>
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1.5 flex items-center gap-2.5">
+            <Wrench className="w-6 h-6 text-blue-400" />
+            <span>Órdenes de Taller & Servicio Especializado</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+            {activeTab === 'form'
+              ? formData.numeroOrdenTaller
+                ? `Editando orden #${formData.numeroOrdenTaller} (${formData.nombreCliente || 'Nuevo'})`
+                : 'Formulario de captura para recepción de equipos, diagnóstico técnico y presupuesto desglosado.'
+              : 'Directorio general, buscador instantáneo y administración de todas las órdenes de taller.'}
+          </p>
+        </div>
+
+        {/* Botonera de Navegación de Vistas y Búsqueda */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {activeTab === 'form' ? (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('list');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              id="btn-ir-a-directorio-ordenes"
+              className="bg-blue-600 hover:bg-blue-500 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all cursor-pointer border border-blue-400/40"
+              title="Abrir buscador y directorio general de órdenes"
+            >
+              <Search className="w-4 h-4 text-blue-200" />
+              <span>Buscador de Órdenes / Directorio</span>
+              <span className="bg-blue-900/80 text-white text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ml-1 border border-blue-400/30">
+                {ordenes.length}
+              </span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleNewRecord}
+              id="btn-ir-a-nueva-orden"
+              className="bg-blue-600 hover:bg-blue-500 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all cursor-pointer border border-blue-400/40"
+              title="Abrir formulario de captura para una nueva orden"
+            >
+              <PlusCircle className="w-4 h-4 text-blue-200" />
+              <span>+ Nueva Orden</span>
+            </button>
+          )}
+
+          {/* Exportación a Excel */}
+          <button
+            type="button"
+            onClick={exportFullExcel}
+            className="bg-slate-800/90 hover:bg-slate-800 text-slate-200 hover:text-white px-3.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm flex items-center gap-2 border border-slate-700 shadow-sm transition-all cursor-pointer"
+            title="Exportar órdenes a archivo Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+            <span className="hidden sm:inline">Excel</span>
+          </button>
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* TAB SELECTOR: FORMULARIO vs DIRECTORIO */}
-      {/* ========================================================================= */}
-      <div className="flex items-center justify-between border-b border-slate-200">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setActiveTab('form')}
-            className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
-              activeTab === 'form'
-                ? 'border-blue-600 text-blue-600 bg-white'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            <Edit className="w-3.5 h-3.5" />
-            <span>Formulario de Captura (Ficha Técnica)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('list')}
-            className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
-              activeTab === 'list'
-                ? 'border-blue-600 text-blue-600 bg-white'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            <LayoutList className="w-3.5 h-3.5" />
-            <span>Directorio de Órdenes ({ordenes.length})</span>
-          </button>
+      {/* STATS BENTO ROW */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-2xs">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Órdenes</span>
+          <span className="text-xl font-black text-slate-800 font-mono mt-0.5 block">{stats.total}</span>
+        </div>
+        <div className="bg-white border border-amber-200/80 rounded-xl p-3 shadow-2xs">
+          <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">En Diagnóstico</span>
+          <span className="text-xl font-black text-amber-700 font-mono mt-0.5 block">{stats.diagnostico}</span>
+        </div>
+        <div className="bg-white border border-blue-200/80 rounded-xl p-3 shadow-2xs">
+          <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider block">En Reparación</span>
+          <span className="text-xl font-black text-blue-700 font-mono mt-0.5 block">{stats.reparacion}</span>
+        </div>
+        <div className="bg-white border border-emerald-200/80 rounded-xl p-3 shadow-2xs">
+          <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">Entregados / Cerrados</span>
+          <span className="text-xl font-black text-emerald-700 font-mono mt-0.5 block">{stats.cerrados}</span>
+        </div>
+        <div className="col-span-2 sm:col-span-4 lg:col-span-1 bg-slate-900 text-white rounded-xl p-3 border border-slate-800 shadow-2xs">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Presupuestado</span>
+          <span className="text-lg font-black text-blue-300 font-mono mt-0.5 block truncate">
+            {formatCurrency(stats.montoTotal)}
+          </span>
         </div>
       </div>
 
@@ -650,122 +644,140 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
       {/* VISTA 1: FORMULARIO DE CAPTURA CON BARRA DE NAVEGACIÓN */}
       {/* ========================================================================= */}
       {activeTab === 'form' && (
-        <div className="space-y-4 animate-in fade-in duration-150">
-          {/* ===================================================================== */}
-          {/* BARRA SUPERIOR DE ACCIONES Y NAVEGACIÓN DE REGISTROS */}
-          {/* ===================================================================== */}
-          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-2xs flex flex-wrap items-center justify-between gap-3">
-            {/* Record Navigator controls */}
-            <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-200 text-xs">
-              <button
-                type="button"
-                onClick={handleNavFirst}
-                disabled={ordenes.length === 0 || currentRecordIndex === 0}
-                className="p-1.5 rounded-lg hover:bg-white text-slate-600 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                title="Primer registro"
-              >
-                <ChevronsLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNavPrev}
-                disabled={ordenes.length === 0 || currentRecordIndex === 0}
-                className="p-1.5 rounded-lg hover:bg-white text-slate-600 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                title="Registro anterior"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              <div className="px-2.5 py-0.5 text-center font-bold text-slate-700 min-w-[90px]">
-                {ordenes.length > 0 ? (
-                  <span>
-                    {currentRecordIndex + 1} de {ordenes.length}
-                  </span>
-                ) : (
-                  <span>0 de 0</span>
-                )}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-150">
+          {/* Form Banner Header (Dark card with colored icon box matching Cotizaciones & Citas) */}
+          <div className="bg-slate-900 text-white p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-xl">
+                <Wrench className="w-5 h-5" />
               </div>
-
-              <button
-                type="button"
-                onClick={handleNavNext}
-                disabled={ordenes.length === 0 || currentRecordIndex >= ordenes.length - 1}
-                className="p-1.5 rounded-lg hover:bg-white text-slate-600 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                title="Registro siguiente"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNavLast}
-                disabled={ordenes.length === 0 || currentRecordIndex >= ordenes.length - 1}
-                className="p-1.5 rounded-lg hover:bg-white text-slate-600 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                title="Último registro"
-              >
-                <ChevronsRight className="w-4 h-4" />
-              </button>
+              <div>
+                <h2 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                  {formData.id ? 'Editar Orden de Taller (Sin Garantía)' : 'Registrar Nueva Orden de Taller'}
+                </h2>
+                <p className="text-xs text-slate-400">
+                  {formData.id
+                    ? 'Modifica los datos de recepción, diagnóstico, presupuesto y estatus.'
+                    : 'Captura los datos del cliente, equipo, falla reportada y presupuesto inicial.'}
+                </p>
+              </div>
             </div>
 
-            {/* Main Action Buttons */}
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+              {/* Controles de Navegación Compactos entre Registros */}
+              <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700">
+                <button
+                  type="button"
+                  onClick={handleNavFirst}
+                  disabled={ordenes.length === 0 || currentRecordIndex === 0}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Primera orden"
+                >
+                  <ChevronsLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNavPrev}
+                  disabled={ordenes.length === 0 || currentRecordIndex === 0}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Orden anterior"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNewRecord}
+                  className="px-2 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer"
+                  title="Limpiar para nueva orden"
+                >
+                  Nueva
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNavNext}
+                  disabled={ordenes.length === 0 || currentRecordIndex >= ordenes.length - 1}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Siguiente orden"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNavLast}
+                  disabled={ordenes.length === 0 || currentRecordIndex >= ordenes.length - 1}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  title="Última orden"
+                >
+                  <ChevronsRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700 text-xs">
+                <span className="text-slate-400 font-medium">Asignación #:</span>
+                <span className="font-mono font-black text-blue-400">#{formData.numeroOrdenTaller || 'N/A'}</span>
+              </div>
+
+              {formData.id && (
+                <button
+                  type="button"
+                  onClick={handleNewRecord}
+                  className="text-xs text-amber-400 hover:text-amber-300 font-semibold px-2.5 py-1.5 bg-amber-950/40 border border-amber-800/60 rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancelar Edición
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Toolbar de Acciones del Formulario */}
+          <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500 font-semibold">
+                {currentRecordIndex >= 0 && ordenes.length > 0
+                  ? `Orden ${currentRecordIndex + 1} de ${ordenes.length}`
+                  : 'Nueva Orden'}
+              </span>
+            </div>
+
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={handleNewRecord}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                title="Limpiar formulario para nueva orden"
               >
-                <PlusCircle className="w-3.5 h-3.5" />
-                <span>Nueva Orden</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSave()}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>Guardar Registro</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleClearForm}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-                title="Limpiar campos"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Limpiar</span>
+                <PlusCircle className="w-3.5 h-3.5 text-slate-600" />
+                <span>En Blanco (Nueva)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleDuplicateRecord()}
                 disabled={!formData.nombreCliente}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
-                title="Crear copia idéntica con nuevo folio"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs"
+                title="Duplicar datos en nueva orden"
               >
-                <Copy className="w-3.5 h-3.5" />
+                <Copy className="w-3.5 h-3.5 text-slate-600" />
                 <span>Duplicar</span>
               </button>
-
-              <div className="h-5 w-px bg-slate-200 mx-0.5" />
 
               <button
                 type="button"
                 onClick={() => openPrint()}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs"
-                title="Imprimir formato oficial de cotizaciones y taller"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                title="Imprimir directamente formato de orden"
               >
-                <Printer className="w-3.5 h-3.5 text-blue-300" />
+                <Printer className="w-3.5 h-3.5 text-slate-600" />
                 <span>Imprimir</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => downloadPdf()}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-                title="Descargar archivo PDF"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                title="Descargar PDF"
               >
-                <FileDown className="w-3.5 h-3.5" />
+                <FileDown className="w-3.5 h-3.5 text-slate-600" />
                 <span>PDF</span>
               </button>
 
@@ -776,12 +788,21 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
                     const rec = ordenes.find((o) => o.id === formData.id);
                     if (rec) requestDelete(rec);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs"
-                  title="Eliminar este registro"
+                  className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl transition-colors cursor-pointer shadow-2xs"
+                  title="Eliminar orden actual"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={() => handleSave()}
+                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs cursor-pointer ml-1"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Guardar Orden</span>
+              </button>
             </div>
           </div>
 
