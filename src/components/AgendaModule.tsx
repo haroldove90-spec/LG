@@ -1180,7 +1180,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
 
           {/* Listado de Contactos en el Directorio */}
           {totalItems === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-xs">
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-12 text-center shadow-xs">
               <BookUser className="w-12 h-12 text-slate-300 mx-auto mb-3" />
               <h3 className="text-base font-bold text-slate-800">No se encontraron registros</h3>
               <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
@@ -1188,18 +1188,18 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                   ? `No hay coincidencias para "${searchQuery}". Intenta con otros términos como el número Id, nombre, teléfono o limpia el buscador.`
                   : 'La agenda está vacía. Haz clic en "Registrar Nuevo Cliente" para dar de alta el primero.'}
               </p>
-              <div className="flex items-center justify-center gap-2 mt-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors cursor-pointer"
+                    className="w-full sm:w-auto px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors cursor-pointer"
                   >
                     Limpiar Buscador
                   </button>
                 )}
                 <button
                   onClick={handleStartNewRegistration}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium text-xs hover:bg-emerald-700 cursor-pointer shadow-xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium text-xs hover:bg-emerald-700 cursor-pointer shadow-xs"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Ir al Formulario en Blanco</span>
@@ -1208,16 +1208,16 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
             </div>
           ) : viewMode === 'horizontal' ? (
             /* ========================================================================= */
-            /* VISTA HORIZONTAL PREDETERMINADA                                           */
+            /* VISTA HORIZONTAL (1 COLUMNA EN MÓVIL, FILA EN ESCRITORIO)                */
             /* ========================================================================= */
-            <div className="space-y-3.5">
+            <div className="space-y-3.5 w-full">
               {paginatedContacts.map((contact) => (
                 <div
                   key={contact.id}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 group"
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 group w-full"
                 >
-                  {/* Columna Izquierda: ID + Identidad */}
-                  <div className="flex items-start gap-3.5 min-w-[260px] lg:max-w-[340px]">
+                  {/* Columna Izquierda / Cabecera Móvil: ID + Identidad */}
+                  <div className="flex items-start gap-3 w-full lg:min-w-[260px] lg:max-w-[340px]">
                     {/* Badge ID */}
                     <div className="flex flex-col items-center justify-center bg-slate-900 text-white rounded-xl px-3 py-2 shrink-0 border border-slate-800 shadow-2xs">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID</span>
@@ -1229,14 +1229,14 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
                         Contacto / Cliente
                       </span>
-                      <h3 className="font-black text-sm sm:text-base text-slate-900 leading-snug tracking-tight">
+                      <h3 className="font-black text-sm sm:text-base text-slate-900 leading-snug tracking-tight break-words">
                         {contact.nombre}
                       </h3>
 
                       {contact.organizacion && (
                         <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1 font-medium">
                           <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span className="truncate">{contact.organizacion}</span>
+                          <span className="break-words">{contact.organizacion}</span>
                         </div>
                       )}
 
@@ -1245,7 +1245,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                           <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <a
                             href={`mailto:${contact.correoElectronico}`}
-                            className="truncate hover:text-emerald-700 transition-colors"
+                            className="break-all hover:text-emerald-700 transition-colors"
                           >
                             {contact.correoElectronico}
                           </a>
@@ -1254,20 +1254,20 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                     </div>
                   </div>
 
-                  {/* Columna Centro: Comunicaciones */}
-                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs min-w-[220px] lg:max-w-[280px]">
-                    <div>
+                  {/* Columna Centro: Comunicaciones (1 columna en móvil, 2 en pantallas más amplias) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs w-full lg:min-w-[220px] lg:max-w-[280px]">
+                    <div className="flex items-center justify-between sm:block">
                       <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
                         <Phone className="w-3 h-3 text-slate-400" /> Teléfono:
                       </span>
-                      <span className="font-bold text-slate-800 text-xs block">
+                      <span className="font-bold text-slate-800 text-xs">
                         {contact.telefono || <span className="text-slate-300 font-normal">--</span>}
                       </span>
                     </div>
 
-                    <div>
-                      <span className="text-[10px] font-semibold text-slate-400 block">Extensión:</span>
-                      <span className="font-bold text-slate-800 text-xs block">
+                    <div className="flex items-center justify-between sm:block">
+                      <span className="text-[10px] font-semibold text-slate-400">Extensión:</span>
+                      <span className="font-bold text-slate-800 text-xs">
                         {contact.extension ? (
                           <span className="bg-slate-200/80 text-slate-800 px-1.5 py-0.5 rounded text-[11px]">
                             Ext: {contact.extension}
@@ -1278,39 +1278,39 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                       </span>
                     </div>
 
-                    <div>
+                    <div className="flex items-center justify-between sm:block">
                       <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
                         <Smartphone className="w-3 h-3 text-slate-400" /> Móvil:
                       </span>
-                      <span className="font-semibold text-slate-800 text-xs block">
+                      <span className="font-semibold text-slate-800 text-xs">
                         {contact.movil || <span className="text-slate-300 font-normal">--</span>}
                       </span>
                     </div>
 
-                    <div>
-                      <span className="text-[10px] font-semibold text-slate-400 block">Fax:</span>
-                      <span className="font-semibold text-slate-800 text-xs block">
+                    <div className="flex items-center justify-between sm:block">
+                      <span className="text-[10px] font-semibold text-slate-400">Fax:</span>
+                      <span className="font-semibold text-slate-800 text-xs">
                         {contact.fax || <span className="text-slate-300 font-normal">--</span>}
                       </span>
                     </div>
                   </div>
 
                   {/* Columna Notas / Cargo */}
-                  <div className="flex-1 min-w-[200px] text-xs">
+                  <div className="w-full flex-1 lg:min-w-[200px] text-xs space-y-1.5">
                     {contact.cargo && (
-                      <div className="mb-1.5">
+                      <div>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                           Cargo / Enlace:
                         </span>
-                        <div className="font-mono text-[11px] text-slate-700 truncate">
+                        <div className="font-mono text-[11px] text-slate-700 break-words">
                           {contact.cargo.startsWith('http') ? (
                             <a
                               href={contact.cargo}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-blue-600 hover:underline inline-flex items-center gap-1 font-sans font-medium"
+                              className="text-blue-600 hover:underline inline-flex items-center gap-1 font-sans font-medium break-all"
                             >
-                              <span className="truncate">{contact.cargo}</span>
+                              <span>{contact.cargo}</span>
                               <ExternalLink className="w-3 h-3 shrink-0" />
                             </a>
                           ) : (
@@ -1321,29 +1321,29 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                     )}
 
                     {contact.informacionAdicional ? (
-                      <div className="bg-amber-50/60 border border-amber-200/60 rounded-xl p-2 text-[11px] text-slate-700 line-clamp-2">
+                      <div className="bg-amber-50/60 border border-amber-200/60 rounded-xl p-2 text-[11px] text-slate-700">
                         <span className="font-bold text-amber-900 block text-[10px] uppercase">Información / Notas:</span>
-                        {contact.informacionAdicional}
+                        <p className="line-clamp-2 sm:line-clamp-3">{contact.informacionAdicional}</p>
                       </div>
                     ) : (
-                      <span className="text-slate-300 text-[11px] italic">Sin información adicional</span>
+                      <span className="text-slate-300 text-[11px] italic block">Sin información adicional</span>
                     )}
                   </div>
 
-                  {/* Columna Derecha: Botones de Acción */}
-                  <div className="flex items-center justify-end lg:flex-col xl:flex-row gap-1.5 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100 shrink-0">
+                  {/* Columna Derecha / Footer Móvil: Botones de Acción */}
+                  <div className="flex items-center justify-between sm:justify-end lg:flex-col xl:flex-row gap-1.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 w-full lg:w-auto shrink-0">
                     <button
                       onClick={() => handlePrintSingle(contact)}
-                      className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+                      className="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer min-h-[38px]"
                       title="Imprimir ficha directamente"
                     >
                       <Printer className="w-4 h-4" />
-                      <span className="hidden sm:inline">Imprimir</span>
+                      <span>Imprimir</span>
                     </button>
 
                     <button
                       onClick={() => ExportService.exportToPdf('agenda', contact)}
-                      className="p-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                      className="p-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
                       title="Descargar Ficha en PDF"
                     >
                       <FileDown className="w-4 h-4" />
@@ -1351,7 +1351,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
 
                     <button
                       onClick={() => handleDuplicateRecord(contact)}
-                      className="p-2 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                      className="p-2 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
                       title="Duplicar este registro"
                     >
                       <Copy className="w-4 h-4" />
@@ -1359,7 +1359,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
 
                     <button
                       onClick={() => handleEditRecord(contact)}
-                      className="p-2 text-slate-600 hover:text-amber-700 hover:bg-amber-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                      className="p-2 text-slate-600 hover:text-amber-700 hover:bg-amber-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
                       title="Editar este registro en el formulario"
                     >
                       <Edit className="w-4 h-4" />
@@ -1367,7 +1367,7 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
 
                     <button
                       onClick={() => setDeleteCandidate(contact)}
-                      className="p-2 text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                      className="p-2 text-slate-600 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 rounded-xl transition-colors cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
                       title="Eliminar este registro"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1378,124 +1378,221 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
             </div>
           ) : viewMode === 'table' ? (
             /* ========================================================================= */
-            /* VISTA EN TABLA                                                            */
+            /* VISTA EN TABLA (CON ADAPTACIÓN MÓVIL A 1 COLUMNA)                          */
             /* ========================================================================= */
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-600">
-                  <thead className="bg-slate-900 text-white font-bold uppercase tracking-wider text-[10px]">
-                    <tr>
-                      <th className="px-4 py-3">Id</th>
-                      <th className="px-4 py-3">Nombre</th>
-                      <th className="px-4 py-3">Organización</th>
-                      <th className="px-4 py-3">Teléfono / Ext</th>
-                      <th className="px-4 py-3">Móvil / Fax</th>
-                      <th className="px-4 py-3">Cargo / Web</th>
-                      <th className="px-4 py-3">Info Adicional</th>
-                      <th className="px-4 py-3 text-right">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {paginatedContacts.map((contact) => (
-                      <tr key={contact.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
-                          <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded text-[11px] font-mono font-bold">
-                            #{contact.agendaId}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 font-extrabold text-slate-900">
-                          {contact.nombre}
-                          {contact.correoElectronico && (
-                            <div className="text-[11px] font-normal text-slate-500">{contact.correoElectronico}</div>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 font-medium text-slate-700">
-                          {contact.organizacion || '--'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div>{contact.telefono || '--'}</div>
-                          {contact.extension && (
-                            <span className="text-slate-500 text-[10px]">Ext: {contact.extension}</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div>{contact.movil || '--'}</div>
-                          {contact.fax && <span className="text-slate-500 text-[10px]">Fax: {contact.fax}</span>}
-                        </td>
-                        <td className="px-4 py-3 max-w-[180px] truncate font-mono text-[11px]">
-                          {contact.cargo || '--'}
-                        </td>
-                        <td className="px-4 py-3 max-w-[200px] truncate text-[11px]">
-                          {contact.informacionAdicional || '--'}
-                        </td>
-                        <td className="px-4 py-3 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              onClick={() => handlePrintSingle(contact)}
-                              className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
-                              title="Imprimir directamente"
-                            >
-                              <Printer className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => ExportService.exportToPdf('agenda', contact)}
-                              className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
-                              title="Descargar PDF"
-                            >
-                              <FileDown className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDuplicateRecord(contact)}
-                              className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
-                              title="Duplicar"
-                            >
-                              <Copy className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleEditRecord(contact)}
-                              className="p-1.5 text-slate-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg cursor-pointer"
-                              title="Editar en formulario"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => setDeleteCandidate(contact)}
-                              className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
-                              title="Eliminar"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : (
-            /* ========================================================================= */
-            /* VISTA EN CUADRÍCULA                                                       */
-            /* ========================================================================= */
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {paginatedContacts.map((contact) => (
-                <div
-                  key={contact.id}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all flex flex-col overflow-hidden group"
-                >
-                  <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="bg-emerald-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md tracking-wider">
+            <>
+              {/* Versión Tarjetas 1 Columna en Móvil (< md) */}
+              <div className="md:hidden space-y-3.5 w-full">
+                {paginatedContacts.map((contact) => (
+                  <div
+                    key={contact.id}
+                    className="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 space-y-3 w-full"
+                  >
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                      <span className="bg-slate-900 text-emerald-400 font-mono font-black text-xs px-2.5 py-1 rounded-lg">
                         ID #{contact.agendaId}
                       </span>
                       {contact.organizacion && (
-                        <span className="text-[11px] font-semibold text-slate-300 truncate max-w-[140px] sm:max-w-[170px]">
+                        <span className="text-xs font-semibold text-slate-600 truncate max-w-[180px]">
                           {contact.organizacion}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-900">{contact.nombre}</h4>
+                      {contact.cargo && (
+                        <p className="text-xs text-slate-500 font-mono mt-0.5">{contact.cargo}</p>
+                      )}
+                      {contact.correoElectronico && (
+                        <p className="text-xs text-emerald-700 mt-0.5">{contact.correoElectronico}</p>
+                      )}
+                    </div>
+
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs space-y-1">
+                      {contact.telefono && (
+                        <div className="flex items-center justify-between text-slate-700">
+                          <span className="text-slate-400 font-medium flex items-center gap-1">
+                            <Phone className="w-3 h-3" /> Tel:
+                          </span>
+                          <span className="font-bold">
+                            {contact.telefono} {contact.extension ? `(Ext: ${contact.extension})` : ''}
+                          </span>
+                        </div>
+                      )}
+                      {contact.movil && (
+                        <div className="flex items-center justify-between text-slate-700">
+                          <span className="text-slate-400 font-medium flex items-center gap-1">
+                            <Smartphone className="w-3 h-3" /> Móvil:
+                          </span>
+                          <span className="font-bold">{contact.movil}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {contact.informacionAdicional && (
+                      <div className="bg-amber-50/70 border border-amber-200/50 p-2 rounded-xl text-[11px] text-slate-700">
+                        <span className="font-bold text-amber-900 block uppercase text-[9px]">Notas:</span>
+                        <p className="line-clamp-2">{contact.informacionAdicional}</p>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-slate-100">
+                      <button
+                        onClick={() => handlePrintSingle(contact)}
+                        className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer min-h-[38px]"
+                      >
+                        <Printer className="w-4 h-4" />
+                        <span>Imprimir</span>
+                      </button>
+                      <button
+                        onClick={() => ExportService.exportToPdf('agenda', contact)}
+                        className="p-2 text-slate-600 hover:text-rose-600 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
+                      >
+                        <FileDown className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDuplicateRecord(contact)}
+                        className="p-2 text-slate-600 hover:text-emerald-700 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleEditRecord(contact)}
+                        className="p-2 text-slate-600 hover:text-amber-700 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteCandidate(contact)}
+                        className="p-2 text-slate-600 hover:text-rose-700 border border-slate-200 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Versión Tabla en Pantallas Medianas / Grandes (md:) */}
+              <div className="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-600">
+                    <thead className="bg-slate-900 text-white font-bold uppercase tracking-wider text-[10px]">
+                      <tr>
+                        <th className="px-4 py-3">Id</th>
+                        <th className="px-4 py-3">Nombre</th>
+                        <th className="px-4 py-3">Organización</th>
+                        <th className="px-4 py-3">Teléfono / Ext</th>
+                        <th className="px-4 py-3">Móvil / Fax</th>
+                        <th className="px-4 py-3">Cargo / Web</th>
+                        <th className="px-4 py-3">Info Adicional</th>
+                        <th className="px-4 py-3 text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {paginatedContacts.map((contact) => (
+                        <tr key={contact.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">
+                            <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded text-[11px] font-mono font-bold">
+                              #{contact.agendaId}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-extrabold text-slate-900">
+                            {contact.nombre}
+                            {contact.correoElectronico && (
+                              <div className="text-[11px] font-normal text-slate-500">{contact.correoElectronico}</div>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 font-medium text-slate-700">
+                            {contact.organizacion || '--'}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div>{contact.telefono || '--'}</div>
+                            {contact.extension && (
+                              <span className="text-slate-500 text-[10px]">Ext: {contact.extension}</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div>{contact.movil || '--'}</div>
+                            {contact.fax && <span className="text-slate-500 text-[10px]">Fax: {contact.fax}</span>}
+                          </td>
+                          <td className="px-4 py-3 max-w-[180px] truncate font-mono text-[11px]">
+                            {contact.cargo || '--'}
+                          </td>
+                          <td className="px-4 py-3 max-w-[200px] truncate text-[11px]">
+                            {contact.informacionAdicional || '--'}
+                          </td>
+                          <td className="px-4 py-3 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                onClick={() => handlePrintSingle(contact)}
+                                className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
+                                title="Imprimir directamente"
+                              >
+                                <Printer className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => ExportService.exportToPdf('agenda', contact)}
+                                className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
+                                title="Descargar PDF"
+                              >
+                                <FileDown className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDuplicateRecord(contact)}
+                                className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg cursor-pointer"
+                                title="Duplicar"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleEditRecord(contact)}
+                                className="p-1.5 text-slate-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg cursor-pointer"
+                                title="Editar en formulario"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => setDeleteCandidate(contact)}
+                                className="p-1.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
+                                title="Eliminar"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          ) : (
+            /* ========================================================================= */
+            /* VISTA EN CUADRÍCULA (1 COLUMNA EN MÓVIL, 2 EN TABLET, 3 EN ESCRITORIO)    */
+            /* ========================================================================= */
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 w-full">
+              {paginatedContacts.map((contact) => (
+                <div
+                  key={contact.id}
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all flex flex-col overflow-hidden group w-full"
+                >
+                  {/* Cabecera de Tarjeta */}
+                  <div className="p-3.5 sm:p-4 bg-slate-900 text-white flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="bg-emerald-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md tracking-wider shrink-0 font-mono">
+                        ID #{contact.agendaId}
+                      </span>
+                      {contact.organizacion && (
+                        <span className="text-[11px] font-semibold text-slate-300 truncate">
+                          {contact.organizacion}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => handlePrintSingle(contact)}
                         className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
@@ -1534,13 +1631,14 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                     </div>
                   </div>
 
+                  {/* Cuerpo de Tarjeta en 1 columna */}
                   <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
                     <div>
-                      <h4 className="font-extrabold text-sm sm:text-base text-slate-900 leading-snug">
+                      <h4 className="font-extrabold text-sm sm:text-base text-slate-900 leading-snug break-words">
                         {contact.nombre}
                       </h4>
                       {contact.cargo && (
-                        <p className="text-xs text-slate-500 font-mono mt-1 truncate">
+                        <p className="text-xs text-slate-500 font-mono mt-1 break-words">
                           {contact.cargo}
                         </p>
                       )}
@@ -1549,8 +1647,8 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                     <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
                       {contact.telefono && (
                         <div className="flex items-center gap-2 text-slate-700">
-                          <Phone className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{contact.telefono}</span>
+                          <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="font-medium">{contact.telefono}</span>
                           {contact.extension && (
                             <span className="text-[11px] bg-slate-200 text-slate-700 px-1 rounded font-medium">
                               Ext: {contact.extension}
@@ -1560,22 +1658,22 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                       )}
                       {contact.movil && (
                         <div className="flex items-center gap-2 text-slate-700">
-                          <Smartphone className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{contact.movil}</span>
+                          <Smartphone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="font-medium">{contact.movil}</span>
                         </div>
                       )}
                       {contact.correoElectronico && (
-                        <div className="flex items-center gap-2 text-slate-700 truncate">
+                        <div className="flex items-center gap-2 text-slate-700 break-all">
                           <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span className="truncate">{contact.correoElectronico}</span>
+                          <span className="break-all">{contact.correoElectronico}</span>
                         </div>
                       )}
                     </div>
 
                     {contact.informacionAdicional && (
-                      <div className="text-[11px] text-slate-600 bg-amber-50/70 border border-amber-200/50 p-2.5 rounded-xl line-clamp-3">
+                      <div className="text-[11px] text-slate-600 bg-amber-50/70 border border-amber-200/50 p-2.5 rounded-xl">
                         <span className="font-bold text-amber-900 block text-[10px] uppercase">Notas:</span>
-                        {contact.informacionAdicional}
+                        <p className="line-clamp-3">{contact.informacionAdicional}</p>
                       </div>
                     )}
                   </div>
