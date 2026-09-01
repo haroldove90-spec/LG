@@ -214,48 +214,116 @@ export const FormatPrintPreview: React.FC<FormatPrintPreviewProps> = ({
               return (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
-                    <div><span className="text-slate-400 block">Fecha Pedido:</span><span className="font-semibold">{c.fechaPedido}</span></div>
-                    <div><span className="text-slate-400 block">Referencia REF:</span><span className="font-semibold">{c.referenciaRef || 'N/A'}</span></div>
-                    <div><span className="text-slate-400 block">Atendió:</span><span className="font-semibold">{c.atendio}</span></div>
-                    <div><span className="text-slate-400 block">Estatus:</span><span className="font-semibold">{c.estatus}</span></div>
+                    <div>
+                      <span className="text-slate-400 block font-medium">Fecha Pedido:</span>
+                      <span className="font-semibold text-slate-800">{c.fechaPedido || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block font-medium">Referencia REF:</span>
+                      <span className="font-semibold text-slate-800">{c.referenciaRef || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block font-medium">Atendió:</span>
+                      <span className="font-semibold text-slate-800">{c.atendio || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block font-medium">Estatus:</span>
+                      <span className="font-semibold text-slate-800">{c.estatus || 'N/A'}</span>
+                    </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg p-3">
                     <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Datos del Cliente y Aparato</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                      <div><span className="text-slate-400 block">Cliente:</span><span className="font-medium text-slate-800">{c.nombreCliente}</span></div>
-                      <div><span className="text-slate-400 block">Teléfonos:</span><span className="font-medium text-slate-800">{c.telefono} {c.celular ? `/ ${c.celular}` : ''}</span></div>
-                      <div><span className="text-slate-400 block">Aparato:</span><span className="font-medium text-slate-800">{c.aparato}</span></div>
-                      <div><span className="text-slate-400 block">Marca:</span><span className="font-medium text-slate-800">{c.marca}</span></div>
-                      <div><span className="text-slate-400 block">Modelo (*):</span><span className="font-medium text-slate-800">{c.modelo}</span></div>
-                      <div><span className="text-slate-400 block">Serie:</span><span className="font-mono text-slate-800">{c.serie || 'N/A'}</span></div>
+                      <div>
+                        <span className="text-slate-400 block font-medium">Cliente:</span>
+                        <span className="font-medium text-slate-900">{c.nombreCliente}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block font-medium">Teléfonos:</span>
+                        <span className="font-medium text-slate-800">{c.telefono || ''} {c.celular ? `/ ${c.celular}` : ''}</span>
+                      </div>
+                      {c.email && (
+                        <div>
+                          <span className="text-slate-400 block font-medium">Email:</span>
+                          <span className="font-medium text-slate-800 truncate block">{c.email}</span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-slate-400 block font-medium">Aparato:</span>
+                        <span className="font-medium text-slate-800">{c.aparato}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block font-medium">Marca:</span>
+                        <span className="font-medium text-slate-800">{c.marca}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block font-medium">Modelo (*):</span>
+                        <span className="font-medium text-slate-800">{c.modelo}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block font-medium">Serie:</span>
+                        <span className="font-mono text-slate-800">{c.serie || 'N/A'}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="bg-sky-50/50 border border-sky-200 rounded-lg p-4 flex items-center justify-between">
+                  <div className="border border-slate-200 rounded-lg p-3">
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nombre o Número de Parte Solicitada</h3>
+                    <p className="text-xs font-medium text-slate-800 whitespace-pre-wrap leading-relaxed">
+                      {c.nombreNumeroParte || 'Sin descripción de pieza detallada'}
+                    </p>
+                  </div>
+
+                  <div className="bg-rose-50/70 border border-rose-200/70 rounded-lg p-3 text-xs text-rose-800">
+                    <strong className="font-bold mr-1">AVISO DE POLÍTICA Y GARANTÍA:</strong>
+                    <span>{c.notaPolitica || 'En piezas eléctricas no hay devolución, ni garantía'}</span>
+                  </div>
+
+                  {(c.detallesOperacion || c.datosPedido) && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      {c.detallesOperacion && (
+                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                          <strong className="text-slate-700 block mb-1">Detalles de la Operación:</strong>
+                          <p className="text-slate-600 whitespace-pre-wrap">{c.detallesOperacion}</p>
+                        </div>
+                      )}
+                      {c.datosPedido && (
+                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                          <strong className="text-slate-700 block mb-1">Datos del Pedido y Entrega:</strong>
+                          <p className="text-slate-600 whitespace-pre-wrap">{c.datosPedido}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Resumen de Importes */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
                     <div>
-                      <span className="text-xs text-sky-800 font-bold uppercase tracking-wider block">Nombre o Número de Parte</span>
-                      <p className="text-sm font-semibold text-slate-900 mt-0.5">{c.nombreNumeroParte}</p>
+                      <span className="text-slate-400 block font-medium">Subtotal:</span>
+                      <span className="text-sm font-semibold text-slate-800">{formatCurrency(c.subtotal)}</span>
                     </div>
-                    <div className="text-right">
-                      <span className="text-xs text-slate-500 font-medium block">Costo de Refacción</span>
-                      <span className="text-lg font-bold text-sky-700">{formatCurrency(c.costoRefaccion)}</span>
+                    <div>
+                      <span className="text-slate-400 block font-medium">I.V.A. (16%):</span>
+                      <span className="text-sm font-semibold text-slate-800">{formatCurrency(c.iva)}</span>
+                    </div>
+                    <div>
+                      <span className="text-sky-700 block font-bold">TOTAL COTIZADO:</span>
+                      <span className="text-base font-bold text-sky-800 font-mono">{formatCurrency(c.costoRefaccion)}</span>
                     </div>
                   </div>
 
-                  <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 text-xs text-rose-800">
-                    <strong className="block font-bold mb-0.5">AVISO DE POLÍTICA:</strong>
-                    {c.notaPolitica}
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div className="bg-slate-50 p-3 rounded border border-slate-200">
-                      <strong className="text-slate-700 block mb-1">Detalles de la Operación:</strong>
-                      <p className="text-slate-600">{c.detallesOperacion || 'N/A'}</p>
+                  {/* Firmas de Conformidad */}
+                  <div className="pt-6 grid grid-cols-2 gap-6 text-center text-xs">
+                    <div>
+                      <div className="border-b border-slate-300 h-10 mb-1"></div>
+                      <span className="font-bold text-slate-800 block text-[11px]">{c.nombreCliente}</span>
+                      <span className="text-[10px] text-slate-400">Firma de Conformidad Cliente</span>
                     </div>
-                    <div className="bg-slate-50 p-3 rounded border border-slate-200">
-                      <strong className="text-slate-700 block mb-1">Datos del Pedido:</strong>
-                      <p className="text-slate-600">{c.datosPedido || 'N/A'}</p>
+                    <div>
+                      <div className="border-b border-slate-300 h-10 mb-1"></div>
+                      <span className="font-bold text-slate-800 block text-[11px]">{c.atendio || 'Asesor de Servicio'}</span>
+                      <span className="text-[10px] text-slate-400">Cotizó / Asesor Técnico</span>
                     </div>
                   </div>
                 </div>
