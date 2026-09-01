@@ -7,6 +7,7 @@ import {
   OrdenTaller,
   ReporteSitio,
   HojaServicio,
+  AgendaContact,
   CompanyInfo,
   ModuleType,
 } from '../types';
@@ -807,6 +808,114 @@ export const ExportService = {
     return doc;
   },
 
+  // ==========================================
+  // 6. PDF EXPORT - FICHA DE AGENDA / CONTACTO
+  // ==========================================
+  generateAgendaPdf(item: AgendaContact, company: CompanyInfo): jsPDF {
+    const doc = new jsPDF({ unit: 'mm', format: 'letter', orientation: 'portrait' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Header Background
+    doc.setFillColor(...GRAY_BG);
+    doc.rect(0, 0, pageWidth, 36, 'F');
+    doc.setDrawColor(...BORDER_COLOR);
+    doc.line(0, 36, pageWidth, 36);
+
+    // Company Header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(...PRIMARY_COLOR);
+    doc.text((company.commercialName || 'Centro de Servicio Autorizado').toUpperCase(), 14, 12);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`${company.address || ''} • Tel: ${company.phone || ''}`, 14, 18);
+    doc.text(`RFC: ${company.rfc || ''} • ${company.email || ''}`, 14, 23);
+    doc.text(company.authorizedCenter || 'Directorio Técnico y de Proveedores', 14, 28);
+
+    // Badge
+    doc.setFillColor(5, 150, 105); // emerald-600
+    doc.roundedRect(pageWidth - 65, 8, 51, 22, 2, 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text('FICHA DE AGENDA', pageWidth - 61, 14);
+    doc.setFontSize(13);
+    doc.text(`ID #${item.agendaId}`, pageWidth - 61, 22);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Control de Directorio`, pageWidth - 61, 27);
+
+    let startY = 44;
+
+    // Nombre Box
+    autoTable(doc, {
+      startY,
+      theme: 'grid',
+      headStyles: { fillColor: PRIMARY_COLOR, textColor: 255, fontStyle: 'bold', fontSize: 9 },
+      styles: { fontSize: 10, fontStyle: 'bold', cellPadding: 3.5, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
+      head: [['Nombre / Contacto / Programa Técnico']],
+      body: [[item.nombre || 'Sin nombre registrado']],
+    });
+
+    startY = (doc as any).lastAutoTable.finalY + 5;
+
+    // Grid Comunicaciones
+    autoTable(doc, {
+      startY,
+      theme: 'plain',
+      styles: { fontSize: 8.5, cellPadding: 2.5, textColor: PRIMARY_COLOR },
+      columnStyles: {
+        0: { fontStyle: 'bold', cellWidth: 35, fillColor: [241, 245, 249] },
+        1: { cellWidth: 60 },
+        2: { fontStyle: 'bold', cellWidth: 35, fillColor: [241, 245, 249] },
+        3: { cellWidth: 56 },
+      },
+      body: [
+        ['Teléfono Fijo:', item.telefono || 'N/A', 'Extensión:', item.extension || 'N/A'],
+        ['Móvil (Celular):', item.movil || 'N/A', 'Fax:', item.fax || 'N/A'],
+        ['Correo Electrónico:', item.correoElectronico || 'N/A', 'Organización / Área:', item.organizacion || 'N/A'],
+      ],
+    });
+
+    startY = (doc as any).lastAutoTable.finalY + 5;
+
+    // Cargo / Enlace
+    if (item.cargo) {
+      autoTable(doc, {
+        startY,
+        theme: 'grid',
+        headStyles: { fillColor: [71, 85, 105], textColor: 255, fontStyle: 'bold', fontSize: 8.5 },
+        styles: { fontSize: 8.5, cellPadding: 3, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
+        head: [['Cargo / Puesto / Enlace Técnico']],
+        body: [[item.cargo]],
+      });
+      startY = (doc as any).lastAutoTable.finalY + 5;
+    }
+
+    // Información Adicional
+    if (item.informacionAdicional) {
+      autoTable(doc, {
+        startY,
+        theme: 'grid',
+        headStyles: { fillColor: [148, 163, 184], textColor: 255, fontStyle: 'bold', fontSize: 8.5 },
+        styles: { fontSize: 8, cellPadding: 3, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
+        head: [['Información Adicional / Ubicación y Referencias']],
+        body: [[item.informacionAdicional]],
+      });
+      startY = (doc as any).lastAutoTable.finalY + 5;
+    }
+
+    // Footer
+    const signY = Math.max(startY + 15, 240);
+    doc.setFontSize(7.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`${company.name} • RFC: ${company.rfc} • Documento oficial de directorio.`, 14, 268);
+
+    return doc;
+  },
+
   // Generic PDF Dispatcher
   exportToPdf(module: ModuleType, record: any): void {
     const company = StorageService.getCompany();
@@ -814,6 +923,10 @@ export const ExportService = {
     let filename = '';
 
     switch (module) {
+      case 'agenda':
+        doc = this.generateAgendaPdf(record as AgendaContact, company);
+        filename = `Agenda_${record.agendaId || 'Contacto'}.pdf`;
+        break;
       case 'folio_seguimiento':
         doc = this.generateFolioSeguimientoPdf(record as FolioSeguimiento, company);
         filename = `${record.folio || 'Folio'}_Seguimiento.pdf`;

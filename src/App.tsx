@@ -13,6 +13,7 @@ import {
   Save,
   Menu,
   Shield,
+  BookUser,
 } from 'lucide-react';
 import { ModuleType, CompanyInfo } from './types';
 import { StorageService } from './lib/storage';
@@ -22,14 +23,16 @@ import { CotizacionModule } from './components/CotizacionModule';
 import { OrdenTallerModule } from './components/OrdenTallerModule';
 import { ReporteSitioModule } from './components/ReporteSitioModule';
 import { HojaServicioModule } from './components/HojaServicioModule';
+import { AgendaModule } from './components/AgendaModule';
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<ModuleType>('orden_taller');
+  const [activeModule, setActiveModule] = useState<ModuleType>('agenda');
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(() => StorageService.getCompanyInfo());
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [tempCompany, setTempCompany] = useState<CompanyInfo>(companyInfo);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState({
+    agendaCount: 0,
     foliosCount: 0,
     cotizacionesCount: 0,
     ordenesCount: 0,
@@ -39,6 +42,7 @@ export default function App() {
 
   const refreshCounters = () => {
     setStats({
+      agendaCount: StorageService.getAgenda().length,
       foliosCount: StorageService.getFoliosSeguimiento().length,
       cotizacionesCount: StorageService.getCotizaciones().length,
       ordenesCount: StorageService.getOrdenesTaller().length,
@@ -70,6 +74,14 @@ export default function App() {
   };
 
   const modules = [
+    {
+      id: 'agenda' as ModuleType,
+      number: '★',
+      title: 'Agenda',
+      subtitle: 'Contactos y Programas',
+      icon: BookUser,
+      count: stats.agendaCount,
+    },
     {
       id: 'orden_taller' as ModuleType,
       number: '1',
@@ -311,6 +323,9 @@ export default function App() {
 
         {/* Main Bento Canvas */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          {activeModule === 'agenda' && (
+            <AgendaModule company={companyInfo} />
+          )}
           {activeModule === 'metricas' && (
             <MetricasModule
               company={companyInfo}

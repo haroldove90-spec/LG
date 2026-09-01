@@ -1,10 +1,11 @@
 export type ModuleType =
-  | 'metricas'
-  | 'folio_seguimiento'
-  | 'cotizacion'
+  | 'agenda'
   | 'orden_taller'
   | 'reporte_sitio'
-  | 'hoja_servicio';
+  | 'folio_seguimiento'
+  | 'cotizacion'
+  | 'hoja_servicio'
+  | 'metricas';
 
 export type StatusType =
   | 'Nuevo'
@@ -222,7 +223,22 @@ export interface HojaServicio extends BaseRecord {
   firmaClienteDataUrl?: string;
 }
 
-export type AnyRecord = FolioSeguimiento | Cotizacion | OrdenTaller | ReporteSitio | HojaServicio;
+// 6. Agenda de Contactos / Directorio
+export interface AgendaContact extends BaseRecord {
+  agendaId: string; // Id (ej. 1, 2, 3...)
+  nombre: string;
+  telefono: string;
+  extension: string;
+  movil: string;
+  fax: string;
+  correoElectronico: string;
+  organizacion: string;
+  cargo: string;
+  informacionAdicional: string;
+  categoria?: 'Proveedor / Refacciones' | 'Cliente / Cuenta' | 'Técnico / Taller' | 'Planta / Distribuidor' | 'Corporativo / Gobierno' | 'General';
+}
+
+export type AnyRecord = FolioSeguimiento | Cotizacion | OrdenTaller | ReporteSitio | HojaServicio | AgendaContact;
 
 export interface CompanyInfo {
   name: string;

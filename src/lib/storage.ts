@@ -4,6 +4,7 @@ import {
   OrdenTaller,
   ReporteSitio,
   HojaServicio,
+  AgendaContact,
   CompanyInfo,
   ModuleType,
 } from '../types';
@@ -14,6 +15,7 @@ import {
   INITIAL_ORDENES_TALLER,
   INITIAL_REPORTES_SITIO,
   INITIAL_HOJAS_SERVICIO,
+  INITIAL_AGENDA,
 } from '../data/initialData';
 
 const KEYS = {
@@ -23,6 +25,7 @@ const KEYS = {
   ORDENES: 'servitrack_ordenes',
   REPORTES: 'servitrack_reportes',
   HOJAS: 'servitrack_hojas',
+  AGENDA: 'servitrack_agenda',
 };
 
 export const StorageService = {
@@ -243,6 +246,70 @@ export const StorageService = {
     return `HS-${year}-${num}`;
   },
 
+  // 6. Agenda de Contactos / Directorio
+  getAgenda(): AgendaContact[] {
+    try {
+      const stored = localStorage.getItem(KEYS.AGENDA);
+      if (!stored) {
+        localStorage.setItem(KEYS.AGENDA, JSON.stringify(INITIAL_AGENDA));
+        return INITIAL_AGENDA;
+      }
+      return JSON.parse(stored);
+    } catch {
+      return INITIAL_AGENDA;
+    }
+  },
+  getAgendaContacts(): AgendaContact[] {
+    return this.getAgenda();
+  },
+  saveAgendaContact(contact: AgendaContact): AgendaContact[] {
+    const list = this.getAgenda();
+    const index = list.findIndex((item) => item.id === contact.id);
+    let updated: AgendaContact[];
+    if (index >= 0) {
+      updated = [...list];
+      updated[index] = { ...contact, updatedAt: new Date().toISOString() };
+    } else {
+      updated = [contact, ...list];
+    }
+    localStorage.setItem(KEYS.AGENDA, JSON.stringify(updated));
+    return updated;
+  },
+  deleteAgendaContact(id: string): AgendaContact[] {
+    const list = this.getAgenda().filter((item) => item.id !== id);
+    localStorage.setItem(KEYS.AGENDA, JSON.stringify(list));
+    return list;
+  },
+  duplicateAgendaContact(id: string): { list: AgendaContact[]; duplicated: AgendaContact | null } {
+    const list = this.getAgenda();
+    const original = list.find((item) => item.id === id);
+    if (!original) return { list, duplicated: null };
+
+    const nextId = this.getNextAgendaId();
+    const newContact: AgendaContact = {
+      ...original,
+      id: `agenda-${Date.now()}`,
+      agendaId: nextId,
+      nombre: `${original.nombre} (Copia)`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const updated = [newContact, ...list];
+    localStorage.setItem(KEYS.AGENDA, JSON.stringify(updated));
+    return { list: updated, duplicated: newContact };
+  },
+  getNextAgendaId(): string {
+    const list = this.getAgenda();
+    if (list.length === 0) return '1';
+    // try finding highest numeric ID
+    const maxNum = list.reduce((max, item) => {
+      const parsed = parseInt(item.agendaId, 10);
+      return !isNaN(parsed) && parsed > max ? parsed : max;
+    }, 0);
+    return String(maxNum + 1);
+  },
+
   // Reset to default
   resetData(): void {
     localStorage.setItem(KEYS.FOLIOS, JSON.stringify(INITIAL_FOLIOS));
@@ -250,6 +317,7 @@ export const StorageService = {
     localStorage.setItem(KEYS.ORDENES, JSON.stringify(INITIAL_ORDENES_TALLER));
     localStorage.setItem(KEYS.REPORTES, JSON.stringify(INITIAL_REPORTES_SITIO));
     localStorage.setItem(KEYS.HOJAS, JSON.stringify(INITIAL_HOJAS_SERVICIO));
+    localStorage.setItem(KEYS.AGENDA, JSON.stringify(INITIAL_AGENDA));
     localStorage.setItem(KEYS.COMPANY, JSON.stringify(DEFAULT_COMPANY));
   },
 };

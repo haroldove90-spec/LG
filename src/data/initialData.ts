@@ -1,4 +1,4 @@
-import { CompanyInfo, FolioSeguimiento, Cotizacion, OrdenTaller, ReporteSitio, HojaServicio } from '../types';
+import { CompanyInfo, FolioSeguimiento, Cotizacion, OrdenTaller, ReporteSitio, HojaServicio, AgendaContact } from '../types';
 
 export const DEFAULT_COMPANY: CompanyInfo = {
   name: 'SERVICIOS TÉCNICOS INTEGRALES S.A. DE C.V.',
@@ -361,5 +361,56 @@ export const INITIAL_HOJAS_SERVICIO: HojaServicio[] = [
     firmaTecnicoDataUrl: '',
     nombreClienteFirma: 'Dr. Héctor Manuel Cárdenas Rosas',
     firmaClienteDataUrl: ''
+  }
+];
+
+export const INITIAL_AGENDA: AgendaContact[] = [
+  {
+    id: 'agenda-1',
+    createdAt: '2026-08-30T10:00:00.000Z',
+    updatedAt: '2026-08-30T10:00:00.000Z',
+    agendaId: '1',
+    nombre: 'PROGRAMA FAMSA ASSY  JC96-04052A',
+    telefono: '',
+    extension: '600',
+    movil: '',
+    fax: '',
+    correoElectronico: '',
+    organizacion: 'PROGRAMA ASSY  ext. 600',
+    cargo: 'http://www.asiahore.com/sia/principasia.html',
+    informacionAdicional: 'PASEO RIO SONORA #72 % GALEANA Y REFORMA A UN LADO DEL PALOMINO EN EL CENTRO DE GOBIERNO ****',
+    categoria: 'Proveedor / Refacciones'
+  },
+  {
+    id: 'agenda-2',
+    createdAt: '2026-08-28T09:15:00.000Z',
+    updatedAt: '2026-08-28T09:15:00.000Z',
+    agendaId: '2',
+    nombre: 'LG ELECTRONICS PLANTA MÉXICO S.A. DE C.V.',
+    telefono: '(55) 5321-1900',
+    extension: '1420',
+    movil: '(55) 8412-9901',
+    fax: '(55) 5321-1999',
+    correoElectronico: 'soporte.partes@lge.com.mx',
+    organizacion: 'LG ELECTRONICS MÉXICO (DEPARTAMENTO DE PARTES)',
+    cargo: 'Gerencia Nacional de Refacciones y Garantías',
+    informacionAdicional: 'PEDIDOS DE COMPRESORES LINEAR INVERTER Y TARJETA PCB MAIN ANTES DE LAS 13:00 HRS PARA ENVÍO MISMO DÍA.',
+    categoria: 'Planta / Distribuidor'
+  },
+  {
+    id: 'agenda-3',
+    createdAt: '2026-08-25T14:30:00.000Z',
+    updatedAt: '2026-08-25T14:30:00.000Z',
+    agendaId: '3',
+    nombre: 'DISTRIBUIDORA DE REFACCIONES DEL NORTE S.A.',
+    telefono: '(662) 213-4455',
+    extension: '102',
+    movil: '(662) 198-7744',
+    fax: '(662) 213-4456',
+    correoElectronico: 'ventas@refaccionesdelnorte.com',
+    organizacion: 'REFACCIONES DEL NORTE HERMOSILLO',
+    cargo: 'Asesor Técnico de Mostrador Especializado',
+    informacionAdicional: 'SURTIDO DE BANDAS, BOMBAS DE DESAGÜE, VÁLVULAS Y CAPACITORES MULTIMARCA WHIRLPOOL / MABE / SAMSUNG.',
+    categoria: 'Proveedor / Refacciones'
   }
 ];
