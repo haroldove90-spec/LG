@@ -35,6 +35,8 @@ import {
   ShieldCheck,
   HelpCircle,
   CheckCircle2,
+  User,
+  Home,
 } from 'lucide-react';
 import { ReporteSitio, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
@@ -204,7 +206,7 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
     }, 3500);
   };
 
-  // Helper de Impresión Directa en iframe invisible
+  // Helper de Impresión Directa en iframe invisible (Diseño Sencillo, Formal y Minimalista)
   const printDirectly = (htmlBody: string, docTitle: string) => {
     try {
       const iframe = document.createElement('iframe');
@@ -237,7 +239,7 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                   background: #ffffff;
                   margin: 0;
                   padding: 0;
-                  font-size: 11.5px;
+                  font-size: 11px;
                   line-height: 1.4;
                   -webkit-print-color-adjust: exact;
                   print-color-adjust: exact;
@@ -245,93 +247,130 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                 * {
                   box-sizing: border-box;
                 }
-                .report-card {
-                  border: 2px solid #2d264b;
-                  border-radius: 4px;
-                  overflow: hidden;
-                }
-                .header-bar {
-                  background: #2d264b;
-                  color: #ffffff;
-                  padding: 8px 12px;
+                .header {
                   display: flex;
                   justify-content: space-between;
-                  align-items: center;
+                  align-items: flex-start;
+                  border-bottom: 2px solid #0f172a;
+                  padding-bottom: 8px;
+                  margin-bottom: 10px;
                 }
-                .header-bar h2 {
-                  margin: 0;
-                  font-size: 14px;
-                  font-weight: 900;
+                .company-name {
+                  font-size: 15px;
+                  font-weight: 800;
+                  color: #0f172a;
+                  letter-spacing: -0.5px;
+                }
+                .doc-title {
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  color: #64748b;
+                  text-transform: uppercase;
+                  margin-top: 2px;
                   letter-spacing: 0.5px;
                 }
-                .report-num-box {
-                  background: #ffffff;
-                  color: #dc2626;
-                  border: 2px solid #dc2626;
-                  font-size: 20px;
-                  font-weight: 900;
-                  padding: 4px 16px;
+                .badge {
+                  background: #0f172a;
+                  color: #ffffff;
+                  font-family: monospace;
+                  font-weight: 700;
+                  font-size: 12.5px;
+                  padding: 5px 12px;
                   border-radius: 4px;
-                  text-align: center;
                   display: inline-block;
                 }
-                .band-title {
-                  background: #2d264b;
-                  color: #ffffff;
-                  font-size: 10px;
-                  font-weight: 800;
-                  text-transform: uppercase;
-                  padding: 4px 8px;
-                  letter-spacing: 0.5px;
-                }
-                .field-row {
-                  display: flex;
-                  border-bottom: 1px solid #2d264b;
-                }
-                .field-col {
-                  flex: 1;
-                  border-right: 1px solid #2d264b;
-                }
-                .field-col:last-child {
-                  border-right: none;
-                }
-                .field-label {
-                  background: #2d264b;
-                  color: #ffffff;
+                .section-title {
                   font-size: 9.5px;
                   font-weight: 800;
                   text-transform: uppercase;
-                  padding: 3px 6px;
-                  text-align: center;
+                  letter-spacing: 0.5px;
+                  color: #334155;
+                  margin-top: 10px;
+                  margin-bottom: 5px;
+                  border-bottom: 1px solid #e2e8f0;
+                  padding-bottom: 3px;
                 }
-                .field-val {
-                  padding: 6px 8px;
-                  font-size: 12px;
-                  min-height: 26px;
+                .box {
+                  border: 1px solid #cbd5e1;
+                  border-radius: 5px;
+                  padding: 7px 10px;
+                  margin-bottom: 6px;
+                }
+                .box-gray {
+                  background-color: #f8fafc;
+                }
+                .field-label {
+                  font-size: 8.5px;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  color: #64748b;
+                  display: block;
+                  margin-bottom: 1.5px;
+                }
+                .field-value {
+                  font-size: 11.5px;
+                  font-weight: 700;
                   color: #0f172a;
-                  font-weight: 600;
                 }
-                .red-val {
-                  color: #dc2626;
-                  font-weight: 800;
+                .grid-2 {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 8px;
                 }
-                .green-box {
-                  background-color: #16a34a;
-                  color: #ffffff;
-                  padding: 10px;
-                  font-size: 11px;
-                  font-weight: 600;
-                  min-height: 50px;
+                .grid-3 {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr 1fr;
+                  gap: 8px;
+                }
+                .grid-4 {
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  gap: 8px;
+                }
+                .notes-box {
+                  background: #f8fafc;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 5px;
+                  padding: 8px 10px;
+                  font-size: 10.5px;
+                  color: #1e293b;
+                  line-height: 1.4;
                   white-space: pre-wrap;
+                }
+                .confidential-box {
+                  background: #f0fdf4;
+                  border: 1px solid #86efac;
+                  border-radius: 5px;
+                  padding: 8px 10px;
+                  font-size: 10.5px;
+                  color: #166534;
+                  line-height: 1.4;
+                  white-space: pre-wrap;
+                }
+                .signatures {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 40px;
+                  margin-top: 18px;
+                  padding-top: 6px;
+                }
+                .sign-line {
+                  border-top: 1px solid #94a3b8;
+                  text-align: center;
+                  padding-top: 4px;
+                  font-size: 9px;
+                  font-weight: 700;
+                  color: #475569;
+                  text-transform: uppercase;
                 }
                 .footer {
                   border-top: 1px solid #cbd5e1;
                   padding-top: 6px;
-                  margin-top: 16px;
+                  margin-top: 14px;
                   display: flex;
                   justify-content: space-between;
                   font-size: 9.5px;
-                  color: #64748b;
+                  color: #94a3b8;
                 }
               </style>
             </head>
@@ -506,195 +545,206 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
     }
   };
 
-  // Imprimir Ficha Oficial Individual
+  // Imprimir Ficha Oficial Individual (Formato Minimalista y Formal)
   const handlePrintSingle = (item: ReporteSitio) => {
     const html = `
-      <div class="report-card">
-        <!-- Header Bar -->
-        <div style="background: #2d264b; padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2d264b;">
-          <div style="color: #38bdf8; font-size: 16px; font-weight: 900; letter-spacing: 0.5px;">
-            ${company.commercialName || 'CENTRO DE SERVICIO AUTORIZADO'}
-          </div>
-          <div style="text-align: center;">
-            <div style="color: #ffffff; font-size: 13px; font-weight: 900; letter-spacing: 1px;"># DE REPORTE</div>
-            <div class="report-num-box">${item.numeroReporte}</div>
-          </div>
-          <div style="color: #94a3b8; font-size: 10px; text-align: right;">
-            Tel: ${company.phone || ''}<br/>
-            RFC: ${company.rfc || ''}
-          </div>
-        </div>
-
-        <!-- Row 1: Tipo Servicio, Fecha, Atendió -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1.2;">
-            <div class="field-label">TIPO DE SERVICIO</div>
-            <div class="field-val">${item.tipoServicio || 'CON CARGO'}</div>
-          </div>
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">FECHA DE REPORTE</div>
-            <div class="field-val">${item.fechaReporte || ''}</div>
-          </div>
-          <div class="field-col" style="flex: 1.2;">
-            <div class="field-label">*ATENDIO*</div>
-            <div class="field-val red-val">${item.atendio || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 2: Nombre del Cliente -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">*NOMBRE DEL CLIENTE*</div>
-            <div class="field-val" style="font-size: 13px;">${item.nombreCliente || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 3: Dirección -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">*DIRECCION NUMERO DE CASA, ENTRE CALLES Y REFERENCIAS*</div>
-            <div class="field-val">${item.direccion || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 4: Colonia, Tipo Casa, Teléfono, Celular -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1.5;">
-            <div class="field-label">COLONIA</div>
-            <div class="field-val">${item.colonia || ''}</div>
-          </div>
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">*TIPO DE CASA*</div>
-            <div class="field-val">${item.tipoCasa || '-'}</div>
-          </div>
-          <div class="field-col" style="flex: 1.2;">
-            <div class="field-label">TELEFONO</div>
-            <div class="field-val">${item.telefono || '--'}</div>
-          </div>
-          <div class="field-col" style="flex: 1.2;">
-            <div class="field-label">CELULAR</div>
-            <div class="field-val red-val">${item.celular || '--'}</div>
-          </div>
-        </div>
-
-        <!-- Row 5: Aparato, Marca, Modelo -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1.5;">
-            <div class="field-label">APARATO</div>
-            <div class="field-val">${item.aparato || ''}</div>
-          </div>
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">MARCA</div>
-            <div class="field-val red-val">${item.marca || ''}</div>
-          </div>
-          <div class="field-col" style="flex: 1.5;">
-            <div class="field-label">MODELO</div>
-            <div class="field-val">${item.modelo || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 6: Serie Difusor, Serie Equipo -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">SERIE DEL DIFUSOR</div>
-            <div class="field-val">${item.serieDifusor || '--'}</div>
-          </div>
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">SERIE DEL EQUIPO</div>
-            <div class="field-val">${item.serieEquipo || '--'}</div>
-          </div>
-        </div>
-
-        <!-- Row 7: Falla que Reporta el Cliente -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">FALLA QUE REPORTA EL CLIENTE</div>
-            <div class="field-val" style="min-height: 36px;">${item.fallaReportada || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 8: Fecha de Visita, Hora de Visita, Técnico -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1.5;">
-            <div class="field-label">FECHA DE VISITA</div>
-            <div class="field-val red-val">${item.fechaVisita || ''}</div>
-          </div>
-          <div class="field-col" style="flex: 1.5;">
-            <div class="field-label">HORA DE VISITA</div>
-            <div class="field-val red-val">${item.horaVisita || ''}</div>
-          </div>
-          <div class="field-col" style="flex: 1.2;">
-            <div class="field-label">TECNICO:</div>
-            <div class="field-val">${item.tecnico || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 9: Detalles 1ra Visita -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">DETALLES DE 1ER VISITA</div>
-            <div class="field-val" style="min-height: 44px; white-space: pre-wrap;">${item.detalles1erVisita || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 10: 2da Visita, 3ra Visita -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">2DA VISITA</div>
-            <div class="field-val" style="min-height: 40px; white-space: pre-wrap;">${item.detalles2daVisita || ''}</div>
-          </div>
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">3ERA VISITA</div>
-            <div class="field-val" style="min-height: 40px; white-space: pre-wrap;">${item.detalles3eraVisita || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 11: Presupuesto, Partes Solicitadas -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">PRESUPUESTO:</div>
-            <div class="field-val" style="min-height: 45px; white-space: pre-wrap; font-size: 13px;">${typeof item.presupuesto === 'number' ? `$${item.presupuesto.toFixed(2)} MXN` : (item.presupuesto || '')}</div>
-          </div>
-          <div class="field-col" style="flex: 1.2;">
-            <div class="field-label">PARTES SOLICITADAS</div>
-            <div class="field-val" style="min-height: 45px; white-space: pre-wrap;">${item.partesSolicitadas || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 12: # de Pedido -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label"># DE PEDIDO</div>
-            <div class="field-val">${item.numeroPedido || '--'}</div>
-          </div>
-        </div>
-
-        <!-- Row 13: Observaciones -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">OBSERVACIONES</div>
-            <div class="field-val">${item.observaciones || ''}</div>
-          </div>
-        </div>
-
-        <!-- Row 14: Número de Orden de Servicio -->
-        <div class="field-row">
-          <div class="field-col" style="flex: 1;">
-            <div class="field-label">NUMERO DE ORDEN DE SERVICIO</div>
-            <div class="field-val">${item.numeroOrdenServicio || '--'}</div>
-          </div>
-        </div>
-
-        <!-- Row 15: Información Confidencial (Green Box) -->
+      <div class="header">
         <div>
-          <div class="field-label" style="background: #1e1b4b;">INFORMACION CONFIDENCIAL</div>
-          <div class="green-box">${item.informacionConfidencial || 'Sin notas confidenciales registradas'}</div>
+          <div class="company-name">${company.commercialName || 'CENTRO DE SERVICIO AUTORIZADO'}</div>
+          <div class="doc-title">REPORTE TÉCNICO DE CITA Y SERVICIO EN SITIO</div>
+          <div style="font-size: 9.5px; color: #64748b; margin-top: 2px;">
+            ${company.address || ''} • Tel: ${company.phone || ''} • RFC: ${company.rfc || ''}
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div class="badge">REPORTE: #${item.numeroReporte}</div>
+          <div style="font-size: 9.5px; color: #64748b; margin-top: 4px;">
+            Fecha: ${item.fechaReporte || new Date().toLocaleDateString('es-MX')}
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">1. Identidad del Reporte & Datos del Cliente</div>
+      <div class="grid-4">
+        <div class="box">
+          <div class="field-label">Tipo de Servicio</div>
+          <div class="field-value">${item.tipoServicio || 'CON CARGO'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Fecha de Reporte</div>
+          <div class="field-value">${item.fechaReporte || '--'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Personal de Atención</div>
+          <div class="field-value">${item.atendio || '--'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Tipo de Inmueble</div>
+          <div class="field-value">${item.tipoCasa || '-'}</div>
+        </div>
+      </div>
+
+      <div class="box box-gray">
+        <div class="field-label">Nombre del Cliente / Solicitante</div>
+        <div class="field-value" style="font-size: 13px;">${item.nombreCliente || 'Sin nombre'}</div>
+      </div>
+
+      <div class="section-title">2. Ubicación & Domicilio de Atención</div>
+      <div class="grid-2">
+        <div class="box">
+          <div class="field-label">Dirección, Número y Entre Calles</div>
+          <div class="field-value">${item.direccion || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Colonia</div>
+          <div class="field-value">${item.colonia || 'N/A'}</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="box">
+          <div class="field-label">Teléfono Fijo</div>
+          <div class="field-value">${item.telefono || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Móvil / Celular</div>
+          <div class="field-value">${item.celular || 'N/A'}</div>
+        </div>
+      </div>
+
+      <div class="section-title">3. Información del Equipo & Falla Reportada</div>
+      <div class="grid-3">
+        <div class="box">
+          <div class="field-label">Aparato</div>
+          <div class="field-value">${item.aparato || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Marca</div>
+          <div class="field-value">${item.marca || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Modelo</div>
+          <div class="field-value">${item.modelo || 'N/A'}</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="box">
+          <div class="field-label">Serie del Difusor</div>
+          <div class="field-value" style="font-family: monospace;">${item.serieDifusor || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Serie del Equipo</div>
+          <div class="field-value" style="font-family: monospace;">${item.serieEquipo || 'N/A'}</div>
+        </div>
+      </div>
+      <div class="box">
+        <div class="field-label">Falla Reportada por el Cliente</div>
+        <div class="field-value" style="font-weight: 500; font-size: 11px;">${item.fallaReportada || 'Sin reporte detallado'}</div>
+      </div>
+
+      <div class="section-title">4. Programación de Visita & Asignación Técnica</div>
+      <div class="grid-3">
+        <div class="box">
+          <div class="field-label">Fecha Programada</div>
+          <div class="field-value">${item.fechaVisita || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Horario de Visita</div>
+          <div class="field-value">${item.horaVisita || 'TRANSCURSO DEL DIA'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Técnico Asignado</div>
+          <div class="field-value">${item.tecnico || 'Sin asignar'}</div>
+        </div>
+      </div>
+
+      <div class="section-title">5. Bitácora de Visitas Técnicas en Domicilio</div>
+      <div class="box">
+        <div class="field-label">Detalles de 1ª Visita</div>
+        <div class="field-value" style="font-weight: 500; font-size: 10.5px;">${item.detalles1erVisita || 'Sin registro de primera visita'}</div>
+      </div>
+      ${
+        item.detalles2daVisita || item.detalles3eraVisita
+          ? `
+        <div class="grid-2">
+          ${
+            item.detalles2daVisita
+              ? `
+            <div class="box">
+              <div class="field-label">Detalles de 2ª Visita</div>
+              <div class="field-value" style="font-weight: 500; font-size: 10.5px;">${item.detalles2daVisita}</div>
+            </div>
+          `
+              : ''
+          }
+          ${
+            item.detalles3eraVisita
+              ? `
+            <div class="box">
+              <div class="field-label">Detalles de 3ª Visita</div>
+              <div class="field-value" style="font-weight: 500; font-size: 10.5px;">${item.detalles3eraVisita}</div>
+            </div>
+          `
+              : ''
+          }
+        </div>
+      `
+          : ''
+      }
+
+      <div class="section-title">6. Presupuesto, Refacciones & Requisición</div>
+      <div class="grid-4">
+        <div class="box">
+          <div class="field-label">Presupuesto Total</div>
+          <div class="field-value">${typeof item.presupuesto === 'number' ? `$${item.presupuesto.toFixed(2)} MXN` : item.presupuesto || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label"># de Pedido</div>
+          <div class="field-value">${item.numeroPedido || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Orden de Servicio</div>
+          <div class="field-value">${item.numeroOrdenServicio || 'N/A'}</div>
+        </div>
+        <div class="box">
+          <div class="field-label">Partes Solicitadas</div>
+          <div class="field-value">${item.partesSolicitadas || 'N/A'}</div>
+        </div>
+      </div>
+
+      ${
+        item.observaciones
+          ? `
+        <div class="box">
+          <div class="field-label">Observaciones Generales</div>
+          <div class="field-value" style="font-weight: 500; font-size: 10.5px;">${item.observaciones}</div>
+        </div>
+      `
+          : ''
+      }
+
+      ${
+        item.informacionConfidencial
+          ? `
+        <div class="section-title">7. Información Confidencial / Accesos y Referencias</div>
+        <div class="confidential-box">
+          ${item.informacionConfidencial}
+        </div>
+      `
+          : ''
+      }
+
+      <div class="signatures">
+        <div class="sign-line">
+          ${item.tecnico || 'Técnico Responsable'} • Firma de Técnico
+        </div>
+        <div class="sign-line">
+          Firma de Conformidad del Cliente
         </div>
       </div>
 
       <div class="footer">
-        <div>${company.name || 'ServiTrack Pro'} • Control Oficial de Citas y Servicio en Sitio</div>
-        <div>Fecha de Impresión: ${new Date().toLocaleDateString('es-MX')}</div>
+        <div>${company.name || 'ServiTrack Pro'} • RFC: ${company.rfc || ''}</div>
+        <div>Ficha Oficial de Citas a Domicilio • Página 1 de 1</div>
       </div>
     `;
 
@@ -935,90 +985,694 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
       </div>
 
       {/* ========================================================================= */}
-      {/* VISTA 1: FORMULARIO PRINCIPAL DE REGISTRO (DISEÑO OFICIAL DE LA IMAGEN) */}
+      {/* VISTA 1: FORMULARIO EN BLANCO PARA REGISTRAR NUEVA CITA / REPORTE */}
       {/* ========================================================================= */}
       {mainView === 'create' && (
-        <div className="space-y-4 animate-in fade-in duration-150">
-          {/* BARRA DE NAVEGACIÓN Y ACCIONES DE BASE DE DATOS */}
-          <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-3">
-            {/* Controles de Navegación entre Registros */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <button
-                type="button"
-                onClick={() => handleNavigateRecord('first')}
-                disabled={reportes.length === 0 || currentRecordIndex === 0}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                title="Primer registro"
-              >
-                <ChevronsLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => handleNavigateRecord('prev')}
-                disabled={reportes.length === 0 || currentRecordIndex <= 0}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                title="Registro anterior"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                <span>Reporte</span>
-                <span className="font-mono text-indigo-600 font-bold">
-                  {currentRecordIndex >= 0 ? currentRecordIndex + 1 : 'Nuevo'}
-                </span>
-                <span>de</span>
-                <span className="font-mono font-bold">{reportes.length}</span>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-200">
+          {/* Form Banner Header */}
+          <div className="bg-slate-900 text-white p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-xl">
+                <CalendarCheck className="w-5 h-5" />
               </div>
-
-              <button
-                type="button"
-                onClick={() => handleNavigateRecord('next')}
-                disabled={reportes.length === 0 || currentRecordIndex >= reportes.length - 1}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                title="Registro siguiente"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => handleNavigateRecord('last')}
-                disabled={reportes.length === 0 || currentRecordIndex === reportes.length - 1}
-                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                title="Último registro"
-              >
-                <ChevronsRight className="w-4 h-4" />
-              </button>
+              <div>
+                <h2 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                  {editingItem ? 'Editar Reporte de Cita en Sitio' : 'Registrar Nueva Cita a Cliente (Reporte)'}
+                </h2>
+                <p className="text-xs text-slate-400">
+                  {editingItem
+                    ? 'Modifica los datos del reporte técnico y guarda los cambios.'
+                    : 'Captura los datos del cliente, equipo, falla reportada y programación de visita.'}
+                </p>
+              </div>
             </div>
 
-            {/* Acciones Rápidas del Registro Actual */}
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={handleClearForm}
-                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                title="Limpiar campos para nuevo registro en blanco"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>En Blanco</span>
-              </button>
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+              {/* Controles de Navegación Compactos entre Registros */}
+              <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => handleNavigateRecord('first')}
+                  disabled={reportes.length === 0 || currentRecordIndex === 0}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Primer reporte"
+                >
+                  <ChevronsLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleNavigateRecord('prev')}
+                  disabled={reportes.length === 0 || currentRecordIndex <= 0}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Reporte anterior"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-[11px] font-mono font-bold text-slate-300 px-2">
+                  {currentRecordIndex >= 0 ? `${currentRecordIndex + 1} / ${reportes.length}` : 'Nuevo'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleNavigateRecord('next')}
+                  disabled={reportes.length === 0 || currentRecordIndex >= reportes.length - 1}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Reporte siguiente"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleNavigateRecord('last')}
+                  disabled={reportes.length === 0 || currentRecordIndex === reportes.length - 1}
+                  className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Último reporte"
+                >
+                  <ChevronsRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700 text-xs">
+                <span className="text-slate-400 font-medium">Asignación #:</span>
+                <span className="font-mono font-black text-indigo-400">#{formData.numeroReporte || 'N/A'}</span>
+              </div>
 
               {editingItem && (
-                <>
+                <button
+                  type="button"
+                  onClick={handleClearForm}
+                  className="text-xs text-amber-400 hover:text-amber-300 font-semibold px-2.5 py-1.5 bg-amber-950/40 border border-amber-800/60 rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancelar Edición
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Form Content */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSaveForm();
+            }}
+            className="p-5 sm:p-7 space-y-6"
+          >
+            {/* Sección 1: Identidad del Reporte y Cliente */}
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Hash className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Identidad del Reporte y Cliente
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                {/* # de Reporte */}
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    # de Reporte <span className="text-indigo-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    id="form-numeroReporte"
+                    value={formData.numeroReporte || ''}
+                    onChange={(e) => setFormData({ ...formData, numeroReporte: e.target.value })}
+                    placeholder="Ej. 11740"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-mono font-bold text-slate-900 transition-all"
+                  />
+                  <span className="text-[11px] text-slate-400 mt-1 block">Consecutivo oficial editable.</span>
+                </div>
+
+                {/* Tipo de Servicio */}
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Tipo de Servicio
+                  </label>
+                  <select
+                    id="form-tipoServicio"
+                    value={formData.tipoServicio || 'CON CARGO'}
+                    onChange={(e) => setFormData({ ...formData, tipoServicio: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-semibold text-slate-900 transition-all"
+                  >
+                    {TIPO_SERVICIO_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Fecha de Reporte */}
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Fecha de Reporte
+                  </label>
+                  <input
+                    type="date"
+                    id="form-fechaReporte"
+                    value={formData.fechaReporte || ''}
+                    onChange={(e) => setFormData({ ...formData, fechaReporte: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-medium"
+                  />
+                </div>
+
+                {/* Personal que Atendió */}
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Atendió Solicitud (*ATENDIO*)
+                  </label>
+                  <select
+                    id="form-atendio"
+                    value={formData.atendio || 'ELIZABETH'}
+                    onChange={(e) => setFormData({ ...formData, atendio: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-semibold text-slate-900 transition-all"
+                  >
+                    {ATENDIO_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Nombre del Cliente */}
+                <div className="md:col-span-12">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Nombre del Cliente / Solicitante <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      required
+                      id="form-nombreCliente"
+                      value={formData.nombreCliente || ''}
+                      onChange={(e) => setFormData({ ...formData, nombreCliente: e.target.value })}
+                      placeholder="Ej. R11740 Lizbet Chávez / Lic. Fernando Zúñiga"
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-semibold text-slate-900 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 2: Ubicación y Contacto del Domicilio */}
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <MapPin className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Ubicación y Datos de Contacto
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                {/* Dirección y Referencias */}
+                <div className="md:col-span-8">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Dirección, Número de Casa, Entre Calles y Referencias
+                  </label>
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      id="form-direccion"
+                      value={formData.direccion || ''}
+                      onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
+                      placeholder="Ej. Cochise #66 entre Yaqui y Mayo (Frente al parque)"
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Colonia */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Colonia / Sector
+                  </label>
+                  <input
+                    type="text"
+                    id="form-colonia"
+                    value={formData.colonia || ''}
+                    onChange={(e) => setFormData({ ...formData, colonia: e.target.value })}
+                    placeholder="Ej. EL APACHE"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all uppercase font-medium"
+                  />
+                </div>
+
+                {/* Tipo de Inmueble / Casa */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Tipo de Casa / Inmueble
+                  </label>
+                  <div className="relative">
+                    <Home className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <select
+                      id="form-tipoCasa"
+                      value={formData.tipoCasa || '-'}
+                      onChange={(e) => setFormData({ ...formData, tipoCasa: e.target.value })}
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all uppercase font-medium"
+                    >
+                      {TIPO_CASA_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Teléfono Fijo */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Teléfono Fijo
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      id="form-telefono"
+                      value={formData.telefono || ''}
+                      onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                      placeholder="Teléfono fijo"
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Celular / WhatsApp */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Celular / WhatsApp
+                  </label>
+                  <div className="relative">
+                    <Smartphone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      id="form-celular"
+                      value={formData.celular || ''}
+                      onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
+                      placeholder="Ej. 6622111124"
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 3: Datos del Equipo y Falla Reportada */}
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Wrench className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Información del Equipo y Falla Reportada
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                {/* Aparato */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Aparato / Electrodoméstico
+                  </label>
+                  <select
+                    id="form-aparato"
+                    value={formData.aparato || 'REFRIGERADOR'}
+                    onChange={(e) => setFormData({ ...formData, aparato: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-semibold uppercase"
+                  >
+                    {APARATO_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Marca */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Marca
+                  </label>
+                  <select
+                    id="form-marca"
+                    value={formData.marca || 'LG'}
+                    onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-semibold uppercase"
+                  >
+                    {MARCA_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Modelo */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Modelo
+                  </label>
+                  <input
+                    type="text"
+                    id="form-modelo"
+                    value={formData.modelo || ''}
+                    onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
+                    placeholder="Ej. LS74BXP o WET4027HW0"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all uppercase font-medium"
+                  />
+                </div>
+
+                {/* Serie Difusor */}
+                <div className="md:col-span-6">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Serie del Difusor
+                  </label>
+                  <input
+                    type="text"
+                    id="form-serieDifusor"
+                    value={formData.serieDifusor || ''}
+                    onChange={(e) => setFormData({ ...formData, serieDifusor: e.target.value })}
+                    placeholder="Número de serie difusor o N/A"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-mono"
+                  />
+                </div>
+
+                {/* Serie Equipo */}
+                <div className="md:col-span-6">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Serie del Equipo
+                  </label>
+                  <input
+                    type="text"
+                    id="form-serieEquipo"
+                    value={formData.serieEquipo || ''}
+                    onChange={(e) => setFormData({ ...formData, serieEquipo: e.target.value })}
+                    placeholder="Ej. 003MRSS14470"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-mono font-medium"
+                  />
+                </div>
+
+                {/* Falla Reportada */}
+                <div className="md:col-span-12">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Falla que Reporta el Cliente
+                  </label>
+                  <textarea
+                    id="form-fallaReportada"
+                    rows={2}
+                    value={formData.fallaReportada || ''}
+                    onChange={(e) => setFormData({ ...formData, fallaReportada: e.target.value })}
+                    placeholder="Descripción detallada de la anomalía o falla reportada por el cliente..."
+                    className="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all resize-y"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 4: Programación de Visita y Asignación Técnica */}
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <CalendarCheck className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Programación de Visita y Asignación Técnica
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                {/* Fecha de Visita */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Fecha de Visita Programada
+                  </label>
+                  <div className="relative">
+                    <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="date"
+                      id="form-fechaVisita"
+                      value={formData.fechaVisita || ''}
+                      onChange={(e) => setFormData({ ...formData, fechaVisita: e.target.value })}
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Horario de Visita */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Horario de Visita
+                  </label>
+                  <div className="relative">
+                    <Clock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <select
+                      id="form-horaVisita"
+                      value={formData.horaVisita || 'TRANSCURSO DEL DIA'}
+                      onChange={(e) => setFormData({ ...formData, horaVisita: e.target.value })}
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-semibold uppercase"
+                    >
+                      {HORA_VISITA_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Técnico Asignado */}
+                <div className="md:col-span-4">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Técnico en Sitio Asignado
+                  </label>
+                  <div className="relative">
+                    <UserCheck className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <select
+                      id="form-tecnico"
+                      value={formData.tecnico || 'JOAQUIN'}
+                      onChange={(e) => setFormData({ ...formData, tecnico: e.target.value })}
+                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-semibold uppercase"
+                    >
+                      {TECNICO_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 5: Bitácora de Visitas Técnicas en Domicilio */}
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <Clock className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Bitácora de Visitas Técnicas en Domicilio
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                {/* 1ra Visita */}
+                <div className="md:col-span-12">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Detalles de 1ª Visita (Diagnóstico y Acciones Iniciales)
+                  </label>
+                  <textarea
+                    id="form-detalles1erVisita"
+                    rows={2}
+                    value={formData.detalles1erVisita || ''}
+                    onChange={(e) => setFormData({ ...formData, detalles1erVisita: e.target.value })}
+                    placeholder="Diagnóstico, mediciones, piezas probadas y acciones realizadas en la 1ra visita..."
+                    className="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all resize-y"
+                  />
+                </div>
+
+                {/* 2da Visita */}
+                <div className="md:col-span-6">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Detalles de 2ª Visita (Seguimiento / Refacciones)
+                  </label>
+                  <textarea
+                    id="form-detalles2daVisita"
+                    rows={2}
+                    value={formData.detalles2daVisita || ''}
+                    onChange={(e) => setFormData({ ...formData, detalles2daVisita: e.target.value })}
+                    placeholder="Instalación de refacciones o seguimiento..."
+                    className="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all resize-y"
+                  />
+                </div>
+
+                {/* 3ra Visita */}
+                <div className="md:col-span-6">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Detalles de 3ª Visita (Revisión Final y Pruebas)
+                  </label>
+                  <textarea
+                    id="form-detalles3eraVisita"
+                    rows={2}
+                    value={formData.detalles3eraVisita || ''}
+                    onChange={(e) => setFormData({ ...formData, detalles3eraVisita: e.target.value })}
+                    placeholder="Pruebas finales, entrega o cierre..."
+                    className="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all resize-y"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 6: Presupuesto, Partes y Requisición */}
+            <div>
+              <div className="flex items-center gap-2 pb-2 mb-4 border-b border-slate-100">
+                <FileSpreadsheet className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Presupuesto, Refacciones y Requisición
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                {/* Presupuesto */}
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Presupuesto Acordado / Total
+                  </label>
+                  <input
+                    type="text"
+                    id="form-presupuesto"
+                    value={formData.presupuesto !== undefined ? String(formData.presupuesto) : ''}
+                    onChange={(e) => setFormData({ ...formData, presupuesto: e.target.value })}
+                    placeholder="Ej. $1,450.00"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-semibold"
+                  />
+                </div>
+
+                {/* Partes Solicitadas */}
+                <div className="md:col-span-5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Partes Solicitadas / Refacciones
+                  </label>
+                  <input
+                    type="text"
+                    id="form-partesSolicitadas"
+                    value={formData.partesSolicitadas || ''}
+                    onChange={(e) => setFormData({ ...formData, partesSolicitadas: e.target.value })}
+                    placeholder="Lista de piezas requeridas para la reparación"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-medium"
+                  />
+                </div>
+
+                {/* # de Pedido */}
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    # de Pedido
+                  </label>
+                  <input
+                    type="text"
+                    id="form-numeroPedido"
+                    value={formData.numeroPedido || ''}
+                    onChange={(e) => setFormData({ ...formData, numeroPedido: e.target.value })}
+                    placeholder="Requisición"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-mono"
+                  />
+                </div>
+
+                {/* Número de Orden de Servicio */}
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Orden de Servicio
+                  </label>
+                  <input
+                    type="text"
+                    id="form-numeroOrdenServicio"
+                    value={formData.numeroOrdenServicio || ''}
+                    onChange={(e) => setFormData({ ...formData, numeroOrdenServicio: e.target.value })}
+                    placeholder="No. Orden"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-mono"
+                  />
+                </div>
+
+                {/* Observaciones */}
+                <div className="md:col-span-12">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Observaciones Generales
+                  </label>
+                  <input
+                    type="text"
+                    id="form-observaciones"
+                    value={formData.observaciones || ''}
+                    onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
+                    placeholder="Ej. CLIENTE DEPOSITO $700.00 DE REVISION / Pendiente confirmación de horario"
+                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-900 transition-all font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 7: Información Confidencial / Accesos y Referencias */}
+            <div className="p-4 bg-emerald-50/60 border border-emerald-200/80 rounded-2xl">
+              <div className="flex items-center gap-2 pb-2 mb-3 border-b border-emerald-200/60">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-900">
+                    Información Confidencial / Accesos y Referencias
+                  </h3>
+                  <p className="text-[11px] text-emerald-700">
+                    Notas privadas de acceso a caseta, portones y claves de seguridad.
+                  </p>
+                </div>
+              </div>
+
+              <textarea
+                id="form-informacionConfidencial"
+                rows={3}
+                value={formData.informacionConfidencial || ''}
+                onChange={(e) => setFormData({ ...formData, informacionConfidencial: e.target.value })}
+                placeholder="Códigos de acceso, número de intercomunicador, autorización de caseta o indicaciones confidenciales para el técnico..."
+                className="w-full p-3 text-sm bg-white border border-emerald-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-emerald-950 transition-all resize-y placeholder:text-emerald-400 font-medium"
+              />
+            </div>
+
+            {/* Footer con Botones de Acción */}
+            <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                {/* Botón Guardar */}
+                <button
+                  type="submit"
+                  id="btn-guardar-reporte"
+                  className="flex-1 sm:flex-none px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{editingItem ? 'Actualizar Reporte' : 'Guardar Reporte'}</span>
+                </button>
+
+                {/* Botón Limpiar */}
+                <button
+                  type="button"
+                  onClick={handleClearForm}
+                  id="btn-limpiar-formulario"
+                  className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-slate-200"
+                  title="Restablecer todos los campos en blanco"
+                >
+                  <RotateCcw className="w-4 h-4 text-slate-500" />
+                  <span className="hidden sm:inline">En Blanco</span>
+                </button>
+              </div>
+
+              {/* Botones de acción si estamos editando */}
+              {editingItem && (
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                   <button
                     type="button"
                     onClick={() => handleDuplicateRecord(editingItem)}
-                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-200 transition-colors cursor-pointer"
                     title="Duplicar este reporte"
                   >
                     <Copy className="w-3.5 h-3.5 text-indigo-600" />
-                    <span className="hidden sm:inline">Duplicar</span>
+                    <span>Duplicar</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handlePrintSingle(editingItem)}
-                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                    title="Imprimir formato oficial de este reporte"
+                    className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-200 transition-colors cursor-pointer"
+                    title="Imprimir formato oficial"
                   >
                     <Printer className="w-3.5 h-3.5 text-slate-700" />
                     <span>Imprimir</span>
@@ -1029,552 +1683,23 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                       const doc = ExportService.generateReporteSitioPdf(editingItem, company);
                       doc.save(`Reporte_${editingItem.numeroReporte}.pdf`);
                     }}
-                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-200 transition-colors cursor-pointer"
                     title="Exportar a PDF"
                   >
                     <FileDown className="w-3.5 h-3.5 text-red-600" />
-                    <span className="hidden sm:inline">PDF</span>
+                    <span>PDF</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setDeleteCandidate(editingItem)}
-                    className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                     title="Eliminar este reporte"
                   >
                     <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                    <span className="hidden sm:inline">Eliminar</span>
+                    <span>Eliminar</span>
                   </button>
-                </>
+                </div>
               )}
-
-              <button
-                type="button"
-                onClick={() => handleSaveForm()}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-              >
-                <Save className="w-4 h-4" />
-                <span>{editingItem ? 'Actualizar Reporte' : 'Guardar Reporte'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* FICHA OFICIAL DE CAPTURA - REPLICA EXACTA DEL FORMATO EN IMÁGENES */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSaveForm();
-            }}
-            className="bg-[#2D2A4A] p-3 sm:p-4 rounded-xl border-2 border-[#1E1B38] shadow-lg text-slate-900 space-y-1.5"
-          >
-            {/* Top Bar: Logo/Cyan area & # DE REPORTE */}
-            <div className="bg-[#2D2A4A] flex flex-col sm:flex-row items-center justify-between gap-3 pb-2 pt-1 border-b border-indigo-900/60">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-cyan-400 rounded flex items-center justify-center font-black text-slate-900 shadow-inner">
-                  <Truck className="w-6 h-6 text-slate-900" />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-sm tracking-wide">
-                    {company.commercialName || 'SERVICIOS TÉCNICOS EN SITIO'}
-                  </h3>
-                  <p className="text-[11px] text-cyan-300">Hoja Oficial de Cita a Domicilio</p>
-                </div>
-              </div>
-
-              {/* # DE REPORTE (Destacado en Rojo sobre Fondo Blanco) */}
-              <div className="flex flex-col items-center">
-                <div className="text-white text-xs font-black tracking-wider uppercase px-2 py-0.5">
-                  # DE REPORTE
-                </div>
-                <div className="bg-white border-2 border-red-600 rounded px-4 py-1 flex items-center justify-center shadow-xs">
-                  <input
-                    type="text"
-                    required
-                    value={formData.numeroReporte || ''}
-                    onChange={(e) => setFormData({ ...formData, numeroReporte: e.target.value })}
-                    className="text-xl sm:text-2xl font-black text-red-600 text-center tracking-tight bg-transparent focus:outline-none w-32"
-                    placeholder="11740"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 1: TIPO DE SERVICIO | FECHA DE REPORTE | *ATENDIO* */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  TIPO DE SERVICIO
-                </div>
-                <div className="p-1 bg-white">
-                  <select
-                    value={formData.tipoServicio || 'CON CARGO'}
-                    onChange={(e) => setFormData({ ...formData, tipoServicio: e.target.value })}
-                    className="w-full text-xs font-bold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                  >
-                    {TIPO_SERVICIO_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  FECHA DE REPORTE
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="date"
-                    value={formData.fechaReporte || ''}
-                    onChange={(e) => setFormData({ ...formData, fechaReporte: e.target.value })}
-                    className="w-full text-xs font-semibold text-slate-800 text-center py-1 focus:outline-none bg-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  *ATENDIO*
-                </div>
-                <div className="p-1 bg-white">
-                  <select
-                    value={formData.atendio || 'ELIZABETH'}
-                    onChange={(e) => setFormData({ ...formData, atendio: e.target.value })}
-                    className="w-full text-xs font-bold text-red-600 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  >
-                    {ATENDIO_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 2: *NOMBRE DEL CLIENTE* */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                *NOMBRE DEL CLIENTE*
-              </div>
-              <div className="p-1 bg-white">
-                <input
-                  type="text"
-                  required
-                  value={formData.nombreCliente || ''}
-                  onChange={(e) => setFormData({ ...formData, nombreCliente: e.target.value })}
-                  placeholder="Ej. R11740 Lizbet Chávez"
-                  className="w-full text-xs sm:text-sm font-bold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                />
-              </div>
-            </div>
-
-            {/* FILA 3: *DIRECCION NUMERO DE CASA, ENTRE CALLES Y REFERENCIAS* */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                *DIRECCION NUMERO DE CASA, ENTRE CALLES Y REFERENCIAS*
-              </div>
-              <div className="p-1 bg-white">
-                <input
-                  type="text"
-                  value={formData.direccion || ''}
-                  onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-                  placeholder="Ej. Cochise#66 clave de ACCESO"
-                  className="w-full text-xs sm:text-sm font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                />
-              </div>
-            </div>
-
-            {/* FILA 4: COLONIA | *TIPO DE CASA* | TELEFONO | CELULAR */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-1">
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  COLONIA
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="text"
-                    value={formData.colonia || ''}
-                    onChange={(e) => setFormData({ ...formData, colonia: e.target.value })}
-                    placeholder="Ej. EL APACHE"
-                    className="w-full text-xs font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  *TIPO DE CASA*
-                </div>
-                <div className="p-1 bg-white">
-                  <select
-                    value={formData.tipoCasa || '-'}
-                    onChange={(e) => setFormData({ ...formData, tipoCasa: e.target.value })}
-                    className="w-full text-xs font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  >
-                    {TIPO_CASA_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  TELEFONO
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="text"
-                    value={formData.telefono || ''}
-                    onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                    placeholder="Teléfono fijo"
-                    className="w-full text-xs font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  CELULAR
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="text"
-                    value={formData.celular || ''}
-                    onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
-                    placeholder="Ej. 6622111124"
-                    className="w-full text-xs font-bold text-red-600 text-center py-1.5 focus:outline-none bg-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 5: APARATO | MARCA | MODELO */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  APARATO
-                </div>
-                <div className="p-1 bg-white">
-                  <select
-                    value={formData.aparato || 'REFRIGERADOR'}
-                    onChange={(e) => setFormData({ ...formData, aparato: e.target.value })}
-                    className="w-full text-xs font-bold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  >
-                    {APARATO_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  MARCA
-                </div>
-                <div className="p-1 bg-white">
-                  <select
-                    value={formData.marca || 'LG'}
-                    onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
-                    className="w-full text-xs font-bold text-red-600 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  >
-                    {MARCA_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  MODELO
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="text"
-                    value={formData.modelo || ''}
-                    onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
-                    placeholder="Ej. LS74BXP"
-                    className="w-full text-xs font-bold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 6: SERIE DEL DIFUSOR | SERIE DEL EQUIPO */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  SERIE DEL DIFUSOR
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="text"
-                    value={formData.serieDifusor || ''}
-                    onChange={(e) => setFormData({ ...formData, serieDifusor: e.target.value })}
-                    placeholder="Número de serie difusor"
-                    className="w-full text-xs font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  SERIE DEL EQUIPO
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="text"
-                    value={formData.serieEquipo || ''}
-                    onChange={(e) => setFormData({ ...formData, serieEquipo: e.target.value })}
-                    placeholder="Ej. 003MRSS14470"
-                    className="w-full text-xs font-bold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 7: FALLA QUE REPORTA EL CLIENTE */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                FALLA QUE REPORTA EL CLIENTE
-              </div>
-              <div className="p-1 bg-white">
-                <input
-                  type="text"
-                  value={formData.fallaReportada || ''}
-                  onChange={(e) => setFormData({ ...formData, fallaReportada: e.target.value })}
-                  placeholder="Ej. sonido en abanico o compresor"
-                  className="w-full text-xs sm:text-sm font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                />
-              </div>
-            </div>
-
-            {/* FILA 8: FECHA DE VISITA | HORA DE VISITA | TECNICO: */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  FECHA DE VISITA
-                </div>
-                <div className="p-1 bg-white">
-                  <input
-                    type="date"
-                    value={formData.fechaVisita || ''}
-                    onChange={(e) => setFormData({ ...formData, fechaVisita: e.target.value })}
-                    className="w-full text-xs font-bold text-red-600 text-center py-1 focus:outline-none bg-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  HORA DE VISITA
-                </div>
-                <div className="p-1 bg-white">
-                  <select
-                    value={formData.horaVisita || 'TRANSCURSO DEL DIA'}
-                    onChange={(e) => setFormData({ ...formData, horaVisita: e.target.value })}
-                    className="w-full text-xs font-bold text-red-600 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  >
-                    {HORA_VISITA_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  TECNICO:
-                </div>
-                <div className="p-1 bg-white">
-                  <select
-                    value={formData.tecnico || 'JOAQUIN'}
-                    onChange={(e) => setFormData({ ...formData, tecnico: e.target.value })}
-                    className="w-full text-xs font-bold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent uppercase"
-                  >
-                    {TECNICO_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 9: DETALLES DE 1ER VISITA */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                DETALLES DE 1ER VISITA
-              </div>
-              <div className="p-1.5 bg-white">
-                <textarea
-                  rows={2}
-                  value={formData.detalles1erVisita || ''}
-                  onChange={(e) => setFormData({ ...formData, detalles1erVisita: e.target.value })}
-                  placeholder="Detalles y acciones realizadas durante la primera visita técnica..."
-                  className="w-full text-xs text-slate-800 p-1 focus:outline-none bg-transparent resize-y"
-                />
-              </div>
-            </div>
-
-            {/* FILA 10: 2DA VISITA | 3ERA VISITA */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  2DA VISITA
-                </div>
-                <div className="p-1.5 bg-white">
-                  <textarea
-                    rows={2}
-                    value={formData.detalles2daVisita || ''}
-                    onChange={(e) => setFormData({ ...formData, detalles2daVisita: e.target.value })}
-                    placeholder="Detalles de la segunda visita técnica..."
-                    className="w-full text-xs text-slate-800 p-1 focus:outline-none bg-transparent resize-y"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  3ERA VISITA
-                </div>
-                <div className="p-1.5 bg-white">
-                  <textarea
-                    rows={2}
-                    value={formData.detalles3eraVisita || ''}
-                    onChange={(e) => setFormData({ ...formData, detalles3eraVisita: e.target.value })}
-                    placeholder="Detalles de la tercera visita técnica..."
-                    className="w-full text-xs text-slate-800 p-1 focus:outline-none bg-transparent resize-y"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 11: PRESUPUESTO: | PARTES SOLICITADAS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  PRESUPUESTO:
-                </div>
-                <div className="p-1.5 bg-white">
-                  <textarea
-                    rows={2}
-                    value={formData.presupuesto !== undefined ? String(formData.presupuesto) : ''}
-                    onChange={(e) => setFormData({ ...formData, presupuesto: e.target.value })}
-                    placeholder="Monto de presupuesto o desglose financiero..."
-                    className="w-full text-xs font-semibold text-slate-800 p-1 focus:outline-none bg-transparent resize-y"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-                <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                  PARTES SOLICITADAS
-                </div>
-                <div className="p-1.5 bg-white">
-                  <textarea
-                    rows={2}
-                    value={formData.partesSolicitadas || ''}
-                    onChange={(e) => setFormData({ ...formData, partesSolicitadas: e.target.value })}
-                    placeholder="Lista de refacciones requeridas..."
-                    className="w-full text-xs text-slate-800 p-1 focus:outline-none bg-transparent resize-y"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* FILA 12: # DE PEDIDO */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                # DE PEDIDO
-              </div>
-              <div className="p-1 bg-white">
-                <input
-                  type="text"
-                  value={formData.numeroPedido || ''}
-                  onChange={(e) => setFormData({ ...formData, numeroPedido: e.target.value })}
-                  placeholder="Número de pedido / requisición"
-                  className="w-full text-xs font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                />
-              </div>
-            </div>
-
-            {/* FILA 13: OBSERVACIONES */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                OBSERVACIONES
-              </div>
-              <div className="p-1 bg-white">
-                <input
-                  type="text"
-                  value={formData.observaciones || ''}
-                  onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
-                  placeholder="Ej. CLIENTE DEPOSITO $700.00 DE REVISION"
-                  className="w-full text-xs sm:text-sm font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                />
-              </div>
-            </div>
-
-            {/* FILA 14: NUMERO DE ORDEN DE SERVICIO */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                NUMERO DE ORDEN DE SERVICIO
-              </div>
-              <div className="p-1 bg-white">
-                <input
-                  type="text"
-                  value={formData.numeroOrdenServicio || ''}
-                  onChange={(e) => setFormData({ ...formData, numeroOrdenServicio: e.target.value })}
-                  placeholder="Número de orden de servicio ligada"
-                  className="w-full text-xs font-semibold text-slate-800 text-center py-1.5 focus:outline-none bg-transparent"
-                />
-              </div>
-            </div>
-
-            {/* FILA 15: INFORMACION CONFIDENCIAL (RECUADRO VERDE ESMERALDA) */}
-            <div className="bg-[#2D2A4A] border border-indigo-900/80 rounded overflow-hidden">
-              <div className="bg-[#1F1B38] text-white text-[10px] sm:text-[11px] font-bold text-center py-1 uppercase tracking-wider">
-                INFORMACION CONFIDENCIAL
-              </div>
-              <div className="p-2 bg-[#16A34A] rounded-b">
-                <textarea
-                  rows={3}
-                  value={formData.informacionConfidencial || ''}
-                  onChange={(e) => setFormData({ ...formData, informacionConfidencial: e.target.value })}
-                  placeholder="Notas internas, códigos de acceso, referencias de caseta o indicaciones confidenciales..."
-                  className="w-full text-xs font-medium text-white placeholder:text-emerald-200 focus:outline-none bg-transparent resize-y"
-                />
-              </div>
-            </div>
-
-            {/* BOTÓN FINAL DE GUARDAR */}
-            <div className="pt-3 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={handleClearForm}
-                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-              >
-                Limpiar Formulario
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:scale-98 text-white rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all cursor-pointer"
-              >
-                <Save className="w-4 h-4" />
-                <span>{editingItem ? 'Actualizar Reporte' : 'Guardar Reporte'}</span>
-              </button>
             </div>
           </form>
         </div>
