@@ -109,39 +109,39 @@ export interface OrdenTaller extends BaseRecord {
   informacionConfidencial: string; // Área restringida
 }
 
-// 4. # de Reporte (Servicio en Sitio / Domicilio)
+// 4. # de Reporte (Citas a Clientes / Servicio en Sitio / Domicilio)
 export interface ReporteSitio extends BaseRecord {
   // Encabezado y Control
-  numeroReporte: string; // Autonumérico (ej. REP-2026-001)
-  tipoServicio: 'Con cargo' | 'Garantía' | 'Mantenimiento' | 'Revisión técnica' | 'Instalación';
+  numeroReporte: string; // Ej. 11740 o REP-2026-001
+  tipoServicio: string; // 'CON CARGO' | 'GARANTIA' | 'PRESUPUESTO' | 'REVISION TECNICA' | 'MANTENIMIENTO' | 'INSTALACION' | string
   fechaReporte: string;
-  atendio: string;
+  atendio: string; // Ej. ELIZABETH, MARIANA, etc.
   // Datos del Cliente y Domicilio
-  nombreCliente: string;
-  direccion: string; // Número, entre calles y referencias
+  nombreCliente: string; // Ej. R11740 Lizbet Chávez
+  direccion: string; // Número de casa, entre calles y referencias
   colonia: string;
-  tipoCasa: 'Casa de 1 piso' | 'Casa de 2 pisos' | 'Departamento' | 'Local comercial' | 'Oficina' | 'Privada/Condominio';
+  tipoCasa: string; // '-', 'CASA', 'CASA 1 PISO', 'DEPARTAMENTO', 'LOCAL COMERCIAL', etc.
   telefono: string;
-  celular: string;
+  celular: string; // Ej. 6622111124
   // Identificación del Equipo
-  aparato: string;
-  marca: string;
-  modelo: string;
+  aparato: string; // Ej. REFRIGERADOR, LAVADORA, etc.
+  marca: string; // Ej. LG, SAMSUNG, WHIRLPOOL, etc.
+  modelo: string; // Ej. LS74BXP
   serieDifusor: string;
-  serieEquipo: string;
+  serieEquipo: string; // Ej. 003MRSS14470
   // Falla y Visitas
-  fallaReportada: string;
-  fechaVisita: string;
-  horaVisita: string;
-  tecnico: string;
+  fallaReportada: string; // Ej. sonido en abanico o compresor
+  fechaVisita: string; // Ej. 2026-08-31
+  horaVisita: string; // Ej. TRANSCURSO DEL DIA
+  tecnico: string; // Ej. JOAQUIN, ROBERTO, etc.
   detalles1erVisita: string;
   detalles2daVisita: string;
   detalles3eraVisita: string;
   // Costeo y Cierre
-  presupuesto: number;
+  presupuesto: number | string;
   partesSolicitadas: string;
   numeroPedido: string;
-  observaciones: string;
+  observaciones: string; // Ej. CLIENTE DEPOSITO $700.00 DE REVISION
   numeroOrdenServicio: string;
   informacionConfidencial: string;
 }

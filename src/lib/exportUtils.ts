@@ -560,15 +560,28 @@ export const ExportService = {
         3: { cellWidth: 56, fontStyle: 'bold', textColor: [124, 58, 237], halign: 'right' },
       },
       body: [
-        ['Partes Solicitadas:', item.partesSolicitadas || 'N/A', 'Presupuesto Total:', formatCurrency(item.presupuesto)],
+        ['Partes Solicitadas:', item.partesSolicitadas || 'N/A', 'Presupuesto Total:', typeof item.presupuesto === 'number' ? formatCurrency(item.presupuesto) : (item.presupuesto || 'N/A')],
         ['# de Pedido:', item.numeroPedido || 'N/A', 'Observaciones:', item.observaciones || 'N/A'],
       ],
     });
 
-    startY = (doc as any).lastAutoTable.finalY + 5;
+    startY = (doc as any).lastAutoTable.finalY + 4;
+
+    // Información Confidencial (si existe)
+    if (item.informacionConfidencial) {
+      autoTable(doc, {
+        startY,
+        theme: 'grid',
+        headStyles: { fillColor: [22, 163, 74], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        styles: { fontSize: 7.5, cellPadding: 2.5, textColor: [20, 83, 45], fillColor: [240, 253, 244] },
+        head: [['Información Confidencial / Accesos y Referencias']],
+        body: [[item.informacionConfidencial]],
+      });
+      startY = (doc as any).lastAutoTable.finalY + 4;
+    }
 
     // Signatures
-    const signY = Math.max(startY + 12, 230);
+    const signY = Math.max(startY + 10, 230);
     doc.setDrawColor(148, 163, 184);
     doc.line(25, signY, 85, signY);
     doc.line(125, signY, 185, signY);

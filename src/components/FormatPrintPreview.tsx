@@ -356,7 +356,11 @@ export const FormatPrintPreview: React.FC<FormatPrintPreviewProps> = ({
                     </div>
                     <div className="text-right">
                       <span className="text-slate-500 block">Presupuesto</span>
-                      <span className="text-base font-bold text-purple-800">{formatCurrency(r.presupuesto)}</span>
+                      <span className="text-base font-bold text-purple-800">
+                        {typeof r.presupuesto === 'number'
+                          ? formatCurrency(r.presupuesto)
+                          : r.presupuesto || '$0.00'}
+                      </span>
                     </div>
                   </div>
                 </div>

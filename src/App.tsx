@@ -14,6 +14,7 @@ import {
   Menu,
   Shield,
   BookUser,
+  CalendarCheck,
 } from 'lucide-react';
 import { ModuleType, CompanyInfo } from './types';
 import { StorageService } from './lib/storage';
@@ -93,9 +94,9 @@ export default function App() {
     {
       id: 'reporte_sitio' as ModuleType,
       number: '2',
-      title: 'Servicio en Sitio',
-      subtitle: 'Ruta & Domicilio',
-      icon: Truck,
+      title: 'Citas a Clientes (Reportes)',
+      subtitle: 'Servicio en Sitio & Domicilio',
+      icon: CalendarCheck,
       count: stats.reportesCount,
     },
     {

@@ -201,10 +201,22 @@ export const StorageService = {
   },
   getNextReporteNumber(): string {
     const list = this.getReportesSitio();
-    const count = list.length + 1;
-    const year = new Date().getFullYear();
-    const num = String(count).padStart(3, '0');
-    return `REP-${year}-${num}`;
+    if (list.length === 0) return '11740';
+    
+    // Extract numeric IDs from list
+    const numericValues = list
+      .map((r) => {
+        const clean = (r.numeroReporte || '').replace(/[^0-9]/g, '');
+        return clean ? parseInt(clean, 10) : 0;
+      })
+      .filter((n) => !isNaN(n) && n > 0);
+
+    if (numericValues.length > 0) {
+      const maxVal = Math.max(...numericValues);
+      return String(maxVal + 1);
+    }
+
+    return '11740';
   },
 
   // 5. Hojas de Servicio
