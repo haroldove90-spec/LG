@@ -43,6 +43,7 @@ import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
 import { printUnifiedDocumentDirectly } from '../lib/printUtils';
 import { FormatPrintPreview } from './FormatPrintPreview';
+import { WhatsAppShareMenu } from './WhatsAppShareMenu';
 import * as XLSX from 'xlsx';
 
 const ITEMS_PER_PAGE = 10;
@@ -541,26 +542,26 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
       )}
 
       {/* ========================================================================= */}
-      {/* HEADER DE MÓDULO & CONTROL DE VISTAS (TARJETA CON COLOR DE FONDO DISTINTIVO) */}
+      {/* HEADER DE MÓDULO & CONTROL DE VISTAS (DISEÑO LIMPIO Y UNIFICADO)          */}
       {/* ========================================================================= */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 p-5 sm:p-6 rounded-2xl border border-blue-900/60 shadow-lg text-white">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+            <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide">
               Módulo de Órdenes de Taller
             </span>
-            <span className="bg-slate-800/80 text-slate-300 border border-slate-700 text-xs px-2.5 py-0.5 rounded-full font-medium font-mono">
+            <span className="bg-slate-100 text-slate-700 text-xs px-2.5 py-0.5 rounded-full font-medium">
               {ordenes.length} órdenes registradas
             </span>
-            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+            <span className="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-semibold">
               Sin Garantía
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1.5 flex items-center gap-2.5">
-            <Wrench className="w-6 h-6 text-blue-400" />
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1 flex items-center gap-2">
+            <Wrench className="w-6 h-6 text-blue-600" />
             <span>Órdenes de Taller & Servicio Especializado</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             {activeTab === 'form'
               ? formData.numeroOrdenTaller
                 ? `Editando orden #${formData.numeroOrdenTaller} (${formData.nombreCliente || 'Nuevo'})`
@@ -570,7 +571,7 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
         </div>
 
         {/* Botonera de Navegación de Vistas y Búsqueda */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           {activeTab === 'form' ? (
             <button
               type="button"
@@ -579,12 +580,12 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               id="btn-ir-a-directorio-ordenes"
-              className="bg-blue-600 hover:bg-blue-500 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all cursor-pointer border border-blue-400/40"
-              title="Abrir buscador y directorio general de órdenes"
+              className="bg-slate-900 hover:bg-slate-800 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-all cursor-pointer border border-slate-800"
+              title="Ir al directorio general de órdenes"
             >
-              <Search className="w-4 h-4 text-blue-200" />
+              <Search className="w-4 h-4 text-blue-400" />
               <span>Buscador de Órdenes / Directorio</span>
-              <span className="bg-blue-900/80 text-white text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ml-1 border border-blue-400/30">
+              <span className="bg-slate-800 text-blue-300 text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ml-1">
                 {ordenes.length}
               </span>
             </button>
@@ -593,10 +594,10 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
               type="button"
               onClick={handleNewRecord}
               id="btn-ir-a-nueva-orden"
-              className="bg-blue-600 hover:bg-blue-500 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all cursor-pointer border border-blue-400/40"
+              className="bg-blue-600 hover:bg-blue-700 active:scale-98 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-all cursor-pointer"
               title="Abrir formulario de captura para una nueva orden"
             >
-              <PlusCircle className="w-4 h-4 text-blue-200" />
+              <PlusCircle className="w-4 h-4" />
               <span>+ Nueva Orden</span>
             </button>
           )}
@@ -605,10 +606,10 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
           <button
             type="button"
             onClick={exportFullExcel}
-            className="bg-slate-800/90 hover:bg-slate-800 text-slate-200 hover:text-white px-3.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm flex items-center gap-2 border border-slate-700 shadow-sm transition-all cursor-pointer"
+            className="bg-white hover:bg-slate-50 text-slate-700 px-3.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm flex items-center gap-2 border border-slate-200 shadow-2xs transition-all cursor-pointer"
             title="Exportar órdenes a archivo Excel (.xlsx)"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
             <span className="hidden sm:inline">Excel</span>
           </button>
         </div>
@@ -740,6 +741,13 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              <WhatsAppShareMenu
+                module="orden_taller"
+                record={formData}
+                company={company}
+                variant="button"
+              />
+
               <button
                 type="button"
                 onClick={handleNewRecord}
@@ -1529,6 +1537,12 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
                       {/* ACTION BUTTON BAR (UNIFIED DESIGN) */}
                       <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
                         <div className="flex items-center gap-1">
+                          <WhatsAppShareMenu
+                            module="orden_taller"
+                            record={item}
+                            company={company}
+                            variant="icon"
+                          />
                           <button
                             type="button"
                             onClick={() => openPrint(item)}
@@ -1619,6 +1633,12 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
                             </td>
                             <td className="py-2.5 px-4 text-center">
                               <div className="flex items-center justify-center gap-1">
+                                <WhatsAppShareMenu
+                                  module="orden_taller"
+                                  record={item}
+                                  company={company}
+                                  variant="icon"
+                                />
                                 <button
                                   type="button"
                                   onClick={() => openPrint(item)}
@@ -1696,6 +1716,12 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
 
                         <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
                           <div className="flex items-center gap-1">
+                            <WhatsAppShareMenu
+                              module="orden_taller"
+                              record={item}
+                              company={company}
+                              variant="icon"
+                            />
                             <button
                               type="button"
                               onClick={() => openPrint(item)}
