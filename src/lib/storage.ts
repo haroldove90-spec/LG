@@ -52,13 +52,13 @@ export const StorageService = {
   getFolios(): FolioSeguimiento[] {
     try {
       const stored = localStorage.getItem(KEYS.FOLIOS);
-      if (!stored) {
+      if (stored === null) {
         localStorage.setItem(KEYS.FOLIOS, JSON.stringify(INITIAL_FOLIOS));
         return INITIAL_FOLIOS;
       }
       return JSON.parse(stored);
     } catch {
-      return INITIAL_FOLIOS;
+      return [];
     }
   },
   getFoliosSeguimiento(): FolioSeguimiento[] {
@@ -94,13 +94,13 @@ export const StorageService = {
   getCotizaciones(): Cotizacion[] {
     try {
       const stored = localStorage.getItem(KEYS.COTIZACIONES);
-      if (!stored) {
+      if (stored === null) {
         localStorage.setItem(KEYS.COTIZACIONES, JSON.stringify(INITIAL_COTIZACIONES));
         return INITIAL_COTIZACIONES;
       }
       return JSON.parse(stored);
     } catch {
-      return INITIAL_COTIZACIONES;
+      return [];
     }
   },
   saveCotizacion(cotizacion: Cotizacion): Cotizacion[] {
@@ -133,13 +133,13 @@ export const StorageService = {
   getOrdenesTaller(): OrdenTaller[] {
     try {
       const stored = localStorage.getItem(KEYS.ORDENES);
-      if (!stored) {
+      if (stored === null) {
         localStorage.setItem(KEYS.ORDENES, JSON.stringify(INITIAL_ORDENES_TALLER));
         return INITIAL_ORDENES_TALLER;
       }
       return JSON.parse(stored);
     } catch {
-      return INITIAL_ORDENES_TALLER;
+      return [];
     }
   },
   saveOrdenTaller(orden: OrdenTaller): OrdenTaller[] {
@@ -172,13 +172,13 @@ export const StorageService = {
   getReportesSitio(): ReporteSitio[] {
     try {
       const stored = localStorage.getItem(KEYS.REPORTES);
-      if (!stored) {
+      if (stored === null) {
         localStorage.setItem(KEYS.REPORTES, JSON.stringify(INITIAL_REPORTES_SITIO));
         return INITIAL_REPORTES_SITIO;
       }
       return JSON.parse(stored);
     } catch {
-      return INITIAL_REPORTES_SITIO;
+      return [];
     }
   },
   saveReporteSitio(reporte: ReporteSitio): ReporteSitio[] {
@@ -211,13 +211,13 @@ export const StorageService = {
   getHojasServicio(): HojaServicio[] {
     try {
       const stored = localStorage.getItem(KEYS.HOJAS);
-      if (!stored) {
+      if (stored === null) {
         localStorage.setItem(KEYS.HOJAS, JSON.stringify(INITIAL_HOJAS_SERVICIO));
         return INITIAL_HOJAS_SERVICIO;
       }
       return JSON.parse(stored);
     } catch {
-      return INITIAL_HOJAS_SERVICIO;
+      return [];
     }
   },
   saveHojaServicio(hoja: HojaServicio): HojaServicio[] {
@@ -250,24 +250,13 @@ export const StorageService = {
   getAgenda(): AgendaContact[] {
     try {
       const stored = localStorage.getItem(KEYS.AGENDA);
-      if (!stored) {
+      if (stored === null) {
         localStorage.setItem(KEYS.AGENDA, JSON.stringify(INITIAL_AGENDA));
         return INITIAL_AGENDA;
       }
-      const parsed: AgendaContact[] = JSON.parse(stored);
-      // If user had an older short seed array without 1560, enrich with missing initial items
-      if (parsed.length < INITIAL_AGENDA.length) {
-        const existingIds = new Set(parsed.map((p) => p.agendaId));
-        const missing = INITIAL_AGENDA.filter((item) => !existingIds.has(item.agendaId));
-        if (missing.length > 0) {
-          const merged = [...parsed, ...missing];
-          localStorage.setItem(KEYS.AGENDA, JSON.stringify(merged));
-          return merged;
-        }
-      }
-      return parsed;
+      return JSON.parse(stored);
     } catch {
-      return INITIAL_AGENDA;
+      return [];
     }
   },
   getAgendaContacts(): AgendaContact[] {
