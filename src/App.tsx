@@ -24,6 +24,8 @@ import { StorageService } from './lib/storage';
 import { AgendaModule } from './components/AgendaModule';
 import { ReporteSitioModule } from './components/ReporteSitioModule';
 import { CotizacionModule } from './components/CotizacionModule';
+import { OrdenTallerModule } from './components/OrdenTallerModule';
+import { Wrench } from 'lucide-react';
 
 export default function App() {
   const [activeModule, setActiveModule] = useState<ModuleType>('agenda');
@@ -42,6 +44,7 @@ export default function App() {
     agendaCount: 0,
     reportesCount: 0,
     cotizacionesCount: 0,
+    ordenesCount: 0,
   });
 
   const refreshCounters = () => {
@@ -49,6 +52,7 @@ export default function App() {
       agendaCount: StorageService.getAgenda().length,
       reportesCount: StorageService.getReportesSitio().length,
       cotizacionesCount: StorageService.getCotizaciones().length,
+      ordenesCount: StorageService.getOrdenesTaller().length,
     });
   };
 
@@ -156,6 +160,14 @@ export default function App() {
       subtitle: 'Refacciones & Pedidos',
       icon: FileCheck,
       count: stats.cotizacionesCount,
+    },
+    {
+      id: 'orden_taller' as ModuleType,
+      number: '4',
+      title: 'Órdenes de Taller (Sin garantía)',
+      subtitle: 'Recepción, Diagnóstico & Presupuesto',
+      icon: Wrench,
+      count: stats.ordenesCount,
     },
   ];
 
@@ -409,6 +421,9 @@ export default function App() {
           )}
           {activeModule === 'cotizacion' && (
             <CotizacionModule company={companyInfo} />
+          )}
+          {activeModule === 'orden_taller' && (
+            <OrdenTallerModule company={companyInfo} />
           )}
         </main>
 

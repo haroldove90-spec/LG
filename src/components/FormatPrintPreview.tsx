@@ -330,56 +330,139 @@ export const FormatPrintPreview: React.FC<FormatPrintPreviewProps> = ({
               );
             })()}
 
-            {/* FORMAT 3: ORDEN TALLER */}
+            {/* FORMAT 3: ORDEN TALLER (SIN GARANTÍA) */}
             {module === 'orden_taller' && (() => {
               const o = record as OrdenTaller;
               return (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
-                    <div><span className="text-slate-400 block">Fecha Ingreso:</span><span className="font-semibold">{o.fechaIngreso}</span></div>
-                    <div><span className="text-slate-400 block">Atendió:</span><span className="font-semibold">{o.atendio}</span></div>
-                    <div><span className="text-slate-400 block">Técnico Asignado:</span><span className="font-semibold text-teal-700">{o.tecnicoAsignado || 'Por asignar'}</span></div>
-                    <div><span className="text-slate-400 block">No. Pedido:</span><span className="font-semibold">{o.numeroPedido || 'N/A'}</span></div>
+                    <div>
+                      <span className="text-slate-400 block font-medium">Fecha de Ingreso:</span>
+                      <span className="font-semibold text-slate-800">{o.fechaIngreso || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block font-medium">Atendió / Recibió:</span>
+                      <span className="font-semibold text-slate-800">{o.atendio || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block font-medium">Técnico Asignado:</span>
+                      <span className="font-semibold text-blue-700">{o.tecnicoAsignado || 'Por asignar'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block font-medium"># de Pedido:</span>
+                      <span className="font-semibold text-slate-800">{o.numeroPedido || 'N/A'}</span>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div className="border border-slate-200 rounded-lg p-3">
-                      <h4 className="font-bold text-slate-700 mb-1">Datos del Cliente</h4>
-                      <p className="text-slate-800 font-medium">{o.nombreCliente}</p>
-                      <p className="text-slate-500">{o.direccion}, {o.colonia}</p>
-                      <p className="text-slate-500">Tel: {o.telefono} {o.celular ? `/ Cel: ${o.celular}` : ''}</p>
+                    <div className="border border-slate-200 rounded-lg p-3 space-y-1">
+                      <h4 className="font-bold text-slate-700 uppercase tracking-wider text-[11px] mb-1.5 flex items-center justify-between">
+                        <span>Datos del Cliente</span>
+                      </h4>
+                      <p className="text-slate-900 font-bold text-sm">{o.nombreCliente}</p>
+                      <p className="text-slate-600">
+                        <strong>Dirección:</strong> {o.direccion || 'N/A'}
+                      </p>
+                      <p className="text-slate-600">
+                        <strong>Colonia:</strong> {o.colonia || 'N/A'}
+                      </p>
+                      <p className="text-slate-600">
+                        <strong>Teléfonos:</strong> {o.telefono || ''} {o.celular ? `/ Cel: ${o.celular}` : ''}
+                      </p>
                     </div>
-                    <div className="border border-slate-200 rounded-lg p-3">
-                      <h4 className="font-bold text-slate-700 mb-1">Datos del Aparato</h4>
-                      <p className="text-slate-800 font-medium">{o.aparato} • {o.marca}</p>
-                      <p className="text-slate-500">Modelo: {o.modeloCode}</p>
-                      <p className="text-slate-500 font-mono">Serie: {o.serie || 'N/A'}</p>
+
+                    <div className="border border-slate-200 rounded-lg p-3 space-y-1">
+                      <h4 className="font-bold text-slate-700 uppercase tracking-wider text-[11px] mb-1.5 flex items-center justify-between">
+                        <span>Datos del Aparato</span>
+                      </h4>
+                      <p className="text-slate-900 font-bold text-sm">{o.aparato} • {o.marca}</p>
+                      <p className="text-slate-600">
+                        <strong>Modelo Code / Versión:</strong> {o.modeloCode || 'N/A'}
+                      </p>
+                      <p className="text-slate-600 font-mono">
+                        <strong>Número de Serie:</strong> {o.serie || 'N/A'}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="border border-slate-200 rounded-lg p-3 text-xs">
-                    <strong className="text-slate-700 block mb-1">Falla Reportada en Recepción:</strong>
-                    <p className="text-slate-600 mb-2">{o.falla}</p>
-                    <strong className="text-slate-700 block mb-1">Accesorios / Observaciones de Entrada:</strong>
-                    <p className="text-slate-600">{o.accesoriosObservaciones || 'Sin accesorios'}</p>
-                  </div>
-
-                  <div className="bg-teal-50/50 border border-teal-200 rounded-lg p-3 flex justify-between items-center text-xs">
+                  <div className="border border-slate-200 rounded-lg p-3 text-xs space-y-3">
                     <div>
-                      <strong className="text-teal-900 block">Refacciones de Taller:</strong>
-                      <span className="text-slate-700">{o.refacciones || 'Sin refacciones'}</span>
+                      <strong className="text-slate-700 block uppercase tracking-wider text-[11px] mb-1">
+                        Falla Reportada en Recepción:
+                      </strong>
+                      <p className="text-slate-800 bg-slate-50 p-2 rounded border border-slate-100 whitespace-pre-wrap font-medium">
+                        {o.falla || 'Sin reporte de falla registrado'}
+                      </p>
                     </div>
-                    <div className="text-right">
-                      <strong className="text-slate-500 block">Presupuesto Estimado</strong>
-                      <span className="text-base font-bold text-teal-800">{formatCurrency(o.presupuesto)}</span>
+
+                    <div>
+                      <strong className="text-slate-700 block uppercase tracking-wider text-[11px] mb-1">
+                        Accesorios / Observaciones de Entrada:
+                      </strong>
+                      <p className="text-slate-700 bg-slate-50 p-2 rounded border border-slate-100 whitespace-pre-wrap">
+                        {o.accesoriosObservaciones || 'Se recibe sin accesorios adicionales'}
+                      </p>
                     </div>
                   </div>
 
+                  {/* Presupuesto y Refacciones */}
+                  <div className="border border-slate-200 rounded-lg p-3 text-xs space-y-3">
+                    <h4 className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
+                      Presupuesto y Refacciones
+                    </h4>
+
+                    {o.presupuestoDesglose && (
+                      <div>
+                        <strong className="text-slate-600 block mb-1">Detalle de Presupuesto / Mano de Obra:</strong>
+                        <p className="text-slate-800 bg-slate-50 p-2 rounded border border-slate-100 font-mono text-[11px] whitespace-pre-wrap">
+                          {o.presupuestoDesglose}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <strong className="text-slate-600 block mb-1">Refacciones Requeridas:</strong>
+                        <p className="text-slate-700 bg-slate-50 p-2 rounded border border-slate-100">
+                          {o.refacciones || 'Sin refacciones especificadas'}
+                        </p>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded border border-slate-200 flex flex-col justify-center text-right">
+                        <span className="text-slate-500 text-[11px] block font-medium">TOTAL PRESUPUESTO</span>
+                        <span className="text-lg font-black text-blue-700 font-mono">
+                          {formatCurrency(o.presupuesto)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Aviso de Política de Taller */}
+                  <div className="bg-rose-50/70 border border-rose-200/70 rounded-lg p-3 text-xs text-rose-800">
+                    <strong className="font-bold mr-1">AVISO DE POLÍTICA Y GARANTÍA:</strong>
+                    <span>En piezas eléctricas no hay devolución, ni garantía. Servicio técnico especializado fuera de garantía de fabricante.</span>
+                  </div>
+
+                  {/* Info Confidencial */}
                   {o.informacionConfidencial && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-900">
-                      <strong>Información Confidencial / Notas Internas:</strong> {o.informacionConfidencial}
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-900">
+                      <strong className="block font-bold mb-0.5">Información Confidencial / Notas Internas:</strong>
+                      <p className="whitespace-pre-wrap">{o.informacionConfidencial}</p>
                     </div>
                   )}
+
+                  {/* Firmas de Conformidad */}
+                  <div className="pt-6 grid grid-cols-2 gap-6 text-center text-xs">
+                    <div>
+                      <div className="border-b border-slate-300 h-10 mb-1"></div>
+                      <span className="font-bold text-slate-800 block text-[11px]">{o.nombreCliente}</span>
+                      <span className="text-[10px] text-slate-400">Firma de Entrega / Conformidad Cliente</span>
+                    </div>
+                    <div>
+                      <div className="border-b border-slate-300 h-10 mb-1"></div>
+                      <span className="font-bold text-slate-800 block text-[11px]">{o.tecnicoAsignado || o.atendio || 'Técnico Especializado'}</span>
+                      <span className="text-[10px] text-slate-400">Técnico / Responsable de Taller</span>
+                    </div>
+                  </div>
                 </div>
               );
             })()}

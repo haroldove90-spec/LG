@@ -177,6 +177,21 @@ export const StorageService = {
   },
   getNextOrdenTallerNumber(): string {
     const list = this.getOrdenesTaller();
+    if (list.length === 0) return '5259';
+
+    // Extract numeric IDs from list
+    const numericValues = list
+      .map((c) => {
+        const clean = (c.numeroOrdenTaller || '').replace(/[^0-9]/g, '');
+        return clean ? parseInt(clean, 10) : 0;
+      })
+      .filter((n) => !isNaN(n) && n > 0);
+
+    if (numericValues.length > 0) {
+      const maxVal = Math.max(...numericValues);
+      return String(maxVal + 1);
+    }
+
     const count = list.length + 1;
     const year = new Date().getFullYear();
     const num = String(count).padStart(3, '0');

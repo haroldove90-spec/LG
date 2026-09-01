@@ -1,6 +1,6 @@
 {
   "name": "Electro Industrias",
-  "description": "Sistema de gestión integral para Electro Industrias: Agenda de contactos y visitas, Citas a clientes (Reportes de servicio) y Cotizaciones de refacciones con exportación a PDF y Excel.",
+  "description": "Sistema de gestión integral para Electro Industrias: Agenda de contactos, Citas a clientes (Reportes de servicio), Cotizaciones de refacciones y Órdenes de taller (Sin garantía) con exportación a PDF, impresión formal y compatibilidad PWA.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

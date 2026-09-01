@@ -85,34 +85,37 @@ export interface Cotizacion extends BaseRecord {
   informacionConfidencial?: string;
 }
 
-// 3. Orden Taller
+// 3. Orden Taller (Sin Garantía)
 export interface OrdenTaller extends BaseRecord {
   // Encabezado y Control
-  numeroOrdenTaller: string; // Autonumérico (ej. OT-2026-001)
-  estatus: StatusType;
-  fechaIngreso: string;
-  atendio: string;
+  numeroOrdenTaller: string; // Ej: 5259 o OT-5259
+  estatus: string; // 'CERRADO/ENTREGADO' | 'EN REPARACION' | 'EN DIAGNOSTICO' | 'EN ESPERA DE REFACCIONES' | 'LISTO PARA ENTREGA' | 'CANCELADO' | StatusType | string
+  fechaIngreso: string; // YYYY-MM-DD
+  atendio: string; // RAUL, ELIZABETH, MARIANA, etc.
   // Datos del Cliente y Ubicación
-  nombreCliente: string;
-  direccion: string;
-  colonia: string;
+  nombreCliente: string; // Ej: OT5259 RAMIRO RIVERA
+  direccion: string; // SATURDINO CAMPOY #602
+  colonia: string; // JESUS GARCIA
   telefono: string;
-  celular: string;
+  celular: string; // 6622111124
   // Datos del Aparato
-  aparato: string;
-  marca: string;
-  modeloCode: string;
-  serie: string;
+  aparato: string; // MICRO-ONDAS, REFRIGERADOR, etc.
+  marca: string; // SAMSUNG, LG, WHIRLPOOL, etc.
+  modeloCode: string; // MG40J5133AT/AX
+  serie: string; // 0AG37WDJ904596J
   // Recepción y Diagnóstico
-  falla: string;
-  accesoriosObservaciones: string;
-  tecnicoAsignado: string;
+  falla: string; // AL CONECTARLO HACE UN RUIDO TIPO CORTO, REVISION GENERAL
+  accesoriosObservaciones: string; // SE RECIBE SIN PLATO Y SIN ARO, Y SIN NINGUN OTRO ACCESORIO...
+  tecnicoAsignado: string; // DAVID GONZALEZ
   // Presupuesto y Partes
-  presupuesto: number;
-  refacciones: string;
-  numeroPedido: string;
-  // Seguridad
-  informacionConfidencial: string; // Área restringida
+  presupuestoDesglose?: string; // Desglose completo de texto / mano de obra
+  subtotal?: number;
+  iva?: number;
+  presupuesto: number; // Monto Total
+  refacciones: string; // Refacciones
+  numeroPedido: string; // # DE PEDIDO
+  // Seguridad y Notas Internas
+  informacionConfidencial: string; // INFORMACION CONFIDENCIAL
 }
 
 // 4. # de Reporte (Citas a Clientes / Servicio en Sitio / Domicilio)
