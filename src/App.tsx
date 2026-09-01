@@ -37,8 +37,8 @@ export default function App() {
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(() => StorageService.getCompanyInfo());
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [tempCompany, setTempCompany] = useState<CompanyInfo>(companyInfo);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLateralDrawerOpen, setIsLateralDrawerOpen] = useState(false);
 
   // PWA Installation state
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -136,7 +136,7 @@ export default function App() {
         '¿Desea restaurar los datos de ejemplo iniciales de Electro Industrias? Se sobrescribirán los cambios no guardados.'
       )
     ) {
-      localStorage.clear();
+      StorageService.resetData();
       window.location.reload();
     }
   };
@@ -147,74 +147,90 @@ export default function App() {
       id: 'agenda' as ModuleType,
       number: '1',
       title: 'Agenda',
+      shortTitle: 'Agenda',
       subtitle: 'Contactos y Programas',
       icon: BookUser,
       count: stats.agendaCount,
+      color: 'blue',
     },
     {
       id: 'reporte_sitio' as ModuleType,
       number: '2',
       title: 'Citas a Clientes (Reportes)',
+      shortTitle: 'Citas en Sitio',
       subtitle: 'Servicio en Sitio & Domicilio',
       icon: CalendarCheck,
       count: stats.reportesCount,
+      color: 'amber',
     },
     {
       id: 'cotizacion' as ModuleType,
       number: '3',
       title: 'Cotizaciones',
+      shortTitle: 'Cotizaciones',
       subtitle: 'Refacciones & Pedidos',
       icon: FileCheck,
       count: stats.cotizacionesCount,
+      color: 'emerald',
     },
     {
       id: 'orden_taller' as ModuleType,
       number: '4',
       title: 'Órdenes de Taller (Sin garantía)',
+      shortTitle: 'Órdenes de Taller',
       subtitle: 'Recepción, Diagnóstico & Presupuesto',
       icon: Wrench,
       count: stats.ordenesCount,
+      color: 'indigo',
+      isNew: true,
     },
   ];
 
   const currentModuleObj = modules.find((m) => m.id === activeModule) || modules[0];
 
-  const toggleSidebar = () => {
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      setIsMobileMenuOpen((prev) => !prev);
-    } else {
-      setIsDesktopSidebarOpen((prev) => !prev);
-    }
+  const openLateralDrawer = () => {
+    setIsLateralDrawerOpen(true);
+  };
+
+  const closeLateralDrawer = () => {
+    setIsLateralDrawerOpen(false);
+  };
+
+  const selectModule = (id: ModuleType) => {
+    setActiveModule(id);
+    setIsLateralDrawerOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] flex text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
-      {/* Bento Grid Left Sidebar (Desktop - Collapsible) */}
+    <div className="min-h-screen bg-[#F1F5F9] flex text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900 relative">
+      {/* ========================================================================= */}
+      {/* 1. DOCKED LATERAL SIDEBAR (DESKTOP & LARGE SCREENS)                      */}
+      {/* ========================================================================= */}
       <aside
         className={`transition-all duration-300 ease-in-out bg-white border-r border-slate-200 flex-col shrink-0 sticky top-0 h-screen overflow-y-auto hidden lg:flex z-30 ${
-          isDesktopSidebarOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden border-r-0'
+          isSidebarOpen ? 'w-72 opacity-100' : 'w-0 opacity-0 overflow-hidden border-r-0 pointer-events-none'
         }`}
       >
         {/* Brand Header */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white text-base font-black shadow-sm ring-2 ring-blue-100 shrink-0">
+            <div className="w-10 h-10 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white text-base font-black shadow-sm ring-2 ring-blue-100 shrink-0">
               <Zap className="w-5 h-5 text-yellow-300 fill-yellow-300" />
             </div>
             <div className="min-w-0">
               <h1 className="text-xs font-black text-slate-900 tracking-tight leading-tight uppercase truncate">
                 Electro Industrias
               </h1>
-              <p className="text-[9px] text-blue-600 uppercase tracking-wider font-bold truncate">
-                Servicio Técnico & PWA
+              <p className="text-[9px] text-blue-600 uppercase tracking-wider font-extrabold truncate">
+                Servicio Técnico Especializado
               </p>
             </div>
           </div>
           <button
             type="button"
-            onClick={() => setIsDesktopSidebarOpen(false)}
+            onClick={() => setIsSidebarOpen(false)}
             className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-            title="Ocultar barra lateral"
+            title="Ocultar barra lateral (deslizar hacia la izquierda)"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -229,47 +245,59 @@ export default function App() {
           </div>
         )}
 
-        {/* Navigation Modules (Bento style items) */}
-        <nav className="flex-1 p-3.5 space-y-1.5">
-          <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Módulos del Sistema (1 al 4)
-          </p>
+        {/* Lateral Navigation Module List */}
+        <nav className="flex-1 p-3 space-y-2">
+          <div className="px-2 pt-1 pb-0.5 flex items-center justify-between">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+              Navegación Lateral (4 Módulos)
+            </span>
+          </div>
+
           {modules.map((mod) => {
             const Icon = mod.icon;
             const isActive = activeModule === mod.id;
             return (
               <button
                 key={mod.id}
-                onClick={() => setActiveModule(mod.id)}
-                className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-all cursor-pointer ${
+                type="button"
+                onClick={() => selectModule(mod.id)}
+                className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer group ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs font-semibold'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent font-medium'
+                    ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-200'
+                    : 'text-slate-700 hover:bg-slate-100/90 border border-slate-200/60 font-medium'
                 }`}
               >
                 <div className="flex items-center gap-2.5 truncate">
                   <div
-                    className={`w-2 h-2 rounded-full shrink-0 transition-colors ${
-                      isActive ? 'bg-blue-600 ring-2 ring-blue-200' : 'bg-slate-300'
+                    className={`p-2 rounded-lg shrink-0 ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
                     }`}
-                  />
-                  <div className={`p-1 rounded-lg shrink-0 ${isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
-                    <Icon className="w-3.5 h-3.5" />
+                  >
+                    <Icon className="w-4 h-4" />
                   </div>
                   <div className="truncate">
-                    <span className="text-xs font-bold block truncate text-slate-900">
-                      #{mod.number}. {mod.title}
-                    </span>
-                    <span className="text-[10px] text-slate-400 block truncate leading-tight">
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-xs font-bold block truncate ${isActive ? 'text-white' : 'text-slate-900'}`}>
+                        #{mod.number}. {mod.title}
+                      </span>
+                      {mod.isNew && (
+                        <span className={`text-[9px] px-1.5 py-0.2 font-black rounded uppercase tracking-wider ${
+                          isActive ? 'bg-yellow-400 text-slate-900' : 'bg-indigo-600 text-white animate-pulse'
+                        }`}>
+                          Nuevo
+                        </span>
+                      )}
+                    </div>
+                    <span className={`text-[10px] block truncate leading-tight ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
                       {mod.subtitle}
                     </span>
                   </div>
                 </div>
                 <span
-                  className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0 ml-1 ${
+                  className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0 ml-1.5 ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-100 text-slate-600 border border-slate-200/60'
+                      ? 'bg-white text-blue-700'
+                      : 'bg-slate-100 text-slate-600 border border-slate-200/80'
                   }`}
                 >
                   {mod.count}
@@ -278,15 +306,15 @@ export default function App() {
             );
           })}
 
-          {/* Tarjeta de Instalación PWA en Sidebar */}
-          <div className="pt-4 mt-4 border-t border-slate-100">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50/70 border border-blue-100/80 rounded-xl p-3 text-xs space-y-2">
+          {/* Tarjeta Directa de Instalación PWA en Barra Lateral */}
+          <div className="pt-3 mt-3 border-t border-slate-100">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50/70 border border-blue-200/80 rounded-xl p-3 text-xs space-y-2">
               <div className="flex items-center gap-1.5 text-blue-900 font-bold">
                 <Smartphone className="w-4 h-4 text-blue-600" />
-                <span>Aplicación Móvil PWA</span>
+                <span>App Móvil & Offline (PWA)</span>
               </div>
               <p className="text-[11px] text-slate-600 leading-snug">
-                Instala Electro Industrias en tu teléfono o computadora para acceso rápido.
+                Instala esta app en tu pantalla de inicio para trabajar con o sin internet.
               </p>
               <button
                 type="button"
@@ -294,22 +322,22 @@ export default function App() {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-98"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>{isInstalled ? 'App Instalada' : 'Instalar App'}</span>
+                <span>{isInstalled ? 'Aplicación Instalada' : 'Instalar en Dispositivo'}</span>
               </button>
             </div>
           </div>
         </nav>
 
-        {/* Bottom Technician & Settings Profile Tile */}
-        <div className="p-3.5 border-t border-slate-100 space-y-2">
-          <div className="flex items-center justify-between px-2 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs border border-blue-200">
+        {/* Sidebar Footer */}
+        <div className="p-3.5 border-t border-slate-100 space-y-2 bg-slate-50/50">
+          <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-white border border-slate-200/80">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-xs">
                 EI
               </div>
-              <div>
-                <p className="text-xs font-bold text-slate-800 leading-none">Electro Industrias</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">Control de Servicio</p>
+              <div className="truncate">
+                <p className="text-xs font-bold text-slate-800 leading-none truncate">Electro Industrias</p>
+                <p className="text-[10px] text-slate-400 mt-0.5 truncate">Sistema de Control</p>
               </div>
             </div>
             <button
@@ -317,7 +345,7 @@ export default function App() {
                 setTempCompany(companyInfo);
                 setIsCompanyModalOpen(true);
               }}
-              className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
               title="Configuración de la Empresa"
             >
               <Settings className="w-4 h-4" />
@@ -327,50 +355,251 @@ export default function App() {
           <div className="flex items-center justify-between text-[11px] px-1 text-slate-400">
             <button
               onClick={handleResetDemoData}
-              className="inline-flex items-center gap-1 hover:text-slate-600 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 hover:text-slate-700 transition-colors cursor-pointer"
             >
               <RefreshCw className="w-3 h-3" />
               <span>Reiniciar Datos</span>
             </button>
-            <span>v4.0 PWA</span>
+            <span>v5.0 PWA</span>
           </div>
         </div>
       </aside>
 
-      {/* Main Container Area */}
+      {/* ========================================================================= */}
+      {/* 2. UNIVERSAL LATERAL SLIDE DRAWER (OPENS LATERALLY FROM THE LEFT)        */}
+      {/* ========================================================================= */}
+      {isLateralDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex animate-in fade-in duration-200">
+          {/* Backdrop semi-transparente */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity cursor-pointer"
+            onClick={closeLateralDrawer}
+            title="Cerrar barra lateral"
+          />
+
+          {/* Panel Lateral que desliza estrictamente de IZQUIERDA a DERECHA */}
+          <div className="relative w-84 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-300 ease-out border-r border-slate-200">
+            {/* Header del Panel Lateral */}
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/90">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xs">
+                  <Zap className="w-5 h-5 text-yellow-300 fill-yellow-300" />
+                </div>
+                <div>
+                  <h2 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                    Electro Industrias
+                  </h2>
+                  <p className="text-[9px] text-blue-600 font-extrabold uppercase tracking-wider">
+                    Navegación Lateral
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={closeLateralDrawer}
+                className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-white rounded-xl transition-colors cursor-pointer border border-slate-200/80 shadow-2xs"
+                aria-label="Cerrar barra lateral"
+                title="Cerrar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Lista Lateral de Módulos (1 al 4) */}
+            <nav className="flex-1 p-3.5 space-y-2 overflow-y-auto">
+              <p className="px-2 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                Módulos del Sistema (Deslizar y Seleccionar)
+              </p>
+              {modules.map((mod) => {
+                const Icon = mod.icon;
+                const isActive = activeModule === mod.id;
+                return (
+                  <button
+                    key={mod.id}
+                    type="button"
+                    onClick={() => selectModule(mod.id)}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-200 font-bold'
+                        : 'text-slate-700 hover:bg-slate-100/90 border border-slate-200/80 font-medium'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 truncate">
+                      <div
+                        className={`p-2 rounded-lg shrink-0 ${
+                          isActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div className="truncate">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-xs font-bold block truncate ${isActive ? 'text-white' : 'text-slate-900'}`}>
+                            #{mod.number}. {mod.title}
+                          </span>
+                          {mod.isNew && (
+                            <span className={`text-[9px] px-1.5 py-0.2 font-black rounded uppercase tracking-wider ${
+                              isActive ? 'bg-yellow-400 text-slate-900' : 'bg-indigo-600 text-white'
+                            }`}>
+                              Nuevo
+                            </span>
+                          )}
+                        </div>
+                        <span className={`text-[10px] block truncate ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
+                          {mod.subtitle}
+                        </span>
+                      </div>
+                    </div>
+                    <span
+                      className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ml-1.5 ${
+                        isActive
+                          ? 'bg-white text-blue-700'
+                          : 'bg-slate-100 text-slate-600 border border-slate-200/60'
+                      }`}
+                    >
+                      {mod.count}
+                    </span>
+                  </button>
+                );
+              })}
+
+              {/* PWA Direct Installation Card */}
+              <div className="pt-3 mt-3 border-t border-slate-100">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50/70 border border-blue-200/80 rounded-xl p-3 text-xs space-y-2">
+                  <div className="flex items-center gap-1.5 text-blue-900 font-bold">
+                    <Smartphone className="w-4 h-4 text-blue-600" />
+                    <span>Instalar en Teléfono / Tablet</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-snug">
+                    Gestiona reportes, cotizaciones y órdenes de taller al instante.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeLateralDrawer();
+                      handleInstallApp();
+                    }}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-98"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>{isInstalled ? 'App Instalada' : 'Instalar Aplicación'}</span>
+                  </button>
+                </div>
+              </div>
+            </nav>
+
+            {/* Lateral Drawer Footer */}
+            <div className="p-3.5 border-t border-slate-100 bg-slate-50/70 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  closeLateralDrawer();
+                  setTempCompany(companyInfo);
+                  setIsCompanyModalOpen(true);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs"
+              >
+                <div className="flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-slate-500" />
+                  <span>Configuración de Empresa</span>
+                </div>
+                <span className="text-[10px] text-slate-400">Editar</span>
+              </button>
+
+              <div className="flex items-center justify-between text-[11px] px-1 text-slate-400">
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeLateralDrawer();
+                    handleResetDemoData();
+                  }}
+                  className="inline-flex items-center gap-1 hover:text-rose-600 transition-colors cursor-pointer"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span>Restaurar Datos</span>
+                </button>
+                <span>v5.0 PWA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 3. MAIN CONTENT CONTAINER                                                 */}
+      {/* ========================================================================= */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header Bar */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-6 lg:px-8 sticky top-0 z-20 shadow-2xs">
-          <div className="flex items-center gap-2.5">
-            {/* Universal Hamburger Menu Button (Works for Desktop, Tablet, Mobile) */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Universal Lateral Drawer Trigger Button (Opens lateral drawer strictly from the left) */}
             <button
               type="button"
-              id="btn-hamburger-menu"
-              onClick={toggleSidebar}
-              className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:border-slate-300 transition-all cursor-pointer flex items-center justify-center shadow-2xs active:scale-95"
-              title={isDesktopSidebarOpen ? "Ocultar menú lateral" : "Mostrar menú lateral"}
-              aria-label="Abrir o cerrar barra lateral de navegación"
+              id="btn-lateral-menu-toggle"
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+                  setIsSidebarOpen((prev) => !prev);
+                } else {
+                  openLateralDrawer();
+                }
+              }}
+              className="p-2 sm:px-3 sm:py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs active:scale-95"
+              title="Abrir barra de navegación lateral"
+              aria-label="Abrir barra de navegación lateral"
             >
-              <Menu className="w-5 h-5 text-slate-700" />
+              <Menu className="w-5 h-5 text-blue-700" />
+              <span className="hidden sm:inline text-xs font-bold text-slate-800">Menú Lateral</span>
             </button>
 
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" />
               <div className="min-w-0">
-                <h2 className="font-bold text-xs sm:text-base text-slate-800 leading-tight truncate">
-                  {currentModuleObj.title}
-                </h2>
-                <p className="text-[10px] text-slate-400 font-medium hidden sm:block truncate">
+                <div className="flex items-center gap-1.5">
+                  <h2 className="font-extrabold text-xs sm:text-base text-slate-900 leading-tight truncate">
+                    #{currentModuleObj.number} {currentModuleObj.title}
+                  </h2>
+                  {currentModuleObj.isNew && (
+                    <span className="bg-indigo-600 text-white text-[9px] px-1.5 py-0.2 font-black rounded uppercase">
+                      Nuevo
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-400 font-medium hidden md:block truncate">
                   {currentModuleObj.subtitle}
                 </p>
               </div>
             </div>
-            <span className="hidden sm:inline-flex bg-blue-50 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase border border-blue-100 shrink-0">
-              Módulo #{currentModuleObj.number}
-            </span>
           </div>
 
-          {/* Quick System Tools Header Action + BOTÓN DE INSTALAR APP */}
+          {/* Quick Direct Module Selector Pills in Header (Always visible for instantaneous 1-click access) */}
+          <div className="hidden xl:flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
+            {modules.map((mod) => {
+              const Icon = mod.icon;
+              const isActive = activeModule === mod.id;
+              return (
+                <button
+                  key={mod.id}
+                  type="button"
+                  onClick={() => selectModule(mod.id)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-white text-blue-700 shadow-xs border border-slate-200'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                  <span>#{mod.number} {mod.shortTitle}</span>
+                  <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-black ${
+                    isActive ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-600'
+                  }`}>
+                    {mod.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Quick System Tools Header Actions */}
           <div className="flex items-center gap-2">
             {/* BOTÓN INSTALAR PWA */}
             <button
@@ -378,7 +607,7 @@ export default function App() {
               onClick={handleInstallApp}
               id="btn-instalar-app-header"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer ring-2 ring-blue-200/50"
-              title="Instalar Electro Industrias en tu teléfono móvil o computadora"
+              title="Instalar Electro Industrias en tu teléfono o computadora"
             >
               <Download className="w-3.5 h-3.5 text-blue-100" />
               <span className="hidden xs:inline">Instalar</span> App
@@ -395,220 +624,39 @@ export default function App() {
               <Settings className="w-3.5 h-3.5 text-slate-500" />
               <span className="hidden sm:inline">Configuración</span>
             </button>
-            <div className="h-4 w-px bg-slate-200 hidden sm:block" />
-            <div className="text-right hidden md:block">
-              <span className="text-[10px] font-bold text-slate-400 block uppercase">Centro Especializado</span>
-              <span className="text-xs font-semibold text-slate-700">Electro Industrias</span>
-            </div>
           </div>
         </header>
 
-        {/* Global Horizontal 4-Module Selector Navigation Banner (Always Visible on All Devices) */}
-        <div className="bg-white border-b border-slate-200 px-3 sm:px-6 py-2.5 shadow-2xs">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider hidden md:inline-block mr-1">
-                Módulos:
-              </span>
-              {modules.map((mod) => {
-                const Icon = mod.icon;
-                const isActive = activeModule === mod.id;
-                return (
-                  <button
-                    key={mod.id}
-                    type="button"
-                    onClick={() => {
-                      setActiveModule(mod.id);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 border ${
-                      isActive
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-200/60'
-                        : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border-slate-200'
-                    }`}
-                  >
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-blue-600'}`} />
-                    <span className="whitespace-nowrap font-bold">
-                      #{mod.number} {mod.title}
-                    </span>
-                    <span
-                      className={`text-[10px] font-black px-1.5 py-0.2 rounded-full ${
-                        isActive ? 'bg-blue-800 text-white' : 'bg-white text-slate-600 border border-slate-200'
-                      }`}
-                    >
-                      {mod.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* If Desktop Sidebar is closed, show button to re-open */}
-            {!isDesktopSidebarOpen && (
-              <button
-                type="button"
-                onClick={() => setIsDesktopSidebarOpen(true)}
-                className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer shrink-0"
-              >
-                <PanelLeftOpen className="w-3.5 h-3.5" />
-                <span>Mostrar Menú Lateral</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Full Slide-Over Navigation Drawer for Mobile and Tablets */}
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden flex animate-in fade-in duration-200">
-            {/* Dark Backdrop */}
-            <div
-              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity cursor-pointer"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-
-            {/* Slide Drawer Panel */}
-            <div className="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-250 border-r border-slate-200">
-              {/* Drawer Header */}
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-gradient-to-tr from-blue-700 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xs">
-                    <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
-                  </div>
-                  <div>
-                    <h2 className="text-xs font-black text-slate-900 uppercase tracking-tight">
-                      Electro Industrias
-                    </h2>
-                    <p className="text-[9px] text-blue-600 font-bold uppercase tracking-wider">
-                      Servicio Técnico & PWA
-                    </p>
-                  </div>
-                </div>
+        {/* Quick Lateral Drawer Trigger Badge when Sidebar is Collapsed on Desktop */}
+        {!isSidebarOpen && (
+          <div className="hidden lg:flex items-center justify-between bg-white border-b border-slate-200 px-6 py-2 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
+            >
+              <PanelLeftOpen className="w-4 h-4" />
+              <span>Deslizar y Mostrar Barra Lateral</span>
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-500">Módulos:</span>
+              {modules.map((mod) => (
                 <button
+                  key={mod.id}
                   type="button"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-white rounded-lg transition-colors cursor-pointer border border-slate-200/60"
-                  aria-label="Cerrar menú"
+                  onClick={() => selectModule(mod.id)}
+                  className={`text-xs font-bold px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                    activeModule === mod.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
                 >
-                  <X className="w-5 h-5" />
+                  #{mod.number} {mod.shortTitle}
                 </button>
-              </div>
-
-              {/* Drawer Navigation List */}
-              <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
-                <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                  Módulos del Sistema (1 al 4)
-                </p>
-                {modules.map((mod) => {
-                  const Icon = mod.icon;
-                  const isActive = activeModule === mod.id;
-                  return (
-                    <button
-                      key={mod.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveModule(mod.id);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs font-semibold'
-                          : 'text-slate-700 hover:bg-slate-50 border border-slate-100 font-medium'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 truncate">
-                        <div
-                          className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                            isActive ? 'bg-blue-600 ring-2 ring-blue-200' : 'bg-slate-300'
-                          }`}
-                        />
-                        <div className="p-1.5 rounded-lg bg-blue-50/80 text-blue-600 shrink-0">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div className="truncate">
-                          <span className="text-xs font-bold block text-slate-900 truncate">
-                            #{mod.number}. {mod.title}
-                          </span>
-                          <span className="text-[10px] text-slate-400 block truncate">
-                            {mod.subtitle}
-                          </span>
-                        </div>
-                      </div>
-                      <span
-                        className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ml-1 ${
-                          isActive
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-slate-100 text-slate-600 border border-slate-200/60'
-                        }`}
-                      >
-                        {mod.count}
-                      </span>
-                    </button>
-                  );
-                })}
-
-                {/* PWA Direct Installation Card */}
-                <div className="pt-3 mt-3 border-t border-slate-100">
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50/70 border border-blue-200/80 rounded-xl p-3 text-xs space-y-2">
-                    <div className="flex items-center gap-1.5 text-blue-900 font-bold">
-                      <Smartphone className="w-4 h-4 text-blue-600" />
-                      <span>Instalar en Teléfono / Tablet</span>
-                    </div>
-                    <p className="text-[11px] text-slate-600 leading-snug">
-                      Accede sin conexión y gestiona órdenes de taller al instante.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        handleInstallApp();
-                      }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-98"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>{isInstalled ? 'App Instalada' : 'Instalar Aplicación'}</span>
-                    </button>
-                  </div>
-                </div>
-              </nav>
-
-              {/* Drawer Footer Actions */}
-              <div className="p-3.5 border-t border-slate-100 bg-slate-50/50 space-y-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setTempCompany(companyInfo);
-                    setIsCompanyModalOpen(true);
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs"
-                >
-                  <div className="flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-slate-500" />
-                    <span>Configuración de Empresa</span>
-                  </div>
-                  <span className="text-[10px] text-slate-400">Editar</span>
-                </button>
-
-                <div className="flex items-center justify-between text-[11px] px-1 text-slate-400">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      handleResetDemoData();
-                    }}
-                    className="inline-flex items-center gap-1 hover:text-rose-600 transition-colors cursor-pointer"
-                  >
-                    <RefreshCw className="w-3 h-3" />
-                    <span>Restaurar Datos</span>
-                  </button>
-                  <span>v4.0 PWA</span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Main Canvas */}
+        {/* Main Canvas with active module */}
         <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-8">
           {activeModule === 'agenda' && (
             <AgendaModule company={companyInfo} />
@@ -636,10 +684,7 @@ export default function App() {
               <button
                 key={mod.id}
                 type="button"
-                onClick={() => {
-                  setActiveModule(mod.id);
-                  setIsMobileMenuOpen(false);
-                }}
+                onClick={() => selectModule(mod.id)}
                 className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all cursor-pointer relative ${
                   isActive
                     ? 'text-blue-600 font-bold bg-blue-50/80'
@@ -661,10 +706,7 @@ export default function App() {
                   )}
                 </div>
                 <span className="text-[10px] mt-0.5 leading-tight tracking-tight text-center truncate max-w-[72px]">
-                  {mod.id === 'agenda' && 'Agenda'}
-                  {mod.id === 'reporte_sitio' && 'Citas Sitio'}
-                  {mod.id === 'cotizacion' && 'Cotizaciones'}
-                  {mod.id === 'orden_taller' && 'Órdenes'}
+                  {mod.shortTitle}
                 </span>
                 {isActive && (
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-0.5" />
@@ -681,7 +723,7 @@ export default function App() {
               <strong className="text-slate-700">Electro Industrias</strong> • {companyInfo.address} • Tel: {companyInfo.phone}
             </p>
             <p className="text-[11px] text-slate-400">
-              Electro Industrias PWA • Agenda, Citas, Cotizaciones y Órdenes de Taller
+              Electro Industrias PWA • Agenda, Citas, Cotizaciones y Órdenes de Taller (Sin garantía)
             </p>
           </div>
         </footer>

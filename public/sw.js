@@ -1,5 +1,5 @@
-// Service Worker for Electro Industrias PWA (v4 - Auto-refresh & Network First)
-const CACHE_NAME = 'electro-industrias-v4';
+// Service Worker for Electro Industrias PWA (v5 - Auto-refresh & Network First)
+const CACHE_NAME = 'electro-industrias-v5';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -40,7 +40,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // For API or non-http requests
+  // Skip websocket or non-http requests
   if (!url.protocol.startsWith('http')) return;
 
   event.respondWith(
@@ -69,3 +69,4 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
