@@ -18,6 +18,12 @@ import {
   Sparkles,
   Zap,
   Info,
+  ChevronLeft,
+  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Layers,
+  Wrench,
 } from 'lucide-react';
 import { ModuleType, CompanyInfo } from './types';
 import { StorageService } from './lib/storage';
@@ -25,7 +31,6 @@ import { AgendaModule } from './components/AgendaModule';
 import { ReporteSitioModule } from './components/ReporteSitioModule';
 import { CotizacionModule } from './components/CotizacionModule';
 import { OrdenTallerModule } from './components/OrdenTallerModule';
-import { Wrench } from 'lucide-react';
 
 export default function App() {
   const [activeModule, setActiveModule] = useState<ModuleType>('agenda');
@@ -33,6 +38,7 @@ export default function App() {
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [tempCompany, setTempCompany] = useState<CompanyInfo>(companyInfo);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
 
   // PWA Installation state
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -173,37 +179,60 @@ export default function App() {
 
   const currentModuleObj = modules.find((m) => m.id === activeModule) || modules[0];
 
+  const toggleSidebar = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setIsMobileMenuOpen((prev) => !prev);
+    } else {
+      setIsDesktopSidebarOpen((prev) => !prev);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
-      {/* Bento Grid Left Sidebar (Desktop) */}
-      <aside className="hidden lg:flex w-64 bg-white border-r border-slate-200 flex-col shrink-0 sticky top-0 h-screen overflow-y-auto">
+      {/* Bento Grid Left Sidebar (Desktop - Collapsible) */}
+      <aside
+        className={`transition-all duration-300 ease-in-out bg-white border-r border-slate-200 flex-col shrink-0 sticky top-0 h-screen overflow-y-auto hidden lg:flex z-30 ${
+          isDesktopSidebarOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden border-r-0'
+        }`}
+      >
         {/* Brand Header */}
-        <div className="p-5 border-b border-slate-100">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white text-base font-black shadow-sm ring-2 ring-blue-100">
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white text-base font-black shadow-sm ring-2 ring-blue-100 shrink-0">
               <Zap className="w-5 h-5 text-yellow-300 fill-yellow-300" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-sm font-black text-slate-900 tracking-tight leading-tight uppercase truncate">
+              <h1 className="text-xs font-black text-slate-900 tracking-tight leading-tight uppercase truncate">
                 Electro Industrias
               </h1>
-              <p className="text-[10px] text-blue-600 uppercase tracking-wider font-bold">
+              <p className="text-[9px] text-blue-600 uppercase tracking-wider font-bold truncate">
                 Servicio Técnico & PWA
               </p>
             </div>
           </div>
-          {companyInfo.authorizedCenter && (
-            <div className="mt-3 inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 border border-slate-200 rounded text-[10px] font-semibold text-slate-600 uppercase">
-              <Shield className="w-3 h-3 text-blue-600" />
-              <span className="truncate max-w-[190px]">{companyInfo.authorizedCenter}</span>
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={() => setIsDesktopSidebarOpen(false)}
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            title="Ocultar barra lateral"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
         </div>
+
+        {companyInfo.authorizedCenter && (
+          <div className="px-4 py-2 bg-slate-50/80 border-b border-slate-100">
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-semibold text-slate-600 uppercase w-full">
+              <Shield className="w-3 h-3 text-blue-600 shrink-0" />
+              <span className="truncate">{companyInfo.authorizedCenter}</span>
+            </div>
+          </div>
+        )}
 
         {/* Navigation Modules (Bento style items) */}
         <nav className="flex-1 p-3.5 space-y-1.5">
           <p className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Módulos Principales
+            Módulos del Sistema (1 al 4)
           </p>
           {modules.map((mod) => {
             const Icon = mod.icon;
@@ -214,26 +243,33 @@ export default function App() {
                 onClick={() => setActiveModule(mod.id)}
                 className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700 border border-blue-100 shadow-2xs font-semibold'
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs font-semibold'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent font-medium'
                 }`}
               >
                 <div className="flex items-center gap-2.5 truncate">
                   <div
                     className={`w-2 h-2 rounded-full shrink-0 transition-colors ${
-                      isActive ? 'bg-blue-600' : 'bg-slate-300'
+                      isActive ? 'bg-blue-600 ring-2 ring-blue-200' : 'bg-slate-300'
                     }`}
                   />
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                  <div className={`p-1 rounded-lg shrink-0 ${isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
                   <div className="truncate">
-                    <span className="text-xs block truncate">{mod.title}</span>
+                    <span className="text-xs font-bold block truncate text-slate-900">
+                      #{mod.number}. {mod.title}
+                    </span>
+                    <span className="text-[10px] text-slate-400 block truncate leading-tight">
+                      {mod.subtitle}
+                    </span>
                   </div>
                 </div>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                  className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0 ml-1 ${
                     isActive
                       ? 'bg-blue-600 text-white'
-                      : 'bg-slate-100 text-slate-500'
+                      : 'bg-slate-100 text-slate-600 border border-slate-200/60'
                   }`}
                 >
                   {mod.count}
@@ -296,7 +332,7 @@ export default function App() {
               <RefreshCw className="w-3 h-3" />
               <span>Reiniciar Datos</span>
             </button>
-            <span>v3.0 PWA</span>
+            <span>v4.0 PWA</span>
           </div>
         </div>
       </aside>
@@ -306,22 +342,16 @@ export default function App() {
         {/* Top Header Bar */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-6 lg:px-8 sticky top-0 z-20 shadow-2xs">
           <div className="flex items-center gap-2.5">
+            {/* Universal Hamburger Menu Button (Works for Desktop, Tablet, Mobile) */}
             <button
               type="button"
               id="btn-hamburger-menu"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`lg:hidden p-2 rounded-xl border transition-all cursor-pointer ${
-                isMobileMenuOpen
-                  ? 'bg-blue-50 text-blue-700 border-blue-200 ring-2 ring-blue-100'
-                  : 'text-slate-700 bg-slate-50 hover:bg-slate-100 border-slate-200'
-              }`}
-              aria-label="Abrir o cerrar menú de navegación"
+              onClick={toggleSidebar}
+              className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:border-slate-300 transition-all cursor-pointer flex items-center justify-center shadow-2xs active:scale-95"
+              title={isDesktopSidebarOpen ? "Ocultar menú lateral" : "Mostrar menú lateral"}
+              aria-label="Abrir o cerrar barra lateral de navegación"
             >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5 text-blue-700" />
-              ) : (
-                <Menu className="w-5 h-5 text-slate-700" />
-              )}
+              <Menu className="w-5 h-5 text-slate-700" />
             </button>
 
             <div className="flex items-center gap-2 min-w-0">
@@ -373,39 +403,58 @@ export default function App() {
           </div>
         </header>
 
-        {/* Quick Module Switcher Pill Bar for Mobile & Tablets (Always visible below header) */}
-        <div className="lg:hidden bg-slate-100/90 border-b border-slate-200 px-2 py-1.5 overflow-x-auto no-scrollbar flex items-center gap-1.5 sticky top-16 z-15 backdrop-blur-xs">
-          {modules.map((mod) => {
-            const Icon = mod.icon;
-            const isActive = activeModule === mod.id;
-            return (
+        {/* Global Horizontal 4-Module Selector Navigation Banner (Always Visible on All Devices) */}
+        <div className="bg-white border-b border-slate-200 px-3 sm:px-6 py-2.5 shadow-2xs">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider hidden md:inline-block mr-1">
+                Módulos:
+              </span>
+              {modules.map((mod) => {
+                const Icon = mod.icon;
+                const isActive = activeModule === mod.id;
+                return (
+                  <button
+                    key={mod.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveModule(mod.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 border ${
+                      isActive
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-200/60'
+                        : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border-slate-200'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-blue-600'}`} />
+                    <span className="whitespace-nowrap font-bold">
+                      #{mod.number} {mod.title}
+                    </span>
+                    <span
+                      className={`text-[10px] font-black px-1.5 py-0.2 rounded-full ${
+                        isActive ? 'bg-blue-800 text-white' : 'bg-white text-slate-600 border border-slate-200'
+                      }`}
+                    >
+                      {mod.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* If Desktop Sidebar is closed, show button to re-open */}
+            {!isDesktopSidebarOpen && (
               <button
-                key={mod.id}
                 type="button"
-                onClick={() => {
-                  setActiveModule(mod.id);
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200/80'
-                }`}
+                onClick={() => setIsDesktopSidebarOpen(true)}
+                className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer shrink-0"
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-blue-600'}`} />
-                <span className="whitespace-nowrap">
-                  #{mod.number} {mod.id === 'orden_taller' ? 'Órdenes Taller' : mod.title.split(' ')[0]}
-                </span>
-                <span
-                  className={`text-[9px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                    isActive ? 'bg-blue-800 text-white' : 'bg-slate-100 text-slate-600'
-                  }`}
-                >
-                  {mod.count}
-                </span>
+                <PanelLeftOpen className="w-3.5 h-3.5" />
+                <span>Mostrar Menú Lateral</span>
               </button>
-            );
-          })}
+            )}
+          </div>
         </div>
 
         {/* Full Slide-Over Navigation Drawer for Mobile and Tablets */}
@@ -552,7 +601,7 @@ export default function App() {
                     <RefreshCw className="w-3 h-3" />
                     <span>Restaurar Datos</span>
                   </button>
-                  <span>v3.0 PWA</span>
+                  <span>v4.0 PWA</span>
                 </div>
               </div>
             </div>

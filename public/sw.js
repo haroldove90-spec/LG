@@ -1,5 +1,5 @@
-// Service Worker for Electro Industrias PWA
-const CACHE_NAME = 'electro-industrias-cache-v1';
+// Service Worker for Electro Industrias PWA (v4 - Auto-refresh & Network First)
+const CACHE_NAME = 'electro-industrias-v4';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -9,14 +9,14 @@ const PRECACHE_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn('Pre-caching assets warning:', err);
+        console.warn('Pre-caching assets notice:', err);
       });
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -25,40 +25,47 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((cacheName) => cacheName !== CACHE_NAME)
-          .map((cacheName) => caches.delete(cacheName))
+          .map((cacheName) => {
+            console.log('Purging old cache:', cacheName);
+            return caches.delete(cacheName);
+          })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
+// Network-First Strategy for updated code and SPA assets
 self.addEventListener('fetch', (event) => {
-  // Only intercept GET requests
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+
+  // For API or non-http requests
+  if (!url.protocol.startsWith('http')) return;
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request)
-        .then((response) => {
-          // If valid response, clone and cache it
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          const responseToCache = response.clone();
+    fetch(event.request)
+      .then((networkResponse) => {
+        // If valid response, update cache in background
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
-          return response;
-        })
-        .catch(() => {
-          // Fallback for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
-          }
-        });
-    })
+        }
+        return networkResponse;
+      })
+      .catch(async () => {
+        // If network fails (offline), try cache
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // Fallback for navigation requests to SPA index
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
+        return new Response('Offline', { status: 503, statusText: 'Offline' });
+      })
   );
 });
