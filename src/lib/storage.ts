@@ -123,6 +123,21 @@ export const StorageService = {
   },
   getNextCotizacionNumber(): string {
     const list = this.getCotizaciones();
+    if (list.length === 0) return '8292';
+    
+    // Extract numeric IDs from list
+    const numericValues = list
+      .map((c) => {
+        const clean = (c.numeroCotizacion || '').replace(/[^0-9]/g, '');
+        return clean ? parseInt(clean, 10) : 0;
+      })
+      .filter((n) => !isNaN(n) && n > 0);
+
+    if (numericValues.length > 0) {
+      const maxVal = Math.max(...numericValues);
+      return String(maxVal + 1);
+    }
+
     const count = list.length + 1;
     const year = new Date().getFullYear();
     const num = String(count).padStart(3, '0');

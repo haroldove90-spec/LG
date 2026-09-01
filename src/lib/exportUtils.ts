@@ -237,69 +237,99 @@ export const ExportService = {
         ['Fecha de Pedido:', item.fechaPedido || 'N/A', 'Estatus Cotización:', item.estatus || 'N/A'],
         ['Atendió:', item.atendio || 'N/A', 'Referencia (REF):', item.referenciaRef || 'N/A'],
         ['Nombre del Cliente:', item.nombreCliente || 'N/A', 'Teléfono / Celular:', `${item.telefono || ''} ${item.celular ? '/ ' + item.celular : ''}`],
-        ['Aparato:', item.aparato || 'N/A', 'Marca / Fabricante:', item.marca || 'N/A'],
-        ['Modelo (Requerido):', item.modelo || 'N/A', 'Número de Serie:', item.serie || 'N/A'],
+        ['Email Contacto:', item.email || 'N/A', 'Aparato / Equipo:', item.aparato || 'N/A'],
+        ['Marca / Fabricante:', item.marca || 'N/A', 'Modelo (Requerido):', item.modelo || 'N/A'],
+        ['Número de Serie:', item.serie || 'N/A', '', ''],
       ],
     });
 
-    startY = (doc as any).lastAutoTable.finalY + 6;
+    startY = (doc as any).lastAutoTable.finalY + 4;
 
     // Detalle de la Refacción & Costo
     autoTable(doc, {
       startY,
       theme: 'grid',
-      headStyles: { fillColor: PRIMARY_COLOR, textColor: 255, fontStyle: 'bold', fontSize: 9 },
-      styles: { fontSize: 8.5, cellPadding: 3, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
-      head: [['Nombre o Número de Parte Solicitada', 'Importe Cotizado']],
-      columnStyles: {
-        0: { cellWidth: 136 },
-        1: { cellWidth: 50, halign: 'right', fontStyle: 'bold', textColor: ACCENT_COLOR },
-      },
-      body: [[item.nombreNumeroParte || 'Sin descripción de pieza', formatCurrency(item.costoRefaccion)]],
+      headStyles: { fillColor: PRIMARY_COLOR, textColor: 255, fontStyle: 'bold', fontSize: 8.5 },
+      styles: { fontSize: 8, cellPadding: 3, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
+      head: [['Nombre o Número de Parte Solicitada']],
+      body: [[item.nombreNumeroParte || 'Sin descripción de pieza']],
     });
 
-    startY = (doc as any).lastAutoTable.finalY + 5;
+    startY = (doc as any).lastAutoTable.finalY + 3;
 
-    // Política de Garantía (Box destacada)
-    doc.setFillColor(254, 242, 242);
-    doc.setDrawColor(248, 113, 113);
-    doc.roundedRect(14, startY, pageWidth - 28, 14, 2, 2, 'FD');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.setTextColor(185, 28, 28);
-    doc.text('AVISO DE POLÍTICA Y GARANTÍA:', 18, startY + 5.5);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(153, 27, 27);
-    doc.text(item.notaPolitica || 'En piezas eléctricas no hay devolución, ni garantía', 18, startY + 10.5);
-
-    startY += 19;
-
-    // Detalles de Operación y Pedido
+    // Desglose Financiero (Subtotal, IVA, Total)
     autoTable(doc, {
       startY,
-      theme: 'grid',
-      headStyles: { fillColor: [71, 85, 105], textColor: 255, fontStyle: 'bold', fontSize: 8.5 },
-      styles: { fontSize: 8, cellPadding: 3, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
-      head: [['Detalles de la Operación y Logística de Importación']],
-      body: [[item.detallesOperacion || 'N/A']],
+      theme: 'plain',
+      styles: { fontSize: 8, cellPadding: 2 },
+      columnStyles: {
+        0: { fontStyle: 'bold', cellWidth: 40, fillColor: [241, 245, 249] },
+        1: { cellWidth: 50, halign: 'right', fontStyle: 'bold' },
+        2: { fontStyle: 'bold', cellWidth: 45, fillColor: [241, 245, 249] },
+        3: { cellWidth: 51, halign: 'right', fontStyle: 'bold', textColor: ACCENT_COLOR },
+      },
+      body: [
+        ['Subtotal Refacción:', formatCurrency(item.subtotal || 0), 'TOTAL FINAL:', formatCurrency(item.costoRefaccion || 0)],
+        ['I.V.A. (16%):', formatCurrency(item.iva || 0), 'Condición:', item.estatus || 'Cotizado'],
+      ],
     });
 
     startY = (doc as any).lastAutoTable.finalY + 4;
 
-    autoTable(doc, {
-      startY,
-      theme: 'grid',
-      headStyles: { fillColor: [100, 116, 139], textColor: 255, fontStyle: 'bold', fontSize: 8.5 },
-      styles: { fontSize: 8, cellPadding: 3, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
-      head: [['Datos del Pedido y Entrega']],
-      body: [[item.datosPedido || 'N/A']],
-    });
+    // Política de Garantía (Box destacada)
+    doc.setFillColor(254, 242, 242);
+    doc.setDrawColor(248, 113, 113);
+    doc.roundedRect(14, startY, pageWidth - 28, 12, 2, 2, 'FD');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(185, 28, 28);
+    doc.text('AVISO DE POLÍTICA Y GARANTÍA:', 18, startY + 4.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(153, 27, 27);
+    doc.text(item.notaPolitica || 'En piezas eléctricas no hay devolución, ni garantía', 18, startY + 8.5);
 
-    startY = (doc as any).lastAutoTable.finalY + 6;
+    startY += 16;
+
+    // Detalles de Operación y Pedido
+    if (item.detallesOperacion) {
+      autoTable(doc, {
+        startY,
+        theme: 'grid',
+        headStyles: { fillColor: [71, 85, 105], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        styles: { fontSize: 7.5, cellPadding: 2.5, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
+        head: [['Detalles de la Operación y Pagos']],
+        body: [[item.detallesOperacion]],
+      });
+      startY = (doc as any).lastAutoTable.finalY + 3;
+    }
+
+    if (item.datosPedido) {
+      autoTable(doc, {
+        startY,
+        theme: 'grid',
+        headStyles: { fillColor: [100, 116, 139], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        styles: { fontSize: 7.5, cellPadding: 2.5, textColor: PRIMARY_COLOR, lineColor: BORDER_COLOR },
+        head: [['Datos del Pedido y Entrega']],
+        body: [[item.datosPedido]],
+      });
+      startY = (doc as any).lastAutoTable.finalY + 3;
+    }
+
+    if (item.informacionConfidencial) {
+      autoTable(doc, {
+        startY,
+        theme: 'grid',
+        headStyles: { fillColor: [15, 118, 110], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        styles: { fontSize: 7.5, cellPadding: 2.5, textColor: [15, 118, 110], fillColor: [240, 253, 250] },
+        head: [['Información Confidencial / Notas Internas']],
+        body: [[item.informacionConfidencial]],
+      });
+      startY = (doc as any).lastAutoTable.finalY + 3;
+    }
 
     // Signatures
-    const signY = Math.max(startY + 15, 230);
+    const signY = Math.max(startY + 10, 230);
     doc.setDrawColor(148, 163, 184);
     doc.line(25, signY, 85, signY);
     doc.line(125, signY, 185, signY);
@@ -1016,6 +1046,7 @@ export const ExportService = {
           { 'CAMPO': 'NOMBRE DEL CLIENTE', 'VALOR': c.nombreCliente },
           { 'CAMPO': 'TELÉFONO', 'VALOR': c.telefono },
           { 'CAMPO': 'CELULAR', 'VALOR': c.celular },
+          { 'CAMPO': 'EMAIL', 'VALOR': c.email || '' },
           { 'CAMPO': 'APARATO', 'VALOR': c.aparato },
           { 'CAMPO': 'MARCA', 'VALOR': c.marca },
           { 'CAMPO': 'MODELO', 'VALOR': c.modelo },
@@ -1023,8 +1054,11 @@ export const ExportService = {
           { 'CAMPO': 'NOMBRE O NO. DE PARTE', 'VALOR': c.nombreNumeroParte },
           { 'CAMPO': 'NOTA DE POLÍTICA', 'VALOR': c.notaPolitica },
           { 'CAMPO': 'DETALLES DE LA OPERACIÓN', 'VALOR': c.detallesOperacion },
+          { 'CAMPO': 'SUBTOTAL ($)', 'VALOR': c.subtotal || 0 },
+          { 'CAMPO': 'IVA ($)', 'VALOR': c.iva || 0 },
           { 'CAMPO': 'COSTO DE LA REFACCIÓN ($)', 'VALOR': c.costoRefaccion },
           { 'CAMPO': 'DATOS DEL PEDIDO', 'VALOR': c.datosPedido },
+          { 'CAMPO': 'INFORMACIÓN CONFIDENCIAL', 'VALOR': c.informacionConfidencial || '' },
         ];
         break;
       }

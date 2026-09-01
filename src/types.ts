@@ -57,15 +57,16 @@ export interface FolioSeguimiento extends BaseRecord {
 // 2. No. Cotización
 export interface Cotizacion extends BaseRecord {
   // Encabezado y Control
-  numeroCotizacion: string; // Autonumérico (ej. COT-2026-001)
+  numeroCotizacion: string; // Ej. 8292 o COT-2026-001
   referenciaRef: string;
-  estatus: StatusType;
+  estatus: string; // 'DEPOSITO EL TOTAL' | 'ANTICIPO' | 'COTIZADO' | 'PENDIENTE' | 'AUTORIZADO' | 'ENTREGADO / CERRADO' | 'CANCELADO' | StatusType | string
   fechaPedido: string;
   atendio: string;
   // Datos del Cliente
   nombreCliente: string;
   telefono: string;
   celular: string;
+  email?: string;
   // Datos del Aparato
   aparato: string;
   marca: string;
@@ -75,8 +76,13 @@ export interface Cotizacion extends BaseRecord {
   nombreNumeroParte: string;
   notaPolitica: string; // Fijo: "En piezas eléctricas no hay devolución, ni garantía"
   detallesOperacion: string;
-  costoRefaccion: number;
+  // Costos y Montos
+  subtotal?: number;
+  iva?: number;
+  costoRefaccion: number; // Total
+  // Pedido e Información
   datosPedido: string;
+  informacionConfidencial?: string;
 }
 
 // 3. Orden Taller
