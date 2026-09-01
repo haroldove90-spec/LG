@@ -1,15 +1,15 @@
 import { CompanyInfo, FolioSeguimiento, Cotizacion, OrdenTaller, ReporteSitio, HojaServicio, AgendaContact } from '../types';
 
 export const DEFAULT_COMPANY: CompanyInfo = {
-  name: 'SERVICIOS TÉCNICOS INTEGRALES S.A. DE C.V.',
-  commercialName: 'ServiTrack Pro - Centro Autorizado',
-  rfc: 'STI-210405-AB3',
+  name: 'ELECTRO INDUSTRIAS S.A. DE C.V.',
+  commercialName: 'Electro Industrias - Servicio Especializado',
+  rfc: 'EIN-210405-AB3',
   phone: '(55) 5482-9000 / 800-737-8422',
-  email: 'contacto@servitrack.pro',
+  email: 'contacto@electroindustrias.com',
   address: 'Av. Insurgentes Sur 1450, Col. Actipan',
   city: 'Ciudad de México, CP 03230',
-  website: 'www.servitrack.pro',
-  authorizedCenter: 'Centro de Servicio Master Autorizado LG, Samsung, Mabe y Whirlpool',
+  website: 'www.electroindustrias.com',
+  authorizedCenter: 'Centro de Servicio Especializado y Soporte Técnico',
 };
 
 export const STAFF_LIST = [

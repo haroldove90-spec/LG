@@ -1,0 +1,25 @@
+{
+  "name": "Electro Industrias",
+  "short_name": "Electro Ind",
+  "description": "Sistema de gestión y servicio técnico para Electro Industrias: Agenda, Citas y Cotizaciones",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
