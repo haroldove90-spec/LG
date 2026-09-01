@@ -569,70 +569,94 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
       .replace(/[^a-z0-9]/g, '');
   };
 
-  // Filtrado de contactos multi-campo
+  // Filtrado de contactos multi-campo con máxima precisión para IDs numéricos
   const filteredContacts = useMemo(() => {
     const rawQuery = searchQuery.trim();
     if (!rawQuery) return contacts;
 
     const normQuery = normalizeText(rawQuery);
-    const cleanQuery = stripSpecialChars(rawQuery);
+    const cleanDigits = rawQuery.replace(/\D/g, '');
+    const isExplicitIdSearch = rawQuery.startsWith('#') || /^id\s*[:#]?\s*\d+/i.test(rawQuery);
 
-    return contacts.filter((c) => {
-      // 1. Coincidencia por ID (ej. 1560 o #1560)
-      const rawId = (c.agendaId || '').trim();
-      const idWithHash = `#${rawId}`.toLowerCase();
-      const cleanId = stripSpecialChars(rawId);
+    // Caso 1: Búsqueda explícita de ID (ej. "#2", "ID: 2", "id #3", "#1560")
+    if (isExplicitIdSearch) {
+      const targetId = rawQuery.replace(/[^0-9]/g, '');
+      if (!targetId) return [];
+      return contacts.filter((c) => {
+        const cId = (c.agendaId || '').trim();
+        return cId === targetId || parseInt(cId, 10) === parseInt(targetId, 10);
+      });
+    }
 
-      if (
-        rawId === rawQuery ||
-        rawId.toLowerCase().includes(normQuery) ||
-        idWithHash.includes(normQuery) ||
-        (cleanQuery && cleanId.includes(cleanQuery)) ||
-        (cleanQuery && cleanId === cleanQuery)
-      ) {
-        return true;
+    // Caso 2: Búsqueda puramente numérica (ej. "2", "3", "1560")
+    const isPureDigits = /^\d+$/.test(rawQuery);
+    if (isPureDigits) {
+      // Si son 1 a 3 dígitos (ej. "2", "3", "25", "102"):
+      // Es una búsqueda intencionada de ID del cliente o Extensión directa
+      if (rawQuery.length <= 3) {
+        return contacts.filter((c) => {
+          const cId = (c.agendaId || '').trim();
+          const ext = (c.extension || '').trim();
+
+          // Coincidencia exacta de ID del cliente
+          if (cId === rawQuery || parseInt(cId, 10) === parseInt(rawQuery, 10)) {
+            return true;
+          }
+          // O coincidencia exacta de Extensión
+          if (ext === rawQuery) {
+            return true;
+          }
+          return false;
+        });
       }
 
-      // 2. Coincidencia en campos de texto
-      const normNombre = normalizeText(c.nombre);
-      const normOrg = normalizeText(c.organizacion);
-      const normTel = normalizeText(c.telefono);
-      const normExt = normalizeText(c.extension);
-      const normMovil = normalizeText(c.movil);
-      const normFax = normalizeText(c.fax);
-      const normEmail = normalizeText(c.correoElectronico);
-      const normCargo = normalizeText(c.cargo);
-      const normInfo = normalizeText(c.informacionAdicional);
+      // Si son 4 o más dígitos (ej. "1560", "4455", "6622134455"):
+      // Puede ser un ID de 4 dígitos o terminación de teléfono
+      return contacts.filter((c) => {
+        const cId = (c.agendaId || '').trim();
+        if (cId === rawQuery || parseInt(cId, 10) === parseInt(rawQuery, 10)) {
+          return true;
+        }
 
-      if (
-        normNombre.includes(normQuery) ||
-        normOrg.includes(normQuery) ||
-        normTel.includes(normQuery) ||
-        normExt.includes(normQuery) ||
-        normMovil.includes(normQuery) ||
-        normFax.includes(normQuery) ||
-        normEmail.includes(normQuery) ||
-        normCargo.includes(normQuery) ||
-        normInfo.includes(normQuery)
-      ) {
-        return true;
-      }
+        // Búsqueda en teléfonos (solo con 4 o más dígitos para evitar falsos positivos)
+        const cleanTel = (c.telefono || '').replace(/\D/g, '');
+        const cleanMovil = (c.movil || '').replace(/\D/g, '');
+        const cleanFax = (c.fax || '').replace(/\D/g, '');
 
-      // 3. Coincidencia limpia en números telefónicos
-      if (cleanQuery.length >= 3) {
-        const cleanTel = stripSpecialChars(c.telefono);
-        const cleanMovil = stripSpecialChars(c.movil);
-        const cleanExt = stripSpecialChars(c.extension);
         if (
-          cleanTel.includes(cleanQuery) ||
-          cleanMovil.includes(cleanQuery) ||
-          cleanExt.includes(cleanQuery)
+          (cleanTel && cleanTel.includes(cleanDigits)) ||
+          (cleanMovil && cleanMovil.includes(cleanDigits)) ||
+          (cleanFax && cleanFax.includes(cleanDigits))
         ) {
           return true;
         }
+
+        return false;
+      });
+    }
+
+    // Caso 3: Búsqueda de Texto General (Nombres, Empresa, Correo, Cargo, Notas)
+    const tokens = normQuery.split(/\s+/).filter(Boolean);
+
+    return contacts.filter((c) => {
+      // Coincidencia de ID en texto (ej. "id #2" o "2")
+      const cId = (c.agendaId || '').trim().toLowerCase();
+      if (cId === normQuery || `#${cId}` === normQuery) {
+        return true;
       }
 
-      return false;
+      const searchableString = [
+        c.nombre,
+        c.organizacion,
+        c.correoElectronico,
+        c.cargo,
+        c.informacionAdicional,
+      ]
+        .map((field) => normalizeText(field || ''))
+        .join(' ');
+
+      // Todos los tokens deben coincidir en la ficha del contacto
+      return tokens.every((token) => searchableString.includes(token));
     });
   }, [contacts, searchQuery]);
 
@@ -1127,16 +1151,29 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
             {/* Barra de Resumen de Resultados y Paginación */}
             <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 pt-2 border-t border-slate-100 gap-2">
               <div className="flex items-center gap-2">
-                <span>
-                  Mostrando{' '}
-                  <b className="text-slate-900">
-                    {totalItems > 0 ? startIndex + 1 : 0} - {endIndex}
-                  </b>{' '}
-                  de <b className="text-slate-900">{totalItems}</b> registros
-                </span>
+                {totalItems === 0 && searchQuery ? (
+                  <span className="text-rose-600 font-bold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 inline-block animate-ping"></span>
+                    <span>0 registros encontrados</span>
+                  </span>
+                ) : (
+                  <span>
+                    Mostrando{' '}
+                    <b className="text-slate-900">
+                      {totalItems > 0 ? startIndex + 1 : 0} - {endIndex}
+                    </b>{' '}
+                    de <b className="text-slate-900">{totalItems}</b> registros
+                  </span>
+                )}
                 {searchQuery && (
-                  <span className="text-emerald-800 font-semibold bg-emerald-100 px-2 py-0.5 rounded-md text-[11px]">
-                    Filtro: "{searchQuery}"
+                  <span className={`font-semibold px-2 py-0.5 rounded-md text-[11px] ${
+                    totalItems === 0 
+                      ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                      : 'bg-emerald-100 text-emerald-800'
+                  }`}>
+                    {/^\d+$/.test(searchQuery.trim()) || searchQuery.trim().startsWith('#')
+                      ? `ID: #${searchQuery.replace(/[^0-9]/g, '') || searchQuery.trim()}`
+                      : `Filtro: "${searchQuery}"`}
                   </span>
                 )}
               </div>
@@ -1178,33 +1215,88 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
             </div>
           )}
 
-          {/* Listado de Contactos en el Directorio */}
+          {/* Listado de Contactos en el Directorio / Mensaje Sin Resultados */}
           {totalItems === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-12 text-center shadow-xs">
-              <BookUser className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <h3 className="text-base font-bold text-slate-800">No se encontraron registros</h3>
-              <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-                {searchQuery
-                  ? `No hay coincidencias para "${searchQuery}". Intenta con otros términos como el número Id, nombre, teléfono o limpia el buscador.`
-                  : 'La agenda está vacía. Haz clic en "Registrar Nuevo Cliente" para dar de alta el primero.'}
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="w-full sm:w-auto px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors cursor-pointer"
-                  >
-                    Limpiar Buscador
-                  </button>
+              <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3.5 border border-slate-200">
+                {searchQuery ? (
+                  <Search className="w-7 h-7 text-slate-400" />
+                ) : (
+                  <BookUser className="w-7 h-7 text-slate-400" />
                 )}
-                <button
-                  onClick={handleStartNewRegistration}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium text-xs hover:bg-emerald-700 cursor-pointer shadow-xs"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  <span>Ir al Formulario en Blanco</span>
-                </button>
               </div>
+
+              {searchQuery ? (
+                <>
+                  <div className="inline-block bg-slate-100 text-slate-700 text-xs font-mono font-bold px-3 py-1 rounded-full mb-2">
+                    {/^\d+$/.test(searchQuery.trim()) || searchQuery.trim().startsWith('#')
+                      ? `Búsqueda por ID #${searchQuery.replace(/[^0-9]/g, '') || searchQuery.trim()}`
+                      : `Búsqueda: "${searchQuery}"`}
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 tracking-tight">
+                    {/^\d+$/.test(searchQuery.trim()) || searchQuery.trim().startsWith('#')
+                      ? `Sin resultados para el ID #${searchQuery.replace(/[^0-9]/g, '') || searchQuery.trim()}`
+                      : `Sin resultados para "${searchQuery}"`}
+                  </h3>
+                  <p className="text-sm text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
+                    {/^\d+$/.test(searchQuery.trim()) || searchQuery.trim().startsWith('#')
+                      ? `No existe ningún registro o cliente con el Id #${searchQuery.replace(/[^0-9]/g, '') || searchQuery.trim()} en la agenda. Puedes verificar el número, limpiar la búsqueda o dar de alta un nuevo cliente con este ID.`
+                      : `No se encontraron coincidencias para "${searchQuery}". Intenta con otros términos como nombre, organización o limpia el buscador para ver todos los contactos.`}
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 mt-5">
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold text-xs transition-colors cursor-pointer border border-slate-300/80 flex items-center justify-center gap-2"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Limpiar Buscador (Ver Todos)</span>
+                    </button>
+
+                    {/^\d+$/.test(searchQuery.trim()) || searchQuery.trim().startsWith('#') ? (
+                      <button
+                        onClick={() => {
+                          const targetId = searchQuery.replace(/[^0-9]/g, '') || searchQuery.trim();
+                          setEditingItem(null);
+                          setFormData({
+                            ...getBlankFormState(),
+                            agendaId: targetId,
+                          });
+                          setMainView('create');
+                          setSearchQuery('');
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 cursor-pointer shadow-xs transition-all"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        <span>Registrar Cliente con ID #{searchQuery.replace(/[^0-9]/g, '') || searchQuery.trim()}</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleStartNewRegistration}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 cursor-pointer shadow-xs transition-all"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        <span>Ir al Formulario en Blanco</span>
+                      </button>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-base font-bold text-slate-800">La agenda está vacía</h3>
+                  <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+                    Aún no hay clientes registrados. Haz clic en el botón para crear el primer registro en el formulario.
+                  </p>
+                  <div className="mt-4">
+                    <button
+                      onClick={handleStartNewRegistration}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 cursor-pointer shadow-xs transition-all"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>+ Registrar Primer Cliente</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ) : viewMode === 'horizontal' ? (
             /* ========================================================================= */
