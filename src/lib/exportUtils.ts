@@ -27,6 +27,67 @@ const ACCENT_COLOR: [number, number, number] = [2, 132, 199]; // sky-600
 const GRAY_BG: [number, number, number] = [248, 250, 252]; // slate-50
 const BORDER_COLOR: [number, number, number] = [226, 232, 240]; // slate-200
 
+// Helper para agregar evidencias fotográficas en una cuadrícula horizontal de 4 columnas
+const addEvidencePhotosToPdf = (doc: jsPDF, evidencias: string[] | undefined, startY: number): number => {
+  if (!evidencias || evidencias.length === 0) return startY;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 14;
+  const availableWidth = pageWidth - margin * 2;
+  const cols = 4;
+  const gap = 3;
+  const photoWidth = (availableWidth - gap * (cols - 1)) / cols; // ~44mm
+  const photoHeight = 30;
+
+  let currentY = startY;
+
+  // Si no cabe el título y al menos una fila de fotos, crear nueva página
+  if (currentY + 40 > pageHeight - 25) {
+    doc.addPage();
+    currentY = 18;
+  }
+
+  // Título de la sección de evidencias
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...PRIMARY_COLOR);
+  doc.text(`EVIDENCIAS FOTOGRÁFICAS (${evidencias.length})`, margin, currentY);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(100, 116, 139);
+  doc.text('Imágenes y capturas adjuntas al expediente', margin + 62, currentY);
+  currentY += 4;
+
+  evidencias.forEach((photoDataUrl, index) => {
+    const colIndex = index % cols;
+    if (colIndex === 0 && index > 0) {
+      currentY += photoHeight + 4;
+      if (currentY + photoHeight > pageHeight - 25) {
+        doc.addPage();
+        currentY = 18;
+      }
+    }
+
+    const x = margin + colIndex * (photoWidth + gap);
+    const y = currentY;
+
+    try {
+      doc.setDrawColor(203, 213, 225);
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(x, y, photoWidth, photoHeight, 1.5, 1.5, 'FD');
+      doc.addImage(photoDataUrl, 'JPEG', x + 0.5, y + 0.5, photoWidth - 1, photoHeight - 6);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(71, 85, 105);
+      doc.text(`Foto #${index + 1}`, x + photoWidth / 2, y + photoHeight - 1.5, { align: 'center' });
+    } catch (err) {
+      console.warn('No se pudo incrustar la foto en el PDF:', err);
+    }
+  });
+
+  return currentY + photoHeight + 6;
+};
+
 export const ExportService = {
   // ==========================================
   // 1. PDF EXPORT - FOLIO DE SEGUIMIENTO
@@ -156,6 +217,9 @@ export const ExportService = {
       });
       startY = (doc as any).lastAutoTable.finalY + 6;
     }
+
+    // Evidencias Fotográficas
+    startY = addEvidencePhotosToPdf(doc, item.evidencias, startY);
 
     // Firmas
     const signY = Math.max(startY + 15, 230);
@@ -328,6 +392,9 @@ export const ExportService = {
       startY = (doc as any).lastAutoTable.finalY + 3;
     }
 
+    // Evidencias Fotográficas
+    startY = addEvidencePhotosToPdf(doc, item.evidencias, startY);
+
     // Signatures
     const signY = Math.max(startY + 10, 230);
     doc.setDrawColor(148, 163, 184);
@@ -463,6 +530,9 @@ export const ExportService = {
       });
       startY = (doc as any).lastAutoTable.finalY + 4;
     }
+
+    // Evidencias Fotográficas
+    startY = addEvidencePhotosToPdf(doc, item.evidencias, startY);
 
     // Signatures
     const signY = Math.max(startY + 15, 230);
@@ -609,6 +679,9 @@ export const ExportService = {
       });
       startY = (doc as any).lastAutoTable.finalY + 4;
     }
+
+    // Evidencias Fotográficas
+    startY = addEvidencePhotosToPdf(doc, item.evidencias, startY);
 
     // Signatures
     const signY = Math.max(startY + 10, 230);
@@ -811,6 +884,9 @@ export const ExportService = {
 
     startY = (doc as any).lastAutoTable.finalY + 4;
 
+    // Evidencias Fotográficas
+    startY = addEvidencePhotosToPdf(doc, item.evidencias, startY);
+
     // Firmas Digitales (con soporte de imagen de firma si está dibujada)
     const signY = Math.max(startY + 4, 235);
     const boxW = 80;
@@ -949,6 +1025,9 @@ export const ExportService = {
       });
       startY = (doc as any).lastAutoTable.finalY + 5;
     }
+
+    // Evidencias Fotográficas
+    startY = addEvidencePhotosToPdf(doc, item.evidencias, startY);
 
     // Footer
     const signY = Math.max(startY + 15, 240);

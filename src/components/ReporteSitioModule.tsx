@@ -42,6 +42,7 @@ import { ReporteSitio, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
 import { WhatsAppShareMenu } from './WhatsAppShareMenu';
+import { EvidencePhotoManager } from './EvidencePhotoManager';
 import * as XLSX from 'xlsx';
 
 const ITEMS_PER_PAGE = 10;
@@ -1646,6 +1647,14 @@ export const ReporteSitioModule: React.FC<{ company: CompanyInfo }> = ({ company
                 className="w-full p-3 text-sm bg-white border border-emerald-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-emerald-950 transition-all resize-y placeholder:text-emerald-400 font-medium"
               />
             </div>
+
+            {/* Evidencias Fotográficas en Sitio */}
+            <EvidencePhotoManager
+              photos={formData.evidencias || []}
+              onChange={(photos) => setFormData({ ...formData, evidencias: photos })}
+              title="Evidencias Fotográficas en Sitio"
+              subtitle="Captura fotos con la cámara o sube imágenes del domicilio, placa de serie, fallas y pruebas realizadas"
+            />
 
             {/* Footer con Botones de Acción */}
             <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">

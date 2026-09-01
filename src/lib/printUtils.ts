@@ -566,6 +566,25 @@ export const generateMinimalistDocumentHtml = (
       </div>
     </div>
     ${bodyContent}
+    ${
+      (record as any).evidencias && (record as any).evidencias.length > 0
+        ? `
+      <div class="section-title">Evidencias Fotográficas (${(record as any).evidencias.length})</div>
+      <div class="evidence-grid">
+        ${(record as any).evidencias
+          .map(
+            (photoUrl: string, idx: number) => `
+          <div class="evidence-item">
+            <img src="${photoUrl}" alt="Evidencia #${idx + 1}" />
+            <div class="evidence-caption">Foto #${idx + 1}</div>
+          </div>
+        `
+          )
+          .join('')}
+      </div>
+    `
+        : ''
+    }
     <div class="footer">
       <div>Documento oficial generado por ServiTrack Pro • ${company.commercialName}</div>
       <div>Página 1 / 1</div>
@@ -731,6 +750,41 @@ export const printUnifiedDocumentDirectly = (
                 font-weight: 700;
                 color: #475569;
                 text-transform: uppercase;
+              }
+              .evidence-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+                margin-top: 6px;
+                margin-bottom: 8px;
+              }
+              @media (max-width: 640px) {
+                .evidence-grid {
+                  grid-template-columns: repeat(2, 1fr);
+                }
+              }
+              .evidence-item {
+                border: 1px solid #cbd5e1;
+                border-radius: 4px;
+                overflow: hidden;
+                background: #f8fafc;
+                text-align: center;
+                page-break-inside: avoid;
+                break-inside: avoid;
+              }
+              .evidence-item img {
+                width: 100%;
+                height: 85px;
+                object-fit: cover;
+                display: block;
+              }
+              .evidence-caption {
+                font-size: 8px;
+                font-weight: 700;
+                color: #64748b;
+                padding: 2.5px;
+                background: #ffffff;
+                border-top: 1px solid #e2e8f0;
               }
               .footer {
                 border-top: 1px solid #cbd5e1;

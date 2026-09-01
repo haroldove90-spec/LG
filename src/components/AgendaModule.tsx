@@ -38,6 +38,7 @@ import {
 import { AgendaContact, CompanyInfo } from '../types';
 import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
+import { EvidencePhotoManager } from './EvidencePhotoManager';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -1062,6 +1063,14 @@ export const AgendaModule: React.FC<{ company: CompanyInfo }> = ({ company }) =>
                 </div>
               </div>
             </div>
+
+            {/* Evidencias Fotográficas / Tarjeta de Presentación / Fachada */}
+            <EvidencePhotoManager
+              photos={formData.evidencias || []}
+              onChange={(photos) => setFormData({ ...formData, evidencias: photos })}
+              title="Evidencias Fotográficas / Tarjetas y Fachada"
+              subtitle="Captura o sube fotos de la tarjeta de presentación, local comercial, instalaciones o comprobantes"
+            />
 
             {/* Footer con Botones de Acción */}
             <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">

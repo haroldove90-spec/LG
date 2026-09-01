@@ -20,6 +20,7 @@ import { ExportService } from '../lib/exportUtils';
 import { StatusBadge } from './StatusBadge';
 import { STAFF_LIST, APPLIANCE_CATEGORIES } from '../data/initialData';
 import { FormatPrintPreview } from './FormatPrintPreview';
+import { EvidencePhotoManager } from './EvidencePhotoManager';
 
 const STATUS_OPTIONS: StatusType[] = [
   'Nuevo',
@@ -687,6 +688,16 @@ export const FolioSeguimientoModule: React.FC<{ company: CompanyInfo }> = ({ com
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Evidencias Fotográficas */}
+              <div className="mt-4">
+                <EvidencePhotoManager
+                  photos={formData.evidencias || []}
+                  onChange={(photos) => setFormData({ ...formData, evidencias: photos })}
+                  title="Evidencias Fotográficas del Folio"
+                  subtitle="Captura fotos con la cámara o sube imágenes del equipo y diagnóstico"
+                />
               </div>
 
               {/* Bento Footer Action Bar */}

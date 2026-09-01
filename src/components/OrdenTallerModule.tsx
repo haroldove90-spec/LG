@@ -44,6 +44,7 @@ import { ExportService } from '../lib/exportUtils';
 import { printUnifiedDocumentDirectly } from '../lib/printUtils';
 import { FormatPrintPreview } from './FormatPrintPreview';
 import { WhatsAppShareMenu } from './WhatsAppShareMenu';
+import { EvidencePhotoManager } from './EvidencePhotoManager';
 import * as XLSX from 'xlsx';
 
 const ITEMS_PER_PAGE = 10;
@@ -1343,6 +1344,14 @@ export const OrdenTallerModule: React.FC<{ company: CompanyInfo }> = ({ company 
                 className="w-full px-3 py-2 bg-white border border-amber-200 rounded-xl text-xs font-medium text-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-hidden transition-colors"
               />
             </div>
+
+            {/* SECCIÓN 7: EVIDENCIAS FOTOGRÁFICAS (CÁMARA / GALERÍA) */}
+            <EvidencePhotoManager
+              photos={formData.evidencias || []}
+              onChange={(photos) => setFormData({ ...formData, evidencias: photos })}
+              title="Evidencias Fotográficas del Equipo y Taller"
+              subtitle="Captura fotos con la cámara de tu celular o sube imágenes del estado de entrada, placas de serie y reparaciones"
+            />
 
             {/* BOTÓN INFERIOR DE GUARDAR */}
             <div className="flex items-center justify-end gap-3 pt-2">

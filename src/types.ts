@@ -23,6 +23,7 @@ export interface BaseRecord {
   id: string;
   createdAt: string;
   updatedAt: string;
+  evidencias?: string[]; // URLs or base64 data strings for photographic evidence
 }
 
 // 1. Folio de Seguimiento

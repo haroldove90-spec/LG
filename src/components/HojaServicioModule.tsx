@@ -20,6 +20,7 @@ import { ExportService } from '../lib/exportUtils';
 import { STAFF_LIST, APPLIANCE_CATEGORIES, BRANDS_LIST } from '../data/initialData';
 import { SignaturePad } from './SignaturePad';
 import { FormatPrintPreview } from './FormatPrintPreview';
+import { EvidencePhotoManager } from './EvidencePhotoManager';
 
 const TIPO_SERVICIO_OPTIONS: HojaServicio['tipoServicio'][] = [
   'In-Home (Domicilio)',
@@ -1278,6 +1279,14 @@ export const HojaServicioModule: React.FC<{ company: CompanyInfo }> = ({ company
                   </div>
                 </div>
               </div>
+
+              {/* 8. Evidencias Fotográficas */}
+              <EvidencePhotoManager
+                photos={formData.evidencias || []}
+                onChange={(photos) => setFormData((prev) => ({ ...prev, evidencias: photos }))}
+                title="8. Evidencias Fotográficas de Servicio y Diagnóstico"
+                subtitle="Captura fotos con la cámara o sube imágenes del equipo, número de serie, partes dañadas y firma"
+              />
 
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-200">

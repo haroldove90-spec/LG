@@ -46,6 +46,7 @@ import { StorageService } from '../lib/storage';
 import { ExportService } from '../lib/exportUtils';
 import { printUnifiedDocumentDirectly } from '../lib/printUtils';
 import { FormatPrintPreview } from './FormatPrintPreview';
+import { EvidencePhotoManager } from './EvidencePhotoManager';
 import * as XLSX from 'xlsx';
 
 const ITEMS_PER_PAGE = 10;
@@ -1276,6 +1277,14 @@ export const CotizacionModule: React.FC<{ company: CompanyInfo }> = ({ company }
                 </div>
               </div>
             </div>
+
+            {/* SECCIÓN 7: EVIDENCIAS FOTOGRÁFICAS (CÁMARA / GALERÍA) */}
+            <EvidencePhotoManager
+              photos={formData.evidencias || []}
+              onChange={(photos) => setFormData((prev) => ({ ...prev, evidencias: photos }))}
+              title="Evidencias Fotográficas de la Refacción y Placa"
+              subtitle="Captura fotos con la cámara de tu teléfono o sube imágenes de la etiqueta del aparato, modelo o refacción muestra"
+            />
 
             {/* BOTÓN FINAL DE GUARDAR */}
             <div className="flex justify-end gap-3 pt-2">

@@ -644,6 +644,36 @@ export const FormatPrintPreview: React.FC<FormatPrintPreviewProps> = ({
               );
             })()}
 
+            {/* EVIDENCIAS FOTOGRÁFICAS (GRID: 4 columnas desktop/tablet, 2 columnas móvil) */}
+            {record.evidencias && record.evidencias.length > 0 && (
+              <div className="mt-5 pt-4 border-t border-slate-200">
+                <div className="flex items-center justify-between mb-2.5">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    Evidencias Fotográficas ({record.evidencias.length})
+                  </h4>
+                  <span className="text-[10px] text-slate-400 font-medium">Registro adjunto al formato</span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+                  {record.evidencias.map((photoUrl, idx) => (
+                    <div
+                      key={idx}
+                      className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50 flex flex-col shadow-2xs"
+                    >
+                      <img
+                        src={photoUrl}
+                        alt={`Evidencia #${idx + 1}`}
+                        className="w-full h-24 object-cover"
+                        loading="lazy"
+                      />
+                      <div className="py-1 px-2 text-[10px] font-semibold text-slate-600 bg-white border-t border-slate-100 text-center truncate">
+                        Evidencia #{idx + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* General Disclaimer */}
             <div className="mt-6 pt-4 border-t border-slate-200 text-center text-[11px] text-slate-400">
               Documento expedido por {company.name}. Todos los derechos reservados.

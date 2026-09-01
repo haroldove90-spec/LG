@@ -131,6 +131,25 @@ export const formatRecordForWhatsApp = (
       `• Anticipo Requerido (70%): ${formatCurrency(item.anticipoRequerido)}\n` +
       `• *Restan a la Reparación:* *${formatCurrency(item.restanReparacion)}*\n` +
       `\n_Atendió: ${item.atendio || company.commercialName}_`;
+  } else if (module === 'hoja_servicio') {
+    const item = record as any;
+    folio = item.folioLGEMS || item.id || 'S/F';
+    title = `Hoja de Servicio #${folio}`;
+    phone = cleanPhoneNumber(item.celular || item.telefonoFijo);
+
+    message = `${header}🛠️ *HOJA DE SERVICIO OFICIAL* • *#${folio}*\n\n` +
+      `👤 *Cliente:* ${item.nombreCompleto || 'N/A'}\n` +
+      `📞 *Contacto:* ${item.telefonoFijo || ''} ${item.celular ? '• ' + item.celular : ''}\n` +
+      `📍 *Dirección:* ${item.domicilioCompleto || ''}, ${item.colonia || ''}\n` +
+      `⚙️ *Equipo:* ${item.tipoProducto || ''} ${item.modelo ? '/ ' + item.modelo : ''} (Serie: ${item.numeroSerie || 'N/A'})\n` +
+      `🛠️ *Diagnóstico:* ${item.observacionesDiagnostico || item.sintomaFallaReportada || 'N/A'}\n` +
+      `💰 *Total Liquidación:* *${formatCurrency(item.total)}*\n` +
+      `\n_Técnico: ${item.nombreTecnico || item.tecnicoAsignado || 'Especialista'}_`;
+  }
+
+  // Si cuenta con evidencias fotográficas adjuntas
+  if (record.evidencias && record.evidencias.length > 0) {
+    message += `\n📸 *Evidencias fotográficas:* ${record.evidencias.length} foto(s) registradas en el sistema.`;
   }
 
   return { message, phone, folio, title };
@@ -209,6 +228,13 @@ export const sharePdfToWhatsApp = async (
     } else if (module === 'folio_seguimiento') {
       pdfDoc = ExportService.generateFolioSeguimientoPdf(record as FolioSeguimiento, company);
       fileName = `Folio_Seguimiento_${folio || 'Presupuesto'}.pdf`;
+    } else if (module === 'hoja_servicio') {
+      pdfDoc = ExportService.generateHojaServicioPdf(record as any, company);
+      fileName = `Hoja_Servicio_${folio || 'Oficial'}.pdf`;
+    } else if (module === 'agenda') {
+      const agendaRecord = record as AgendaContact;
+      pdfDoc = ExportService.generateAgendaPdf(agendaRecord, company);
+      fileName = `Agenda_Contacto_${agendaRecord.agendaId || 'Directorio'}.pdf`;
     }
 
     if (!pdfDoc) {
